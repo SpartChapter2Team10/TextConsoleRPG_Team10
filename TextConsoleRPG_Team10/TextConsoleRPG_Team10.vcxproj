@@ -139,6 +139,7 @@
     <ClInclude Include="Header Files\ShopManager.h" />
     <ClInclude Include="Header Files\Singleton.h" />
     <ClInclude Include="Header Files\TypingSpeed.h" />
+    <ClInclude Include="include\Manager\DataManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source Files\AttackUp.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="Source Files\Player.cpp" />
     <ClCompile Include="Source Files\PrintManager.cpp" />
     <ClCompile Include="Source Files\ShopManager.cpp" />
+    <ClCompile Include="src\Manager\DataManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
