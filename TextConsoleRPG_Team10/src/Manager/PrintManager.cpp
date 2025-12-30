@@ -35,23 +35,23 @@ void PrintManager::PrintLog(string Msg, ELogImportance Importance)
 
 void PrintManager::PrintWithTyping(string Msg)
 {
-    float _Interval = 0.0f;
+    int _Interval = 0;
     switch (_CurrentSpeed)
     {
     case ETypingSpeed::Slow:
     {
-        _Interval = 0.8f;
+        _Interval = 400;
     }
         break;
     case ETypingSpeed::Normal:
     {
-        _Interval = 0.5f;
+        _Interval = 200;
     }
 
         break;
     case ETypingSpeed::Fast:
     {
-        _Interval = 0.2f;
+        _Interval = 100;
     }
         break;
     default:
@@ -61,7 +61,7 @@ void PrintManager::PrintWithTyping(string Msg)
     for (int i = 0; i < Msg.length(); i++)
     {
         std::cout << Msg[i];
-        Sleep(Msg[i] == ' ' ? _Interval : _Interval * 1.5f);
+        Sleep(Msg[i] == ' ' ? _Interval : _Interval * 2);
         // 줄당 글자 제한수에 걸리면 다음 줄로 개행
         if (i != 0 && i % _LineLimit == 0)
         {

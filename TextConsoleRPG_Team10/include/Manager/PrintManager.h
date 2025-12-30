@@ -42,8 +42,8 @@ enum class ELogImportance : int
 class PrintManager : public Singleton<PrintManager>
 {
 private:
-    ETypingSpeed _CurrentSpeed;
-    int _LineLimit;
+    ETypingSpeed _CurrentSpeed = ETypingSpeed::Normal;
+    int _LineLimit = 20;
 
 public:
     void PrintLog(string Msg, ELogImportance Importance = ELogImportance::NONE);
