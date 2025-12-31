@@ -9,28 +9,14 @@ bool BattleManager::StartAutoBattle(Player* P)
     // 현재: 플레이어 선공, 노멀 몬스터로 고정 (추후 몬스터 지정 필요)
     NormalMonster* NM = new NormalMonster(P->GetLevel());
 
-    while (true)
-    {
-        ProcessTurn(P, NM);
-        if (NM->IsDead())
-        {
-            return true;
-        }
-        ProcessTurn(NM, P);
-        if (P->IsDead())
-        {
-            return false;
-        }
-    }
-
+void BattleManager::StartAutoBattle(Player* p)
+{
+    // Implementation needed
 }
 
 void BattleManager::ProcessTurn(ICharacter* Atk, ICharacter* Def)
 {
-    //아이템 사용 여부 체크 후 사용
-    Atk->Attack(Def);
-    cout << Atk->GetName() << "의 공격" << endl;
-    cout << Def->GetName() << "의 피해량: " << Atk->GetAtk() << ", 남은 체력: " << Def->GetCurrentHP() << "/" << Def->GetMaxHP() << endl;
+    // Implementation needed
 }
 
 void BattleManager::CalculateReward(Player* P)
