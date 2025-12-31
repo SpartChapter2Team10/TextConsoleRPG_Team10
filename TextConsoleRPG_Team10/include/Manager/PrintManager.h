@@ -5,7 +5,7 @@
 using namespace std;
 
 enum class ETypingSpeed : int
-{   
+{
     NONE = -1,
     Slow = 0,
     Normal,
@@ -43,14 +43,31 @@ class PrintManager : public Singleton<PrintManager>
 {
 private:
     ETypingSpeed _CurrentSpeed = ETypingSpeed::Normal;
-    int _LineLimit = 20;
+    int _LineLimit = 40;
+    int _CurrentCharCnt = 0;
 
 public:
+    // 로그 출력 및 일반 출력 함수
     void PrintLog(const string& Msg, ELogImportance Importance = ELogImportance::NONE);
+    // 로그 출력 및 일반 출력 함수 + 개행
+    void PrintLogLine(const string& Msg, ELogImportance Importance = ELogImportance::NONE);
+    
+    // 타이핑 효과를 적용한 출력 함수
     void PrintWithTyping(const string& Msg);
+    // 타이핑 효과를 적용한 출력 함수 + 개행
+    void PrintWithTypingLine(const string& Msg);
+    
+    // 콘솔 텍스트 색상 변경 함수
     void ChangeTextColor(ETextColor NewTextColor = ETextColor::WHITE);
-    ETextColor GetCurrentTextColor();
+    // 현재 콘솔 텍스트 색상 반환
+    const ETextColor GetCurrentTextColor();
+    // 개행
+    void EndLine();
+
+    // 한 줄당 글자 제한 수 설정 함수
     void SetLineLimit(int Limit);
-    int GetLineLimit();
+    // 한 줄당 글자 제한 수 반환 함수
+    const int& GetLineLimit() const;
+    // 타이핑 효과의 속도 설정 함수
     void SetTypingSpeed(ETypingSpeed NewSpeed);
-};
+}; 

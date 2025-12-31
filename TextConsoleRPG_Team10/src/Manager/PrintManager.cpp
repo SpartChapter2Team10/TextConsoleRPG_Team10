@@ -14,13 +14,13 @@ void PrintManager::PrintLog(const string& Msg, ELogImportance Importance)
         ChangeTextColor(ETextColor::YELLOW);
         cout << "[DISPLAY]: ";
     }
-        break;
+    break;
     case ELogImportance::WARNING:
     {
         ChangeTextColor(ETextColor::RED);
         cout << "[WARNING]: ";
     }
-        break;
+    break;
     default:
         break;
     }
@@ -28,9 +28,16 @@ void PrintManager::PrintLog(const string& Msg, ELogImportance Importance)
     for (int i = 0; i < Msg.length(); i += _LineLimit)
     {
         string MsgStr = Msg.substr(i, _LineLimit);
-        cout << MsgStr << '\n';
+        cout << MsgStr;
+        EndLine();
     }
     ChangeTextColor(PrevColor);
+}
+
+void PrintManager::PrintLogLine(const string& Msg, ELogImportance Importance)
+{
+    PrintLog(Msg, Importance);
+    EndLine();
 }
 
 void PrintManager::PrintWithTyping(const string& Msg)
@@ -40,35 +47,41 @@ void PrintManager::PrintWithTyping(const string& Msg)
     {
     case ETypingSpeed::Slow:
     {
-        _Interval = 400;
-    }
-        break;
-    case ETypingSpeed::Normal:
-    {
         _Interval = 200;
     }
-
-        break;
-    case ETypingSpeed::Fast:
+    break;
+    case ETypingSpeed::Normal:
     {
         _Interval = 100;
     }
-        break;
+
+    break;
+    case ETypingSpeed::Fast:
+    {
+        _Interval = 50;
+    }
+    break;
     default:
         break;
     }
 
-    for (int i = 0; i < Msg.length(); i++)
+    for (const char& ch:Msg)
     {
-        cout << Msg[i];
-        Sleep(Msg[i] == ' ' ? _Interval : _Interval * 2);
+        cout << ch;
+        Sleep(ch == ' ' ? _Interval : _Interval * 2);
         // 줄당 글자 제한수에 걸리면 다음 줄로 개행
-        if (i != 0 && i % _LineLimit == 0)
+        ++_CurrentCharCnt;
+        if (_CurrentCharCnt >= _LineLimit)
         {
-            cout << '\n';
+            EndLine();
         }
     }
-    cout << '\n';
+}
+
+void PrintManager::PrintWithTypingLine(const string& Msg)
+{
+    PrintWithTyping(Msg);
+    EndLine();
 }
 
 void PrintManager::ChangeTextColor(ETextColor NewTextColor)
@@ -76,7 +89,8 @@ void PrintManager::ChangeTextColor(ETextColor NewTextColor)
     int ColorIndex = static_cast<int>(NewTextColor);
     if (NewTextColor >= ETextColor::MAX)
     {
-        cout << "Invalid Text Color Index\n";
+        cout << "\nInvalid Text Color Index: "<< static_cast<int>(NewTextColor);
+        EndLine();
         return;
     }
 
@@ -84,11 +98,11 @@ void PrintManager::ChangeTextColor(ETextColor NewTextColor)
     SetConsoleTextAttribute(HConsole, ColorIndex);
 }
 
-ETextColor PrintManager::GetCurrentTextColor()
+const ETextColor PrintManager::GetCurrentTextColor()
 {
     HANDLE HConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo;
-    
+
     if (GetConsoleScreenBufferInfo(HConsole, &ScreenBufferInfo))
     {
         // wAttributes - 8 byte, 상위 4byte는 배경, 하위 4byte는 글자 색상 
@@ -99,13 +113,19 @@ ETextColor PrintManager::GetCurrentTextColor()
     return ETextColor::WHITE;
 }
 
+void PrintManager::EndLine()
+{
+    cout << '\n';
+    _CurrentCharCnt = 0;
+}
+
 void PrintManager::SetLineLimit(int Limit)
 {
     if (Limit <= 0)Limit = 1;
     _LineLimit = Limit;
 }
 
-int PrintManager::GetLineLimit()
+const int& PrintManager::GetLineLimit() const
 {
     return _LineLimit;
 }
