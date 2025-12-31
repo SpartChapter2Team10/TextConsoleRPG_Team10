@@ -19,5 +19,4 @@ void BattleManager::ProcessTurn(ICharacter* atk, ICharacter* def)
 void BattleManager::CalculateReward(Player* p)
 {
     // Implementation needed
-
 }
