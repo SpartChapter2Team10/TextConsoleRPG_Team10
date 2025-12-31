@@ -13,4 +13,5 @@ public:
     bool IsDead() const override;
     
     tuple<int, int, IItem*> DropReward() override;
+    std::string GetAttackNarration() const override;
 };

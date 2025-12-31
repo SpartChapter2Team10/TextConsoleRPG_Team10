@@ -75,6 +75,7 @@ void GameManager::RunMainLoop()
         if (lowerChoice == 'y')
         {
             ShopManager* Shop = ShopManager::GetInstance();
+            Shop->ReopenShop();
             Shop->PrintShop();
             Shop->BuyItem(_MainPlayer.get(), 0); // 상점에서 체력 회복 포션 1개 구매
             Shop->BuyItem(_MainPlayer.get(), 1); // 상점에서 공격력 증가 포션 1개 구매

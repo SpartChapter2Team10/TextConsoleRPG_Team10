@@ -10,5 +10,4 @@ public:
     AttackUp() : IItem("공격력 증가 포션", 100, 10, 5) {};
     
     void ApplyEffect(Player& Player) override;
-    EItemType GetItemType() const override { return EItemType::AttackUpPotion; }
 };

@@ -36,10 +36,8 @@ void NormalMonster::TakeDamage(int Amount)
 
 void NormalMonster::Attack(ICharacter* Target) const
 {
-    if (Target == nullptr)
-    {
+    if (!Target) 
         return;
-    }
 
     // 공격 연출 등 나중에 추가하면 될 듯
     Target->TakeDamage(_Atk);
@@ -69,4 +67,9 @@ tuple<int, int, IItem*> NormalMonster::DropReward()
     }
     tuple<int, int, IItem*> Reward(50, uniform_int_distribution<>(10, 20)(gen), DropItem);
     return Reward;
+}
+
+std::string NormalMonster::GetAttackNarration() const
+{
+    return _Name + "가 사납게 공격을 내지릅니다!";
 }

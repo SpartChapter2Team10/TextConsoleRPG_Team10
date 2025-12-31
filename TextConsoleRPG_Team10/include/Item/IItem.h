@@ -22,7 +22,7 @@ public:
     virtual ~IItem() = default; //소멸자
 
     virtual void ApplyEffect(Player& Player) = 0; //아이템 사용 시 효과 적용
-    virtual EItemType GetItemType() const = 0;
-
-    int GetMaxCount() const { return _MaxCount; }; //아이템 최대 스택 수 반환
+    int GetMaxCount() const { return _MaxCount; } //아이템 최대 스택 수 반환
+    string GetName() const { return _ItemName; } //아이템 이름 반환
+    int GetPrice() const { return _Price; } //아이템 가격 반환
 };

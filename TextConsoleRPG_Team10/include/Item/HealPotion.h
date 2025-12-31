@@ -10,5 +10,4 @@ public:
     HealPotion() : IItem("체력 회복 포션", 100, 50, 5) {};
 
     void ApplyEffect(Player& Player) override;
-    EItemType GetItemType() const override { return EItemType::HealingPotion; }
 };

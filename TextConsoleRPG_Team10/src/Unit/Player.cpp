@@ -1,18 +1,17 @@
 ﻿#include "../../include/Unit/Player.h"
 #include <iostream>
 
-Player::Player(const string& Name): _Inventory(10)
+Player::Player(const string& Name) : _Inventory(10)
 {
-  // To-Do : csv 파일에서 플레이어 초기 스탯 불러오기
-  _Name = Name;
-  _Level = 1;
-  _MaxHP = 200;
-  _CurrentHP = _MaxHP;
-  _BaseAtk = 30;
-  _CurrentAtk = _BaseAtk;
-  _MaxExp = 550;
-  _CurrentExp = 0;
-  _Gold = 100;
+    _Name = Name;
+    // To-Do : csv 파일에서 플레이어 초기 스탯 불러오기
+    _Level = 1;
+    _MaxHP = 200;
+    _CurrentHP = _MaxHP;
+    _Atk = 30;
+    _MaxExp = 550;
+    _CurrentExp = 0;
+    _Gold = 100;
 }
 
 void Player::TakeDamage(const int Amount)
@@ -26,10 +25,15 @@ void Player::TakeDamage(const int Amount)
 
 void Player::Attack(ICharacter* Target) const
 {
-    if (Target == nullptr)
-    {
+    if (!Target)
         return;
-    }
+
+    Target->TakeDamage(_Atk); // 피해만 전달
+}
+
+std::string Player::GetAttackNarration() const
+{
+    return _Name + "이(가) 용감하게 공격을 날립니다!";
 }
 
 bool Player::IsDead() const
@@ -48,19 +52,18 @@ void Player::CheckLevelUp()
 
 void Player::ProcessLevelUp()
 {
-  if (_Level > 10) 
-  {
-    // To-Do : 최대 레벨 도달 시 처리
-  } 
-  else 
-  {
-    _Level++;
-    _MaxHP += (_Level * 20);
-    _CurrentHP = _MaxHP;
-    _BaseAtk += (_Level * 5);
-    _CurrentAtk = _BaseAtk;
-    _MaxExp += static_cast<int>(_MaxExp * 1.2f);
-  }
+    if (_Level > 10)
+    {
+        // To-Do : 최대 레벨 도달 시 처리
+    }
+    else
+    {
+        _Level++;
+        _MaxHP += (_Level * 20);
+        _CurrentHP = _MaxHP;
+        _Atk += (_Level * 5);
+        _MaxExp += static_cast<int>(_MaxExp * 1.2f);
+    }
 }
 
 void Player::GainExp(const int Amount)
@@ -77,25 +80,4 @@ void Player::GainGold(const int Amount)
 void Player::UseItem(const int SlotIndex)
 {
     _Inventory.UseItem(SlotIndex, *this);
-}
-
-void Player::AddAttack(const int Amount) 
-{ 
-  _CurrentAtk += Amount;
-}
-
-void Player::ResetAttack() 
-{ 
-  _CurrentAtk = _BaseAtk; 
-}
-
-void Player::Heal(const int Amount)
-{ 
-	if (_CurrentHP > _MaxHP || _CurrentHP + Amount > _MaxHP) 
-	{
-		_CurrentHP = _MaxHP; 
-	} else 
-	{
-		_CurrentHP += Amount;
-    }
 }
