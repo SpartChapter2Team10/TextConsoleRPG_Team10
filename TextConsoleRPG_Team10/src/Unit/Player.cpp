@@ -80,7 +80,6 @@ void Player::UseItem(const int SlotIndex)
 void Player::AddAttack(const int Amount) 
 { 
   Atk += Amount;
-  _Inventory->UseItem(0, *this);
 }
 
 void Player::Heal(const int Amount)
