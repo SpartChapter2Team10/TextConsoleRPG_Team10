@@ -4,7 +4,9 @@
 #include <iostream>
 #include <tuple>
 #include <memory>
+
 using namespace std;
+
 bool BattleManager::StartAutoBattle(Player* P)
 {
     // Implementation needed
@@ -58,9 +60,9 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
 {
     // Implementation needed
     // 전투 결과에 따른 보상 계산 및 지급, 플레이어는 경험치 및 골드, 아이템 획득
-    // 몬스터 드롭 불러오고, 이거는 게임 매니저에서 호출됨
-    tuple<int, int, unique_ptr<IItem>>Reward=M->DropReward();
-    P->GainExp(get<0>(Reward));
-    P->GainGold(get<1>(Reward));
-    //P->GetInventory().AddItem(move(get<2>(Reward)), 1);
+
+    tuple<int, int, IItem*>Reward = M->DropReward();
+    P->GainExp(get<0>(Reward)); // 경험치 획득
+    P->GainGold(get<1>(Reward)); // 골드 획득
+    //P->GetInventory().AddItem(아이템포인터, 1);
 }

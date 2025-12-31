@@ -50,24 +50,22 @@ bool NormalMonster::IsDead()
     return _CurrentHP <= 0;
 }
 
-tuple<int, int, unique_ptr<IItem>> NormalMonster::DropReward()
+tuple<int, int, IItem*> NormalMonster::DropReward()
 {
     // 경험치 50, 골드 10~20, 30% 확률 아이템 드롭
-    unique_ptr<IItem> DropItem = nullptr;
+    IItem* DropItem = nullptr;
 
     if (uniform_int_distribution<>(0, 9)(gen) < 3) // 30%
     {
         if(uniform_int_distribution<>(0, 1)(gen)) // 50%
         {
             //HealPotion 생성
-            DropItem = make_unique<HealPotion>();
         }
         else
         {
             //AttackUp 생성
-            DropItem = make_unique<AttackUp>();
         }
     }
-    tuple<int, int, unique_ptr<IItem>> Reward(50, uniform_int_distribution<>(10, 20)(gen), move(DropItem));
+    tuple<int, int, IItem*> Reward(50, uniform_int_distribution<>(10, 20)(gen), DropItem);
     return Reward;
 }
