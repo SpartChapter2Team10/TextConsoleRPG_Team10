@@ -1,4 +1,4 @@
-#include "../../include/Unit/Player.h"
+﻿#include "../../include/Unit/Player.h"
 #include <iostream>
 
 Player::Player(const string& Name) 
@@ -36,16 +36,16 @@ bool Player::IsDead() const
 	return _CurrentHP <= 0; 
 }
 
-void Player::CheckLevelUp() 
+void Player::CheckLevelUp()
 {
-  while (_CurrentExp >= _MaxExp) 
-  {
-    _CurrentExp -= _MaxExp;
-    ProcessLevelUp();
-  }
+    while (_CurrentExp >= _MaxExp)
+    {
+        _CurrentExp -= _MaxExp;
+        ProcessLevelUp();
+    }
 }
 
-void Player::ProcessLevelUp() 
+void Player::ProcessLevelUp()
 {
   if (_Level > 10) 
   {
