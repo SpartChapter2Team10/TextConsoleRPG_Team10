@@ -28,5 +28,6 @@ public:
 	Inventory& GetInventory() { return _Inventory; }
 
 	void AddAttack(const int Amount);
+    void ResetAttack();
     void Heal(const int Amount);
 };
