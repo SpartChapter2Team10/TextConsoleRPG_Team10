@@ -1,7 +1,7 @@
-#include "../../include/Unit/Player.h"
+﻿#include "../../include/Unit/Player.h"
 #include <iostream>
 
-Player::Player(const string& Name) 
+Player::Player(const string& Name): _Inventory(10)
 {
   // To-Do : csv 파일에서 플레이어 초기 스탯 불러오기
   _Name = Name;
@@ -15,26 +15,26 @@ Player::Player(const string& Name)
   _Gold = 100;
 }
 
-void Player::TakeDamage(const int Amount) 
+void Player::TakeDamage(const int Amount)
 {
-  _CurrentHP -= Amount;
-  if (_CurrentHP < 0) 
-  {
-    _CurrentHP = 0;
-  }
+    _CurrentHP -= Amount;
+    if (_CurrentHP < 0)
+    {
+        _CurrentHP = 0;
+    }
 }
 
-void Player::Attack(ICharacter* Target) const 
+void Player::Attack(ICharacter* Target) const
 {
-  if (Target == nullptr) 
-  {
-    return;
-  }
+    if (Target == nullptr)
+    {
+        return;
+    }
 }
 
 bool Player::IsDead() const
-{ 
-	return _CurrentHP <= 0; 
+{
+    return _CurrentHP <= 0;
 }
 
 void Player::CheckLevelUp()
@@ -63,20 +63,20 @@ void Player::ProcessLevelUp()
   }
 }
 
-void Player::GainExp(const int Amount) 
+void Player::GainExp(const int Amount)
 {
-  _CurrentExp += Amount;
-  CheckLevelUp();
+    _CurrentExp += Amount;
+    CheckLevelUp();
 }
 
-void Player::GainGold(const int Amount) 
+void Player::GainGold(const int Amount)
 {
-  _Gold += Amount;
+    _Gold += Amount;
 }
 
-void Player::UseItem(const int SlotIndex) 
-{ 
-  _Inventory.UseItem(SlotIndex, *this); 
+void Player::UseItem(const int SlotIndex)
+{
+    _Inventory.UseItem(SlotIndex, *this);
 }
 
 void Player::AddAttack(const int Amount) 

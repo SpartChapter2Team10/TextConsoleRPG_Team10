@@ -1,13 +1,11 @@
 ﻿#pragma once
 #include <vector>
+#include "../Config.h"
 #include "ItemSlot.h"
-#include "HealPotion.h"
-#include "AttackUp.h"
 
 using namespace std;
 
 class IItem;
-class ItemSlot;
 class Player;
 
 //고정 슬롯 인벤토리 클래스
@@ -23,15 +21,22 @@ private:
 
 public:
     //생성자
-    Inventory() {
-        _Slots.resize(2); //인벤토리 슬롯 2개 고정
-
-        _Slots[0].SetItem(&_HealPotion, 0); //첫 번째 슬롯에 체력 회복 포션 설정
-        _Slots[1].SetItem(&_AttackUp, 0); //두 번째 슬롯에 공격력 증가 포션 설정
-    }
+    Inventory(int MaxSlots) : _Slots(MaxSlots), _MaxSlots(MaxSlots) {}
     
-    int GetItemAmount(int SlotIndex) const; //특정 아이템의 총 개수 반환
-    bool AddItem(int SlotIndex, int Amount); //아이템 인벤토리에 추가
-    bool UseItem(int SlotIndex, Player& P); //아이템 사용
-    void RemoveItem(int SlotIndex); //아이템 인벤토리에서 제거 (1개씩 제거 가정)
+    int GetItemAmount(IItem* item) const; //특정 아이템의 총 개수 반환
+    void UseItem(int slotIndex, Player& p); //아이템 사용
+    bool AddItem(IItem* item, int amount); //아이템 인벤토리에 추가
+    void RemoveItem(int slotIndex); //아이템 인벤토리에서 제거
+
+    template<typename T>
+    int FindFirstSlotIndexOfType() const
+    {
+        EItemType type = T().GetItemType();  // 정적 호출
+        for (size_t i = 0; i < _Slots.size(); ++i) {
+            if (_Slots[i].GetItem() && _Slots[i].GetItem()->GetItemType() == type) {
+                return static_cast<int>(i);
+            }
+        }
+        return -1;
+    }
 };

@@ -19,7 +19,7 @@ void GameManager::StartGame()
     }
 
     // Main Player 생성
-    _MainPlayer = make_shared<Player>();
+    _MainPlayer = make_shared<Player>(PlayerName);
     // TODO: 플레이어 입력 시스템으로 플레이어 정보 입력 받아 설정
     // 유효한 값으로 입력된 경우 캐릭터 생성 로직 수행
 
@@ -54,9 +54,6 @@ void GameManager::RunMainLoop()
             break;
         }
 
-        // 전투 결과에 따른 보상 계산 및 지급, 플레이어는 경험치 및 골드를 획득합니다.
-        BattleManager::GetInstance()->CalculateReward(_MainPlayer.get());
-
         // TODO: 플레이어의 레벨 정보를 받아와 게임 종료 확인
         if (_MainPlayer->GetLevel() >= 10)
         {
@@ -83,7 +80,7 @@ void GameManager::RunMainLoop()
             Shop->BuyItem(_MainPlayer.get(), 1); // 상점에서 공격력 증가 포션 1개 구매
             PrintManager::GetInstance()->PrintLogLine("든든한 채비가 보험인 법이죠, 두둑한 주머니와 함께 " + _MainPlayer->GetName() + "는 다음 층으로 향합니다.");
         }
-        else if (lowerChoice)
+        else if (lowerChoice == 'n')
             PrintManager::GetInstance()->PrintLogLine("역시.. 돈은 아끼고 봐야죠, " + _MainPlayer->GetName() + "는 다음 층으로 향합니다.");
 
     }
