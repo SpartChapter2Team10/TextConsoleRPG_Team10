@@ -138,6 +138,7 @@
     <ClInclude Include="include/Manager/PrintManager.h" />
     <ClInclude Include="include/Manager/ShopManager.h" />
     <ClInclude Include="include/Singleton.h" />
+    <ClInclude Include="include/Config.h" />
     <ClInclude Include="include/Manager/DataManager.h" />
   </ItemGroup>
   <ItemGroup>

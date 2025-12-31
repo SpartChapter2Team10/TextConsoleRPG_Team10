@@ -78,6 +78,9 @@
  <ClInclude Include="include/TypingSpeed.h">
  <Filter>Header Files</Filter>
  </ClInclude>
+ <ClInclude Include="include/Config.h">
+ <Filter>Header Files</Filter>
+ </ClInclude>
  </ItemGroup>
  <ItemGroup>
  <ClCompile Include="src/Item/AttackUp.cpp">
