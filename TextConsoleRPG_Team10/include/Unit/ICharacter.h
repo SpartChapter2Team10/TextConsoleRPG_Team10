@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 
 using namespace std;
@@ -10,8 +10,7 @@ protected:
     int _Level;
     int _CurrentHP;
     int _MaxHP;
-    int _BaseAtk;
-    int _CurrentAtk;
+    int _Atk;
 
 public:
     virtual ~ICharacter() {}
@@ -20,10 +19,12 @@ public:
     virtual void Attack(ICharacter* Target) const = 0;
     virtual bool IsDead() const = 0;
 
-	inline const string& GetName() const { return _Name; }
+    inline const string& GetName() const { return _Name; }
     inline int GetLevel() const { return _Level; }
     inline int GetCurrentHP() const { return _CurrentHP; }
     inline int GetMaxHP() const { return _MaxHP; }
-    inline int GetBaseAtk() const { return _BaseAtk; }
-    inline int GetCurrentAtk() const { return _CurrentAtk; }
+    inline int GetAtk() const { return _Atk; }
+
+    // 공격 연출 문자열 반환 (기본값)
+    virtual std::string GetAttackNarration() const { return _Name + "이(가) 공격을 시도합니다!"; }
 };

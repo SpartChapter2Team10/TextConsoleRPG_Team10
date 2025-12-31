@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ICharacter.h"
 #include "../Item/Inventory.h"
 #include <string>
@@ -25,9 +25,15 @@ public:
     void GainGold(const int Amount);
     void UseItem(const int SlotIndex);
 
+    inline int GetGold() const { return _Gold; }
+    inline int GetExp() const { return _CurrentExp; }
+
 	Inventory& GetInventory() { return _Inventory; }
 
 	void AddAttack(const int Amount);
     void ResetAttack();
     void Heal(const int Amount);
+
+    // 플레이어 전용 공격 연출
+    std::string GetAttackNarration() const override;
 };

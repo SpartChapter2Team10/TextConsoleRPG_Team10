@@ -7,16 +7,17 @@ using namespace std;
 class IItem;
 class Player;
 
+struct ItemStock {
+    IItem* prototype;  // 프로토타입 포인터 (ShopManager 소유)
+    int count;         // 재고 개수
+};
+
 class ShopManager : public Singleton<ShopManager>
 {
-    friend class Singleton<ShopManager>;
-protected:
-    ShopManager() {};
-
 private:
-    vector<IItem*> _SellList;
+    vector<ItemStock> _SellList;  // 판매 목록 (프로토타입 + 개수)
     
-private:
+protected:
     ShopManager() = default;
     friend class Singleton<ShopManager>;
 
