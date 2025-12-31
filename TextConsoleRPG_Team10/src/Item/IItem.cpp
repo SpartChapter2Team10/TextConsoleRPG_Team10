@@ -1,7 +1,7 @@
-#include "../../include/Item/IItem.h"
+ï»¿#include "../../include/Item/IItem.h"
 
-int IItem::GetMaxStack() const
+int IItem::GetMaxCount() const
 {
-    //½½·Ô ´ç ÃÖ´ë º¸À¯ °³¼ö ¹ÝÈ¯
-    return _MaxStack;
+    //ìŠ¬ë¡¯ ë‹¹ ìµœëŒ€ ë³´ìœ  ê°œìˆ˜ ë°˜í™˜
+    return _MaxCount;
 }
