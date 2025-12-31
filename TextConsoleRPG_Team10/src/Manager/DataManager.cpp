@@ -1,25 +1,34 @@
 #include "../../include/Manager/DataManager.h"
+#include "../../include/Config.h"
 
 using namespace std;
 
-void DataManager::Initialize()
+bool DataManager::Initialize()
 {
     // Implementation needed
+    // TODO: Save & Load 경로를 저장함
+    bool IsInitialized = false;
+
+    string BasePath = DEFAULT_RESOURCE_PATH;
+
+
+
+    return IsInitialized;
 }
 
-string DataManager::LoadTextFile(string fileName)
+string DataManager::LoadTextFile(string FileName)
 {
     // Implementation needed
     return "";
 }
 
-vector<vector<string>> DataManager::LoadCSVFile(string fileName)
+vector<vector<string>> DataManager::LoadCSVFile(string FileName)
 {
     // Implementation needed
     return vector<vector<string>>();
 }
 
-bool DataManager::SaveTextFile(string fileName, string data)
+bool DataManager::SaveTextFile(string FileName, string Data)
 {
     // Implementation needed
     return false;
@@ -37,14 +46,19 @@ bool DataManager::LoadPlayerData(Player* p)
     return false;
 }
 
-bool DataManager::FileExists(string fileName)
+bool DataManager::FileExists(string FileName)
 {
     // Implementation needed
     return false;
 }
 
-bool DataManager::DeleteFile(string fileName)
+bool DataManager::DeleteFile(string FileName)
 {
     // Implementation needed
+    return false;
+}
+
+bool DataManager::DirectoryExists(const string& DirPath)
+{
     return false;
 }

@@ -11,11 +11,22 @@ class DataManager : public Singleton<DataManager>
 {
 private:
     string _ResourcePath;
-    string _SaveDataPath;
     bool _IsInitialized;
 
+private:
+    DataManager() = default;
+    friend class Singleton<DataManager>;
+
+    DataManager(const DataManager&) = delete;
+    DataManager& operator=(const DataManager&) = delete;
+
+    string GetAsciiPath() const { return string(DEFAULT_RESOURCE_PATH) + "/" + ASCII_FOLDER; }
+    string GetCSVPath()   const { return string(DEFAULT_RESOURCE_PATH) + "/" + CSV_FOLDER; }
+    string GetDataPath()  const { return string(DEFAULT_RESOURCE_PATH) + "/" + PLAYER_DATA_FOLDER; }
+    string GetTextPath()  const { return string(DEFAULT_RESOURCE_PATH) + "/" + TEXT_FOLDER; }
+
 public:
-    void Initialize();
+    bool Initialize();
     string LoadTextFile(string fileName);
     vector<vector<string>> LoadCSVFile(string fileName);
     bool SaveTextFile(string fileName, string data);
