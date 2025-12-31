@@ -1,17 +1,27 @@
 #include "../../include/Manager/ShopManager.h"
-#include <iostream>
+#include "../../include/Manager/PrintManager.h"
+#include "../../include/Item/HealPotion.h"
+#include "../../include/Item/AttackUp.h"
+
 using namespace std;
 
-ShopManager::ShopManager()
+void ShopManager::ReopenShop()
 {
-    // Implementation needed
-    // ∆«∏≈ ∏ÆΩ∫∆Æ √ ±‚»≠ « ø‰
+    for (IItem* it : _SellList)
+    {
+        delete it;
+    }
+    _SellList.clear();
+    
+    _SellList.push_back(new HealPotion());
+    _SellList.push_back(new AttackUp());
 }
+
 void ShopManager::PrintShop()
 {
     // Implementation needed
     cout << "Shop" << endl;
-    // ∆«∏≈ ∏Ò∑œ √‚∑¬
+    // ÌåêÎß§ Î™©Î°ù Ï∂úÎ†•
 
 }
 
