@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <vector>
+#include "../Config.h"
 
 using namespace std;
 
@@ -27,4 +28,16 @@ public:
     void UseItem(int slotIndex, Player& p); //아이템 사용
     bool AddItem(IItem* item, int amount); //아이템 인벤토리에 추가
     void RemoveItem(int slotIndex); //아이템 인벤토리에서 제거
+
+    template<typename T>
+    int FindFirstSlotIndexOfType() const
+    {
+        EItemType type = T()::GetItemType();  // 정적 호출
+        for (size_t i = 0; i < _Slots.size(); ++i) {
+            if (_Slots[i].GetItem() && _Slots[i].GetItem()->GetItemType() == type) {
+                return static_cast<int>(i);
+            }
+        }
+        return -1;
+    }
 };
