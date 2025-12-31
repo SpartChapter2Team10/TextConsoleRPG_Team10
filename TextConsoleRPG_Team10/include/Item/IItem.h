@@ -12,15 +12,14 @@ protected:
     string _ItemName; //아이템 이름
     int _Price; //아이템 가격
     int _EffectAmount; //아이템 효과 수치
-    int _MaxStack; //슬롯 당 최대 보유 개수
+    int _MaxCount; //아이템 최대 보유 가능한 개수
 
 public:
     //생성자
-    IItem(string ItemName, int Price, int EffectAmount, int MaxStack)
-        : _ItemName(ItemName), _Price(Price), _EffectAmount(EffectAmount), _MaxStack(MaxStack) {
-    }
-
+    IItem(string ItemName, int Price, int EffectAmount, int MaxCount)
+    : _ItemName(ItemName), _Price(Price), _EffectAmount(EffectAmount), _MaxCount(MaxCount){}
+    
     virtual void ApplyEffect(Player& p) = 0; //아이템 사용 시 효과 적용
-    virtual int GetMaxStack() const; //아이템 최대 스택 수 반환
+    virtual int GetMaxCount() const; //아이템 최대 스택 수 반환
     virtual ~IItem() = default; //소멸자
 };

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ICharacter.h"
 #include "../Item/Inventory.h"
 #include <string>
@@ -24,4 +24,6 @@ public:
     void GainExp(const int Amount);
     void GainGold(const int Amount);
     void UseItem(const int SlotIndex);
+
+	Inventory& GetInventory() { return _Inventory; }
 };
