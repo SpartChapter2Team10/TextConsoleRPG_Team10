@@ -124,18 +124,131 @@ artRenderer->SetColor(12);  // 빨간색
 
 ### 4. AsciiArtRenderer (애니메이션)
 ```cpp
+// 방법 1: 파일명 직접 지정
 auto artRenderer = std::make_unique<AsciiArtRenderer>();
 
 std::vector<std::string> frames = {
-    "Frame1.txt",
-    "Frame2.txt",
-    "Frame3.txt"
+    "frame_001.txt",
+    "frame_002.txt",
+    "frame_003.txt"
 };
 
-std::string monstersPath = DataManager::GetInstance()->GetResourcePath("Monsters");
-artRenderer->LoadAnimationFromFiles(monstersPath, frames, 0.3f);  // 0.3초마다 전환
+std::string animPath = DataManager::GetInstance()->GetAnimationsPath();
+artRenderer->LoadAnimationFromFiles(animPath + "/MonsterAttack", frames, 0.3f);  // 0.3초마다 전환
+artRenderer->StartAnimation();
+
+// 방법 2: 폴더 자동 로드 (권장)
+auto artRenderer = std::make_unique<AsciiArtRenderer>();
+
+std::string animPath = DataManager::GetInstance()->GetAnimationsPath();
+artRenderer->LoadAnimationFromFolder(animPath + "/MonsterAttack", 0.3f);  // 폴더 내 모든 .txt 파일 자동 로드
 artRenderer->StartAnimation();
 ```
+
+**파일 구조 예시:**
+```
+Resources/
+└── Animations/
+  └── MonsterAttack/
+        ├── frame_001.txt
+        ├── frame_002.txt
+        ├── frame_003.txt
+        └── frame_004.txt
+```
+
+**중요**: 파일명은 사전순으로 정렬되므로, **제로 패딩**(001, 002, ...)을 사용하세요.
+
+**사용 사례**: 공격 모션, 스킬 이펙트, 인트로 애니메이션
+
+---
+
+## 🎬 애니메이션 시스템 상세
+
+### DataManager 애니메이션 지원
+
+#### 1. 폴더 내 파일 목록 가져오기
+```cpp
+// 특정 폴더 내 모든 파일 목록 가져오기 (확장자 필터 가능)
+std::vector<std::string> DataManager::GetFilesInDirectory(
+    const std::string& folderPath, 
+    const std::string& extension = ""
+);
+```
+
+**예시:**
+```cpp
+// 모든 파일
+std::vector<std::string> allFiles = 
+    DataManager::GetInstance()->GetFilesInDirectory("Resources/Animations/Attack");
+
+// .txt 파일만
+std::vector<std::string> txtFiles = 
+    DataManager::GetInstance()->GetFilesInDirectory("Resources/Animations/Attack", ".txt");
+```
+
+#### 2. 애니메이션 폴더 로드
+```cpp
+// AsciiArtRenderer에서 폴더 기반 애니메이션 로드
+bool LoadAnimationFromFolder(
+    const std::string& animationFolderPath,
+    float frameDuration = 0.5f,
+    const std::string& extension = ".txt"
+);
+```
+
+**장점:**
+- ✅ 파일 추가/삭제 시 코드 수정 불필요
+- ✅ 자동 정렬 (파일명 순서대로)
+- ✅ 확장자 필터링 가능
+
+**예시:**
+```cpp
+auto anim = std::make_unique<AsciiArtRenderer>();
+
+// 기본 사용 (.txt 파일, 0.5초 간격)
+anim->LoadAnimationFromFolder("Resources/Animations/MonsterAttack");
+
+// 커스터마이징
+anim->LoadAnimationFromFolder(
+    "Resources/Animations/Skill",
+    0.2f,    // 0.2초마다 프레임 전환
+    ".txt"   // .txt 파일만 로드
+);
+
+anim->StartAnimation();
+```
+
+### 애니메이션 파일명 규칙
+
+**올바른 예시 (제로 패딩):**
+```
+frame_001.txt
+frame_002.txt
+...
+frame_010.txt
+frame_099.txt
+```
+
+**잘못된 예시 (정렬 문제):**
+```
+frame_1.txt   → frame_1.txt
+frame_10.txt  → frame_10.txt
+frame_2.txt   → frame_2.txt  (2가 10 뒤로 감)
+```
+
+### 애니메이션 제어
+```cpp
+artRenderer->StartAnimation();            // 재생 시작
+artRenderer->StopAnimation();       // 재생 중지
+artRenderer->SetFrameDuration(0.2f);   // 프레임 간격 변경 (0.2초)
+```
+
+### 애니메이션 흐름
+1. **DataManager**가 폴더에서 파일 목록 가져오기
+2. **파일명 정렬** (사전순)
+3. 각 파일을 **프레임으로 로드** (LoadTextFile)
+4. **시간 기반 프레임 전환** (Update)
+5. **현재 프레임 렌더링** (Render)
 
 ---
 

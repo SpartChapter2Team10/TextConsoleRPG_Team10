@@ -8,11 +8,11 @@
 
 bool AsciiArtRenderer::LoadFromFile(const std::string& folderPath, const std::string& fileName)
 {
-  std::string content = DataManager::GetInstance()->LoadTextFile(folderPath, fileName);
+    std::string content = DataManager::GetInstance()->LoadTextFile(folderPath, fileName);
     if (content.empty()) {
-     PrintManager::GetInstance()->PrintLogLine(
+        PrintManager::GetInstance()->PrintLogLine(
             "AsciiArtRenderer: Failed to load " + fileName, ELogImportance::WARNING);
-    return false;
+        return false;
     }
 
     return LoadFromString(content);
@@ -21,18 +21,18 @@ bool AsciiArtRenderer::LoadFromFile(const std::string& folderPath, const std::st
 bool AsciiArtRenderer::LoadFromString(const std::string& artContent)
 {
     _ArtLines.clear();
-    
+
     std::istringstream stream(artContent);
     std::string line;
     while (std::getline(stream, line)) {
         // \r 제거
-   if (!line.empty() && line.back() == '\r') {
-line.pop_back();
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
         }
-    _ArtLines.push_back(line);
+        _ArtLines.push_back(line);
     }
 
- _IsDirty = true;
+    _IsDirty = true;
     return !_ArtLines.empty();
 }
 
@@ -45,33 +45,53 @@ bool AsciiArtRenderer::LoadAnimationFromFiles(const std::string& folderPath,
         std::string content = DataManager::GetInstance()->LoadTextFile(folderPath, fileName);
         if (content.empty()) {
             PrintManager::GetInstance()->PrintLogLine(
-              "AsciiArtRenderer: Failed to load animation frame " + fileName,
-ELogImportance::WARNING);
- continue;
+                "AsciiArtRenderer: Failed to load animation frame " + fileName,
+                ELogImportance::WARNING);
+            continue;
         }
 
-  std::vector<std::string> frame;
+        std::vector<std::string> frame;
         std::istringstream stream(content);
         std::string line;
         while (std::getline(stream, line)) {
-    if (!line.empty() && line.back() == '\r') {
- line.pop_back();
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
             }
             frame.push_back(line);
-   }
+        }
 
         _AnimationFrames.push_back(std::move(frame));
     }
 
-  if (!_AnimationFrames.empty()) {
+    if (!_AnimationFrames.empty()) {
         _FrameDuration = frameDuration;
         _CurrentFrame = 0;
         _IsAnimating = true;
         _IsDirty = true;
         return true;
-  }
+    }
 
     return false;
+}
+
+bool AsciiArtRenderer::LoadAnimationFromFolder(const std::string& animationFolderPath,
+    float frameDuration,
+    const std::string& extension)
+{
+    // 1. 폴더 내 모든 파일 목록 가져오기
+    std::vector<std::string> fileNames =
+        DataManager::GetInstance()->GetFilesInDirectory(animationFolderPath, extension);
+
+    if (fileNames.empty())
+    {
+        PrintManager::GetInstance()->PrintLogLine(
+            "AsciiArtRenderer: No files found in folder " + animationFolderPath,
+            ELogImportance::WARNING);
+        return false;
+    }
+
+    // 2. 기존 LoadAnimationFromFiles 호출
+    return LoadAnimationFromFiles(animationFolderPath, fileNames, frameDuration);
 }
 
 void AsciiArtRenderer::Clear()
@@ -87,8 +107,8 @@ void AsciiArtRenderer::Update(float deltaTime)
 
     _FrameTime += deltaTime;
     if (_FrameTime >= _FrameDuration) {
-     _FrameTime = 0.0f;
-     _CurrentFrame = (_CurrentFrame + 1) % _AnimationFrames.size();
+        _FrameTime = 0.0f;
+        _CurrentFrame = (_CurrentFrame + 1) % _AnimationFrames.size();
         _IsDirty = true;
     }
 }
@@ -99,7 +119,7 @@ void AsciiArtRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
 
     // 애니메이션 모드
     if (_IsAnimating && !_AnimationFrames.empty()) {
-   RenderFrame(buffer, bounds, _AnimationFrames[_CurrentFrame]);
+        RenderFrame(buffer, bounds, _AnimationFrames[_CurrentFrame]);
     }
     // 단일 아트 모드
     else {
@@ -124,15 +144,15 @@ void AsciiArtRenderer::RenderFrame(ScreenBuffer& buffer, const PanelBounds& boun
     // 아트 크기 검증
     int artHeight = static_cast<int>(frame.size());
     int artWidth = 0;
-  for (const auto& line : frame) {
+    for (const auto& line : frame) {
         artWidth = (std::max)(artWidth, static_cast<int>(line.length()));
     }
 
     // 패널보다 크면 경고
     if (artHeight > contentHeight || artWidth > contentWidth) {
         PrintManager::GetInstance()->PrintLogLine(
-        "AsciiArtRenderer: Art size exceeds panel bounds (will be clipped)",
-     ELogImportance::WARNING);
+            "AsciiArtRenderer: Art size exceeds panel bounds (will be clipped)",
+            ELogImportance::WARNING);
     }
 
     // 정렬 계산
@@ -141,15 +161,15 @@ void AsciiArtRenderer::RenderFrame(ScreenBuffer& buffer, const PanelBounds& boun
 
     switch (_Alignment) {
     case ArtAlignment::CENTER:
-    startX = contentX + (contentWidth - artWidth) / 2;
+        startX = contentX + (contentWidth - artWidth) / 2;
         startY = contentY + (contentHeight - artHeight) / 2;
         break;
-  case ArtAlignment::RIGHT:
+    case ArtAlignment::RIGHT:
         startX = contentX + contentWidth - artWidth;
-     break;
+        break;
     case ArtAlignment::LEFT:
     default:
-     break;
+        break;
     }
 
     // 렌더링

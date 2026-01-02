@@ -59,6 +59,9 @@ public:
     std::vector<MonsterSpawnData> LoadMonsterSpawnData(const std::string& fileName);
     std::tuple<std::string, std::string> GetRandomStageAndMonster();
 
+    // 폴더 내 모든 파일 목록 가져오기 (확장자 필터 가능)
+    std::vector<std::string> GetFilesInDirectory(const std::string& folderPath, const std::string& extension = "");
+
     // === 편의 함수 =====
     std::string GetResourcePath(const std::string& resourceType) const;
 
