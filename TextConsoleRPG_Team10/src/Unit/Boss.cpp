@@ -1,4 +1,4 @@
-﻿#include "../../include/Unit/NormalMonster.h"
+﻿#include "../../include/Unit/Boss.h"
 #include "../../include/Item/IItem.h"
 #include "../../include/Unit/IMonster.h"
 #include "../../include/Item/HealPotion.h"
@@ -6,17 +6,18 @@
 #include <random>
 #include <tuple>
 #include <memory>
+#include <iostream>
 
 using namespace std;
 
 // GameManager에 추가 후 삭제
 static mt19937 gen(random_device{}());
 
-Boss::Boss(int PlayerLevel, string Stage, string Name)
+Boss::Boss(int PlayerLevel)
 {
-    _Name = Name;
+    _Name = "에테르노";
     _Level = PlayerLevel;
-    _Stage = Stage;
+    _Stage = "공허의 중심";
 
     uniform_int_distribution<> HpDist(_Level * 20, _Level * 30);
     _MaxHP = static_cast<int>(HpDist(gen) * 1.5); // 보스는 체력 1.5배
@@ -30,7 +31,17 @@ void Boss::TakeDamage(int Amount)
 {
     // 데미지 받음
     _CurrentHP -= Amount;
+
     // 데미지 받는 연출 추가
+    float HpRatio = (float)_CurrentHP / (float)_MaxHP;
+    if (HpRatio < 0.3f)
+    {
+        std::cout << "test 30프로 남음 연출" << std::endl; // 나중에 수정필요함. 이상함.
+    }
+    else if(HpRatio < 0.6f)
+    {
+        std::cout << "test 60프로 남음 연출" << std::endl;
+    }
 }
 
 void Boss::Attack(ICharacter* Target) const
