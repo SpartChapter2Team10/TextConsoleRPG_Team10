@@ -33,4 +33,7 @@ public:
 
     bool BuyItem(Player* Player, int Idx);
     int SellItem(Player* Player, int SlotIdx);
+
+	// 판매 목록 크기 반환
+    size_t GetSellListSize() const { return _SellList.size(); }
 };

@@ -63,7 +63,6 @@ void ShopManager::ReopenShop(const std::string& csvFileName)
 
 void ShopManager::PrintShop()
 {
-    PrintManager::GetInstance()->PrintLogLine("===== 상점에 오신 것을 환영합니다! =====");
     PrintManager::GetInstance()->PrintLogLine("오늘의 판매 목록을 안내해드릴게요.");
 
     for (size_t i = 0; i < _SellList.size(); ++i)
@@ -79,8 +78,6 @@ void ShopManager::PrintShop()
             "골드 | 재고: " + std::to_string(stock._StockCount) + "개";
         PrintManager::GetInstance()->PrintLogLine(msg);
     }
-
-    PrintManager::GetInstance()->PrintLogLine("필요한 물건이 있으신가요? 선택해 주세요!");
 }
 
 bool ShopManager::BuyItem(Player* Player, int idx)
@@ -165,12 +162,15 @@ int ShopManager::SellItem(Player* Player, int SlotIdx)
         return 0;
     }
 
+	// 아이템 이름을 미리 저장 (제거 전에!)
+    std::string ItemName = Item->GetName();
+
     // 아이템 제거 및 골드 지급
     if (Inventory.RemoveItem(SlotIdx, 1))
     {
         Player->ModifyGold(SellPrice);
         PrintManager::GetInstance()->PrintLogLine(
-            Item->GetName() + "을(를) 판매하여 " + std::to_string(SellPrice) + "골드를 획득했습니다!"
+            ItemName + "을(를) 판매하여 " + std::to_string(SellPrice) + "골드를 획득했습니다!"
         );
         return SellPrice;
     }
