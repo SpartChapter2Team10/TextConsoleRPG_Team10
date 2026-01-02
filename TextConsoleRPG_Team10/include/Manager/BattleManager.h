@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "../Singleton.h"
+#include <tuple>
 
 class Player;
 class IMonster;
@@ -11,7 +12,9 @@ private:
     IMonster* _CurrentMonster;
 
 public:
-    void StartAutoBattle(Player* p);
-    void ProcessTurn(ICharacter* atk, ICharacter* def);
-    void CalculateReward(Player* p);
+    bool StartAutoBattle(Player* P);
+    void ProcessTurn(ICharacter* Atk, ICharacter* Def);
+    void ProcessAttack(ICharacter* Atk, ICharacter* Def);
+    void CalculateReward(Player* P, IMonster* M);
+    bool StartBossBattle(Player* P);
 };
