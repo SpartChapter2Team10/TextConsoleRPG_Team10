@@ -6,7 +6,7 @@
     </Filter>
     <Filter Include="Header Files\Item">
       <UniqueIdentifier>{A1B1C1D1-E1F1-11D1-AAAA-00A0C913D1F8}</UniqueIdentifier>
- </Filter>
+    </Filter>
     <Filter Include="Header Files\Unit">
       <UniqueIdentifier>{B2B2C2D2-E2F2-22D2-BBBB-00A0C913D1F8}</UniqueIdentifier>
     </Filter>
@@ -18,6 +18,9 @@
     </Filter>
     <Filter Include="Header Files\UI">
       <UniqueIdentifier>{11111111-2222-3333-4444-555555555555}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Scenes">
+      <UniqueIdentifier>{AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
@@ -37,28 +40,34 @@
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{66666666-7777-8888-9999-000000000000}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\Scenes">
+      <UniqueIdentifier>{BBBBBBBB-CCCC-DDDD-EEEE-FFFFFFFFFFFF}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <!-- Item Headers -->
     <ClInclude Include="include\Item\AttackUp.h">
- <Filter>Header Files\Item</Filter>
+      <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\HealPotion.h">
       <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\IItem.h">
-  <Filter>Header Files\Item</Filter>
+      <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\Inventory.h">
-  <Filter>Header Files\Item</Filter>
-  </ClInclude>
+      <Filter>Header Files\Item</Filter>
+    </ClInclude>
     <ClInclude Include="include\Item\ItemSlot.h">
       <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\ItemData.h">
-  <Filter>Header Files\Item</Filter>
+      <Filter>Header Files\Item</Filter>
     </ClInclude>
-    
+    <ClInclude Include="include\Item\MonsterSpawnData.h">
+      <Filter>Header Files\Item</Filter>
+    </ClInclude>
+
     <!-- Unit Headers -->
     <ClInclude Include="include\Unit\ICharacter.h">
       <Filter>Header Files\Unit</Filter>
@@ -67,22 +76,22 @@
       <Filter>Header Files\Unit</Filter>
     </ClInclude>
     <ClInclude Include="include\Unit\NormalMonster.h">
-   <Filter>Header Files\Unit</Filter>
+      <Filter>Header Files\Unit</Filter>
     </ClInclude>
     <ClInclude Include="include\Unit\Player.h">
       <Filter>Header Files\Unit</Filter>
     </ClInclude>
     <ClInclude Include="include\Unit\Boss.h">
-<Filter>Header Files\Unit</Filter>
+      <Filter>Header Files\Unit</Filter>
     </ClInclude>
-    
+
     <!-- Manager Headers -->
     <ClInclude Include="include\Manager\BattleManager.h">
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
     <ClInclude Include="include\Manager\GameManager.h">
       <Filter>Header Files\Manager</Filter>
-</ClInclude>
+    </ClInclude>
     <ClInclude Include="include\Manager\InputManager.h">
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
@@ -96,9 +105,12 @@
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
     <ClInclude Include="include\Manager\SoundPlayer.h">
- <Filter>Header Files\Manager</Filter>
+      <Filter>Header Files\Manager</Filter>
     </ClInclude>
-    
+    <ClInclude Include="include\Manager\SceneManager.h">
+      <Filter>Header Files\Manager</Filter>
+    </ClInclude>
+
     <!-- Factory Headers -->
     <ClInclude Include="include\Factory\Factory.h">
       <Filter>Header Files\Factory</Filter>
@@ -106,10 +118,10 @@
     <ClInclude Include="include\Factory\ItemFactory.h">
       <Filter>Header Files\Factory</Filter>
     </ClInclude>
-    
+
     <!-- UI Headers -->
     <ClInclude Include="include\UI\ScreenBuffer.h">
- <Filter>Header Files\UI</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="include\UI\Panel.h">
       <Filter>Header Files\UI</Filter>
@@ -124,10 +136,48 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="include\UI\StatRenderer.h">
-<Filter>Header Files\UI</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="include\UI\AsciiArtRenderer.h">
       <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\UIScene.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\InputBridge.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+
+    <!-- UI Scene Headers -->
+    <ClInclude Include="include\UI\Scenes\MainMenuScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\PlayerNameInputScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\CharacterSelectScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\StoryProgressScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\StageSelectScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\BattleScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\ShopScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\CompanionRecruitScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\GameOverScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Scenes\VictoryScene.h">
+      <Filter>Header Files\UI\Scenes</Filter>
     </ClInclude>
     
     <!-- Root Headers -->
@@ -138,7 +188,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  
+
   <ItemGroup>
     <!-- Item Sources -->
     <ClCompile Include="src\Item\AttackUp.cpp">
@@ -153,7 +203,7 @@
     <ClCompile Include="src\Item\ItemSlot.cpp">
       <Filter>Source Files\Item</Filter>
     </ClCompile>
-    
+
     <!-- Unit Sources -->
     <ClCompile Include="src\Unit\NormalMonster.cpp">
       <Filter>Source Files\Unit</Filter>
@@ -164,7 +214,7 @@
     <ClCompile Include="src\Unit\Boss.cpp">
       <Filter>Source Files\Unit</Filter>
     </ClCompile>
-    
+
     <!-- Manager Sources -->
     <ClCompile Include="src\Manager\BattleManager.cpp">
       <Filter>Source Files\Manager</Filter>
@@ -187,20 +237,23 @@
     <ClCompile Include="src\Manager\SoundPlayer.cpp">
       <Filter>Source Files\Manager</Filter>
     </ClCompile>
-    
+    <ClCompile Include="src\Manager\SceneManager.cpp">
+      <Filter>Source Files\Manager</Filter>
+    </ClCompile>
+
     <!-- Factory Sources -->
     <ClCompile Include="src\Factory\ItemFactory.cpp">
       <Filter>Source Files\Factory</Filter>
     </ClCompile>
-    
+
     <!-- UI Sources -->
     <ClCompile Include="src\UI\ScreenBuffer.cpp">
-<Filter>Source Files\UI</Filter>
-    </ClCompile>
-  <ClCompile Include="src\UI\Panel.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
-  <ClCompile Include="src\UI\UIDrawer.cpp">
+    <ClCompile Include="src\UI\Panel.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\UIDrawer.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="src\UI\TextRenderer.cpp">
@@ -211,12 +264,50 @@
     </ClCompile>
     <ClCompile Include="src\UI\AsciiArtRenderer.cpp">
       <Filter>Source Files\UI</Filter>
- </ClCompile>
-    
+    </ClCompile>
+    <ClCompile Include="src\UI\UIScene.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\InputBridge.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+
+    <!-- UI Scene Sources -->
+    <ClCompile Include="src\UI\Scenes\MainMenuScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\PlayerNameInputScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\CharacterSelectScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\StoryProgressScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\StageSelectScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\BattleScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\ShopScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\CompanionRecruitScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\GameOverScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Scenes\VictoryScene.cpp">
+      <Filter>Source Files\UI\Scenes</Filter>
+    </ClCompile>
+
     <!-- Main and Examples -->
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include="UIDrawer_README.md" />
   </ItemGroup>
