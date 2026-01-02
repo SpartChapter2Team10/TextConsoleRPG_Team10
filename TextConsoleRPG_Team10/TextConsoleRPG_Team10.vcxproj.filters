@@ -6,7 +6,7 @@
     </Filter>
     <Filter Include="Header Files\Item">
       <UniqueIdentifier>{A1B1C1D1-E1F1-11D1-AAAA-00A0C913D1F8}</UniqueIdentifier>
-    </Filter>
+ </Filter>
     <Filter Include="Header Files\Unit">
       <UniqueIdentifier>{B2B2C2D2-E2F2-22D2-BBBB-00A0C913D1F8}</UniqueIdentifier>
     </Filter>
@@ -15,6 +15,9 @@
     </Filter>
     <Filter Include="Header Files\Factory">
       <UniqueIdentifier>{A7B7C7D7-E7F7-77D7-AAAA-00A0C913D1F8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{11111111-2222-3333-4444-555555555555}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
@@ -31,26 +34,32 @@
     <Filter Include="Source Files\Factory">
       <UniqueIdentifier>{B8B8C8D8-E8F8-88D8-BBBB-00A0C913D1F8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{66666666-7777-8888-9999-000000000000}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <!-- Item Headers -->
     <ClInclude Include="include\Item\AttackUp.h">
-      <Filter>Header Files\Item</Filter>
+ <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\HealPotion.h">
       <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\IItem.h">
-      <Filter>Header Files\Item</Filter>
+  <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\Inventory.h">
-      <Filter>Header Files\Item</Filter>
-    </ClInclude>
+  <Filter>Header Files\Item</Filter>
+  </ClInclude>
     <ClInclude Include="include\Item\ItemSlot.h">
       <Filter>Header Files\Item</Filter>
     </ClInclude>
     <ClInclude Include="include\Item\ItemData.h">
-      <Filter>Header Files\Item</Filter>
+  <Filter>Header Files\Item</Filter>
     </ClInclude>
+    
+    <!-- Unit Headers -->
     <ClInclude Include="include\Unit\ICharacter.h">
       <Filter>Header Files\Unit</Filter>
     </ClInclude>
@@ -58,17 +67,22 @@
       <Filter>Header Files\Unit</Filter>
     </ClInclude>
     <ClInclude Include="include\Unit\NormalMonster.h">
-      <Filter>Header Files\Unit</Filter>
+   <Filter>Header Files\Unit</Filter>
     </ClInclude>
     <ClInclude Include="include\Unit\Player.h">
       <Filter>Header Files\Unit</Filter>
     </ClInclude>
+    <ClInclude Include="include\Unit\Boss.h">
+<Filter>Header Files\Unit</Filter>
+    </ClInclude>
+    
+    <!-- Manager Headers -->
     <ClInclude Include="include\Manager\BattleManager.h">
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
     <ClInclude Include="include\Manager\GameManager.h">
       <Filter>Header Files\Manager</Filter>
-    </ClInclude>
+</ClInclude>
     <ClInclude Include="include\Manager\InputManager.h">
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
@@ -81,33 +95,52 @@
     <ClInclude Include="include\Manager\DataManager.h">
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="include\Manager\SoundPlayer.h">
+ <Filter>Header Files\Manager</Filter>
+    </ClInclude>
+    
+    <!-- Factory Headers -->
     <ClInclude Include="include\Factory\Factory.h">
       <Filter>Header Files\Factory</Filter>
     </ClInclude>
     <ClInclude Include="include\Factory\ItemFactory.h">
       <Filter>Header Files\Factory</Filter>
     </ClInclude>
+    
+    <!-- UI Headers -->
+    <ClInclude Include="include\UI\ScreenBuffer.h">
+ <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\Panel.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\UIDrawer.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\IContentRenderer.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\TextRenderer.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\StatRenderer.h">
+<Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UI\AsciiArtRenderer.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    
+    <!-- Root Headers -->
     <ClInclude Include="include\Singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Unit\Boss.h">
-      <Filter>Header Files\Unit</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundPlayer.h">
-      <Filter>Header Files\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="include\UI\ScreenBuffer.h" />
-    <ClInclude Include="include\UI\Panel.h" />
-    <ClInclude Include="include\UI\IContentRenderer.h" />
-    <ClInclude Include="include\UI\TextRenderer.h" />
-    <ClInclude Include="include\UI\StatRenderer.h" />
-    <ClInclude Include="include\UI\AsciiArtRenderer.h" />
-    <ClInclude Include="include\UI\UIDrawer.h" />
   </ItemGroup>
+  
   <ItemGroup>
+    <!-- Item Sources -->
     <ClCompile Include="src\Item\AttackUp.cpp">
       <Filter>Source Files\Item</Filter>
     </ClCompile>
@@ -120,12 +153,19 @@
     <ClCompile Include="src\Item\ItemSlot.cpp">
       <Filter>Source Files\Item</Filter>
     </ClCompile>
+    
+    <!-- Unit Sources -->
     <ClCompile Include="src\Unit\NormalMonster.cpp">
       <Filter>Source Files\Unit</Filter>
     </ClCompile>
     <ClCompile Include="src\Unit\Player.cpp">
       <Filter>Source Files\Unit</Filter>
     </ClCompile>
+    <ClCompile Include="src\Unit\Boss.cpp">
+      <Filter>Source Files\Unit</Filter>
+    </ClCompile>
+    
+    <!-- Manager Sources -->
     <ClCompile Include="src\Manager\BattleManager.cpp">
       <Filter>Source Files\Manager</Filter>
     </ClCompile>
@@ -144,24 +184,39 @@
     <ClCompile Include="src\Manager\DataManager.cpp">
       <Filter>Source Files\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="src\Manager\SoundPlayer.cpp">
+      <Filter>Source Files\Manager</Filter>
+    </ClCompile>
+    
+    <!-- Factory Sources -->
     <ClCompile Include="src\Factory\ItemFactory.cpp">
       <Filter>Source Files\Factory</Filter>
     </ClCompile>
+    
+    <!-- UI Sources -->
+    <ClCompile Include="src\UI\ScreenBuffer.cpp">
+<Filter>Source Files\UI</Filter>
+    </ClCompile>
+  <ClCompile Include="src\UI\Panel.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+  <ClCompile Include="src\UI\UIDrawer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\TextRenderer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\StatRenderer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\AsciiArtRenderer.cpp">
+      <Filter>Source Files\UI</Filter>
+ </ClCompile>
+    
+    <!-- Main and Examples -->
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="src\Unit\Boss.cpp">
-      <Filter>Source Files\Unit</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundPlayer.cpp">
-      <Filter>Source Files\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UI\ScreenBuffer.cpp" />
-    <ClCompile Include="src\UI\Panel.cpp" />
-    <ClCompile Include="src\UI\TextRenderer.cpp" />
-    <ClCompile Include="src\UI\StatRenderer.cpp" />
-    <ClCompile Include="src\UI\AsciiArtRenderer.cpp" />
-    <ClCompile Include="src\UI\UIDrawer.cpp" />
-    <ClCompile Include="Example_UIDrawer.cpp" />
   </ItemGroup>
+  
   <ItemGroup>
     <None Include="UIDrawer_README.md" />
   </ItemGroup>

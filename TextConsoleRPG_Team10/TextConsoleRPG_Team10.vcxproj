@@ -153,18 +153,16 @@
     <ClInclude Include="include\Unit\Player.h" />
     <ClInclude Include="include\Manager\PrintManager.h" />
     <ClInclude Include="include\Manager\ShopManager.h" />
+    <ClInclude Include="include\Manager\SoundPlayer.h" />
     <ClInclude Include="include\Singleton.h" />
     <ClInclude Include="include\Config.h" />
     <ClInclude Include="include\Manager\DataManager.h" />
     <ClInclude Include="include\Factory\ItemFactory.h" />
     <ClInclude Include="include\Factory\Factory.h" />
     <ClInclude Include="include\Unit\Boss.h" />
-    <ClInclude Include="SoundPlayer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Example_UIDrawer.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="src\Item\AttackUp.cpp" />
     <ClCompile Include="src\Manager\BattleManager.cpp" />
     <ClCompile Include="src\Manager\GameManager.cpp" />
@@ -182,6 +180,7 @@
     <ClCompile Include="src\Unit\Player.cpp" />
     <ClCompile Include="src\Manager\PrintManager.cpp" />
     <ClCompile Include="src\Manager\ShopManager.cpp" />
+    <ClCompile Include="src\Manager\SoundPlayer.cpp" />
     <ClCompile Include="src\Manager\DataManager.cpp" />
     <ClCompile Include="src\Factory\ItemFactory.cpp" />
     <ClCompile Include="src\Unit\Boss.cpp" />
