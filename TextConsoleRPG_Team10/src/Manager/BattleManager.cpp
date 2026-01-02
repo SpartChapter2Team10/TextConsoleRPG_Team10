@@ -139,6 +139,7 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
         PrintManager::GetInstance()->PrintLogLine("의 경험치를 획득했습니다.");
         P->GainExp(Exp);
         PrintManager::GetInstance()->PrintLogLine(P->GetName() + "의 EXP: " + std::to_string(P->GetExp()) + "/" + std::to_string(P->GetMaxExp()));
+        PrintManager::GetInstance()->EndLine();
     }
 
     if (Gold > 0)
@@ -159,11 +160,11 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
     
         if (P->GetInventory().AddItem(std::move(DroppedItem), 1, Remain))
         {
-         PrintManager::GetInstance()->PrintLogLine(P->GetName() + "은(는) " + ItemName + "을 보상으로 얻었습니다.");
+            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "은(는) " + ItemName + "을 보상으로 얻었습니다.", ELogImportance::DISPLAY);
         }
         else
         {
-        PrintManager::GetInstance()->PrintLogLine(P->GetName() + "은(는) 인벤토리가 가득 차 있어 아이템을 얻지 못했습니다.");
+            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "은(는) 인벤토리가 가득 차 있어 아이템을 얻지 못했습니다.", ELogImportance::WARNING);
         }
         PrintManager::GetInstance()->PrintLogLine("");
     }

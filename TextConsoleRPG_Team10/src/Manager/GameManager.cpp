@@ -48,8 +48,9 @@ void GameManager::RunMainLoop()
         {
             EndGame();
             // TODO: 게임 패배를 처리합니다.
-            PrintManager::GetInstance()->PrintLogLine(_MainPlayer->GetName() + "의 여정은 끝나고 말았습니다...");
-
+            PrintManager::GetInstance()->ChangeTextColor(ETextColor::RED);
+            PrintManager::GetInstance()->SetTypingSpeed(ETypingSpeed::Slow);
+            PrintManager::GetInstance()->PrintWithTyping(_MainPlayer->GetName() + "의 여정은 끝나고 말았습니다...");
             break;
         }
 
