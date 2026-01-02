@@ -1,4 +1,4 @@
-﻿#include "../../include/Unit/Boss.h"
+#include "../../include/Unit/Boss.h"
 #include "../../include/Item/IItem.h"
 #include "../../include/Unit/IMonster.h"
 #include "../../include/Item/HealPotion.h"
