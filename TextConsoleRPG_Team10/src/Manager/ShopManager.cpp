@@ -30,7 +30,7 @@ void ShopManager::PrintShop()
         std::string itemName = stock.prototype->GetName();
         int price = stock.prototype->GetPrice();
 
-        std::string msg = std::to_string(i) + ". " + itemName +
+        std::string msg = std::to_string(i + 1) + ". " + itemName +
             " | 가격: " + std::to_string(price) +
             "골드 | 재고: " + std::to_string(stock.count) + "개";
         PrintManager::GetInstance()->PrintLogLine(msg);
@@ -66,7 +66,9 @@ bool ShopManager::BuyItem(Player* Player, int idx)
     // 플레이어의 골드 확인
     if (Player->GetGold() < Price)
     {
-        PrintManager::GetInstance()->PrintLogLine("소지금이 부족합니다. (" + std::to_string(Price) + "골드 필요)");
+      PrintManager::GetInstance()->PrintLogLine(
+          "[ \"" + ItemName + "\" 1개 구매 실패 ]" + " 소지금이 부족합니다. (" +
+          std::to_string(Price) + "골드 필요)");
         return false;
     }
 
@@ -80,7 +82,7 @@ bool ShopManager::BuyItem(Player* Player, int idx)
     {
         stock.count--;
         Player->ModifyGold(-Price);
-        PrintManager::GetInstance()->PrintLogLine(ItemName + "을(를) 구매하셨습니다! 남은 골드: " + std::to_string(Player->GetGold()));
+        PrintManager::GetInstance()->PrintLogLine(ItemName + "을(를) 1개 구매하셨습니다! 남은 골드: " + std::to_string(Player->GetGold()));
         return true;
     }
     else
