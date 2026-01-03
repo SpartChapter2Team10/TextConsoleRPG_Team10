@@ -1,4 +1,4 @@
-﻿#include "../../include/Manager/DataManager.h"
+#include "../../include/Manager/DataManager.h"
 #include "../../include/Manager/PrintManager.h"
 #include "../../include/Item/ItemData.h"
 #include "../../include/Item/MonsterSpawnData.h"
@@ -446,4 +446,55 @@ std::tuple<std::string, std::string> DataManager::GetRandomStageAndMonster()
 
     const auto& selected = monsterData[idx];
     return { selected.Stage, selected.MonsterName };
+}
+
+// 폴더 내 모든 파일 목록 가져오기
+std::vector<std::string> DataManager::GetFilesInDirectory(const std::string& folderPath, const std::string& extension)
+{
+    std::vector<std::string> fileNames;
+
+    try
+    {
+        namespace FS = std::filesystem;
+
+        if (!FS::exists(folderPath) || !FS::is_directory(folderPath))
+        {
+            SafeLog("DataManager::GetFilesInDirectory - Invalid directory: " + folderPath);
+            return fileNames;
+        }
+
+        // 폴더 내 모든 파일 탐색
+        for (const auto& entry : FS::directory_iterator(folderPath))
+        {
+            if (entry.is_regular_file())
+            {
+                std::string fileName = entry.path().filename().string();
+
+                // 확장자 필터링 (지정된 경우)
+                if (!extension.empty())
+                {
+                    if (entry.path().extension().string() == extension)
+                    {
+                        fileNames.push_back(fileName);
+                    }
+                }
+                else
+                {
+                    fileNames.push_back(fileName);
+                }
+            }
+        }
+
+        // 파일명 정렬 (숫자 순서 보장을 위해)
+        std::sort(fileNames.begin(), fileNames.end());
+
+        SafeLog("Found " + std::to_string(fileNames.size()) + " files in " + folderPath,
+            ELogImportance::DISPLAY);
+    }
+    catch (const std::exception& ex)
+    {
+        SafeLog("DataManager::GetFilesInDirectory exception: " + std::string(ex.what()));
+    }
+
+    return fileNames;
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "include/Singleton.h"
+#include "../Singleton.h"
 #include <string>
 #include <unordered_map>
 #include <memory>
@@ -8,11 +8,11 @@
 // 데이터 중심의 구조체 유지
 struct SoundInstance {
     std::string Alias;    // MCI 제어용 별칭
-    bool bIsLoop;         // 반복 재생 여부
-    float Volume;         // 현재 설정된 볼륨
+    bool bIsLoop;     // 반복 재생 여부
+    float Volume;    // 현재 설정된 볼륨
 
     SoundInstance(std::string InAlias, bool InLoop, float InVol)
-        : Alias(InAlias), bIsLoop(InLoop), Volume(InVol) {
+   : Alias(InAlias), bIsLoop(InLoop), Volume(InVol) {
     }
 };
 
