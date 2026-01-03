@@ -1,48 +1,7 @@
 #pragma once
 #include "../Singleton.h"
+#include "../Common/TextColor.h"  // Enum 정의를 별도 헤더로 분리
 #include <string>
-
-// 타이핑 속도 지정에 사용
-enum class ETypingSpeed : int
-{
-    NONE = -1,
-    Slow = 0,
-    Normal,
-    Fast,
-    MAX
-};
-
-// 텍스트 색상 변경에 사용
-enum class ETextColor : int
-{
-    NONE = -1,
-    BLACK = 0,
-    BLUE,
-    GREEN,
-    CYAN,
-    RED,
-    MAGENTA,
-    YELLOW,
-    LIGHT_GRAY,
-    DARK_GRAY,
-    LIGHT_BLUE,
-    LIGHT_GREEN,
-    LIGHT_CYAN,
-    LIGHT_RED,
-    LIGHT_MAGENTA,
-    LIGHT_YELLOW,
-    WHITE,
-    MAX
-};
-
-// Log 출력 시 사용
-enum class ELogImportance : int
-{
-    NONE = 0,  // 일반 출력
-    DISPLAY,   // [DISPLAY] ~ 출력
-    WARNING,   // [WARNING] ~ 출력
-    MAX
-};
 
 class PrintManager : public Singleton<PrintManager>
 {
@@ -81,4 +40,4 @@ public:
     // 타이핑 효과의 속도 설정 함수
     void SetTypingSpeed(ETypingSpeed NewSpeed);
     int GetIntervalTime() const;
-}; 
+};

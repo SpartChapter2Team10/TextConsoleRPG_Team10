@@ -10,7 +10,7 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
+  <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
@@ -31,7 +31,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
+</PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -48,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+<PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -64,11 +64,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
+</ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -111,82 +111,124 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+   <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+    <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+  <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+ <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  
+  <!-- Header Files -->
   <ItemGroup>
+    <!-- Core -->
+    <ClInclude Include="include\Config.h" />
+    <ClInclude Include="include\Singleton.h" />
+    
+    <!-- Common -->
+    <ClInclude Include="include\Common\TextColor.h" />
+    
+    <!-- Factory -->
+    <ClInclude Include="include\Factory\Factory.h" />
+    <ClInclude Include="include\Factory\ItemFactory.h" />
+    
+    <!-- Item -->
     <ClInclude Include="include\Item\AttackUp.h" />
-    <ClInclude Include="include\Manager\BattleManager.h" />
-    <ClInclude Include="include\Manager\GameManager.h" />
     <ClInclude Include="include\Item\HealPotion.h" />
+    <ClInclude Include="include\Item\IItem.h" />
+ <ClInclude Include="include\Item\Inventory.h" />
+    <ClInclude Include="include\Item\ItemData.h" />
+    <ClInclude Include="include\Item\ItemSlot.h" />
+    <ClInclude Include="include\Item\MonsterSpawnData.h" />
+    
+    <!-- Manager -->
+    <ClInclude Include="include\Manager\BattleManager.h" />
+    <ClInclude Include="include\Manager\DataManager.h" />
+    <ClInclude Include="include\Manager\GameManager.h" />
+    <ClInclude Include="include\Manager\InputManager.h" />
+    <ClInclude Include="include\Manager\PrintManager.h" />
     <ClInclude Include="include\Manager\SceneManager.h" />
+    <ClInclude Include="include\Manager\ShopManager.h" />
+    <ClInclude Include="include\Manager\SoundPlayer.h" />
+    
+    <!-- UI -->
     <ClInclude Include="include\UI\AsciiArtRenderer.h" />
     <ClInclude Include="include\UI\IContentRenderer.h" />
-    <ClInclude Include="include\UI\InputBridge.h" />
-    <ClInclude Include="include\UI\Panel.h" />
-    <ClInclude Include="include\UI\Scenes\BattleScene.h" />
-    <ClInclude Include="include\UI\Scenes\CharacterSelectScene.h" />
-    <ClInclude Include="include\UI\Scenes\CompanionRecruitScene.h" />
-    <ClInclude Include="include\UI\Scenes\MainMenuScene.h" />
-    <ClInclude Include="include\UI\Scenes\PlayerNameInputScene.h" />
-    <ClInclude Include="include\UI\Scenes\ResultScene.h" />
-    <ClInclude Include="include\UI\Scenes\ShopScene.h" />
-    <ClInclude Include="include\UI\Scenes\StageSelectScene.h" />
-    <ClInclude Include="include\UI\Scenes\StoryProgressScene.h" />
+  <ClInclude Include="include\UI\InputBridge.h" />
+<ClInclude Include="include\UI\Panel.h" />
     <ClInclude Include="include\UI\ScreenBuffer.h" />
     <ClInclude Include="include\UI\StatRenderer.h" />
     <ClInclude Include="include\UI\TextRenderer.h" />
     <ClInclude Include="include\UI\UIDrawer.h" />
     <ClInclude Include="include\UI\UIScene.h" />
+    
+    <!-- UI Scenes -->
+    <ClInclude Include="include\UI\Scenes\BattleScene.h" />
+    <ClInclude Include="include\UI\Scenes\CharacterSelectScene.h" />
+    <ClInclude Include="include\UI\Scenes\CompanionRecruitScene.h" />
+  <ClInclude Include="include\UI\Scenes\MainMenuScene.h" />
+    <ClInclude Include="include\UI\Scenes\PlayerNameInputScene.h" />
+  <ClInclude Include="include\UI\Scenes\ResultScene.h" />
+    <ClInclude Include="include\UI\Scenes\ShopScene.h" />
+    <ClInclude Include="include\UI\Scenes\StageSelectScene.h" />
+    <ClInclude Include="include\UI\Scenes\StoryProgressScene.h" />
+    
+    <!-- Unit -->
+    <ClInclude Include="include\Unit\Boss.h" />
     <ClInclude Include="include\Unit\ICharacter.h" />
-    <ClInclude Include="include\Item\IItem.h" />
     <ClInclude Include="include\Unit\IMonster.h" />
-    <ClInclude Include="include\Manager\InputManager.h" />
-    <ClInclude Include="include\Item\Inventory.h" />
-    <ClInclude Include="include\Item\ItemSlot.h" />
-    <ClInclude Include="include\Item\ItemData.h" />
     <ClInclude Include="include\Unit\NormalMonster.h" />
     <ClInclude Include="include\Unit\Player.h" />
-    <ClInclude Include="include\Manager\PrintManager.h" />
-    <ClInclude Include="include\Manager\ShopManager.h" />
-    <ClInclude Include="include\Manager\SoundPlayer.h" />
-    <ClInclude Include="include\Singleton.h" />
-    <ClInclude Include="include\Config.h" />
-    <ClInclude Include="include\Manager\DataManager.h" />
-    <ClInclude Include="include\Factory\ItemFactory.h" />
-    <ClInclude Include="include\Factory\Factory.h" />
-    <ClInclude Include="include\Unit\Boss.h" />
-    <ClInclude Include="include\Item\MonsterSpawnData.h" />
   </ItemGroup>
+  
+  <!-- Source Files -->
   <ItemGroup>
+    <!-- Main -->
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="UIDrawer_TestExample.cpp" />
+    
+    <!-- Factory -->
+    <ClCompile Include="src\Factory\ItemFactory.cpp" />
+    
+    <!-- Item -->
     <ClCompile Include="src\Item\AttackUp.cpp" />
-    <ClCompile Include="src\Manager\BattleManager.cpp" />
-    <ClCompile Include="src\Manager\GameManager.cpp" />
     <ClCompile Include="src\Item\HealPotion.cpp" />
-    <ClCompile Include="src\Manager\InputManager.cpp" />
     <ClCompile Include="src\Item\Inventory.cpp" />
     <ClCompile Include="src\Item\ItemSlot.cpp" />
+    
+    <!-- Manager -->
+    <ClCompile Include="src\Manager\BattleManager.cpp" />
+<ClCompile Include="src\Manager\DataManager.cpp" />
+    <ClCompile Include="src\Manager\GameManager.cpp" />
+    <ClCompile Include="src\Manager\InputManager.cpp" />
+    <ClCompile Include="src\Manager\PrintManager.cpp" />
     <ClCompile Include="src\Manager\SceneManager.cpp" />
+    <ClCompile Include="src\Manager\ShopManager.cpp" />
+    <ClCompile Include="src\Manager\SoundPlayer.cpp" />
+    
+    <!-- UI -->
     <ClCompile Include="src\UI\AsciiArtRenderer.cpp" />
     <ClCompile Include="src\UI\InputBridge.cpp" />
     <ClCompile Include="src\UI\Panel.cpp" />
+    <ClCompile Include="src\UI\ScreenBuffer.cpp" />
+    <ClCompile Include="src\UI\StatRenderer.cpp" />
+    <ClCompile Include="src\UI\TextRenderer.cpp" />
+    <ClCompile Include="src\UI\UIDrawer.cpp" />
+<ClCompile Include="src\UI\UIScene.cpp" />
+    
+    <!-- UI Scenes -->
     <ClCompile Include="src\UI\Scenes\BattleScene.cpp" />
     <ClCompile Include="src\UI\Scenes\CharacterSelectScene.cpp" />
     <ClCompile Include="src\UI\Scenes\CompanionRecruitScene.cpp" />
@@ -196,29 +238,21 @@
     <ClCompile Include="src\UI\Scenes\ShopScene.cpp" />
     <ClCompile Include="src\UI\Scenes\StageSelectScene.cpp" />
     <ClCompile Include="src\UI\Scenes\StoryProgressScene.cpp" />
-    <ClCompile Include="src\UI\ScreenBuffer.cpp" />
-    <ClCompile Include="src\UI\StatRenderer.cpp" />
-    <ClCompile Include="src\UI\TextRenderer.cpp" />
-    <ClCompile Include="src\UI\UIDrawer.cpp" />
-    <ClCompile Include="src\UI\UIScene.cpp" />
+    
+    <!-- Unit -->
+ <ClCompile Include="src\Unit\Boss.cpp" />
     <ClCompile Include="src\Unit\NormalMonster.cpp" />
     <ClCompile Include="src\Unit\Player.cpp" />
-    <ClCompile Include="src\Manager\PrintManager.cpp" />
-    <ClCompile Include="src\Manager\ShopManager.cpp" />
-    <ClCompile Include="src\Manager\SoundPlayer.cpp" />
-    <ClCompile Include="src\Manager\DataManager.cpp" />
-    <ClCompile Include="src\Factory\ItemFactory.cpp" />
-    <ClCompile Include="src\Unit\Boss.cpp" />
-    <ClCompile Include="UIDrawer_TestExample.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="AsyncInput_Design.md" />
-    <None Include="InputBridge_FAQ.md" />
-    <None Include="TextRenderer_Advanced_Guide.md" />
+  
+  <!-- Documentation -->
+<ItemGroup>
+<None Include="PROJECT_GUIDELINE.md" />
+    <None Include="QUICK_REFERENCE.md" />
+    <None Include="SCENE_IMPLEMENTATION_GUIDE.md" />
     <None Include="UIDrawer_Flowchart.md" />
-    <None Include="UIDrawer_README.md" />
-    <None Include="UIDrawer_TestExample_README.md" />
   </ItemGroup>
+  
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

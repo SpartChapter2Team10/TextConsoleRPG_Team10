@@ -11,6 +11,11 @@
 #include <algorithm>
 #include <cstdio>
 
+// Windows API 매크로 충돌 방지
+#ifdef DeleteFile
+#undef DeleteFile
+#endif
+
 // 초기화 확인 및 로그 출력용 헬퍼 함수
 static void SafeLog(const std::string& message, ELogImportance importance = ELogImportance::WARNING)
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include "IContentRenderer.h"
+#include "../Common/TextColor.h"  // ETextColor 사용을 위해 추가
 #include <vector>
 #include <string>
 #include <Windows.h>
@@ -27,6 +28,11 @@ private:
     float _FrameDuration = 0.5f;  // 프레임당 시간 (초)
     bool _IsAnimating = false;
 
+    // 에러 처리용
+    bool _HasError = false;
+    std::string _LastError;
+    std::string _LastFilePath;  // 마지막 시도한 파일 경로
+
 public:
     AsciiArtRenderer() = default;
 
@@ -50,11 +56,20 @@ public:
     // 정렬 설정
     void SetAlignment(ArtAlignment alignment) { _Alignment = alignment; _IsDirty = true; }
     void SetColor(WORD color) { _Color = color; _IsDirty = true; }
+    void SetColor(ETextColor color) { _Color = static_cast<WORD>(color); _IsDirty = true; }  // 오버로드 추가
 
     // 애니메이션 제어
     void StartAnimation() { _IsAnimating = true; }
     void StopAnimation() { _IsAnimating = false; }
     void SetFrameDuration(float duration) { _FrameDuration = duration; }
+
+    // 에러 정보 접근
+    bool HasError() const { return _HasError; }
+    const std::string& GetLastError() const { return _LastError; }
+    const std::string& GetLastFilePath() const { return _LastFilePath; }  // 추가
+    
+    // 에러 초기화 (재시도 전)
+    void ClearError() { _HasError = false; _LastError.clear(); _LastFilePath.clear(); }
 
     // IContentRenderer 구현
     void Render(ScreenBuffer& buffer, const PanelBounds& bounds) override;

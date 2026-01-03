@@ -2,12 +2,14 @@
 #include "../UIScene.h"
 #include <string>
 
-// 플레이어 이름 입력 Scene (완전 구현)
+// 플레이어 이름 입력 Scene
 class PlayerNameInputScene : public UIScene
 {
 private:
     std::string _PlayerName;
-    bool _InputComplete;
+
+    // 확인 화면 표시
+    void ShowConfirmation();
 
 public:
     PlayerNameInputScene();

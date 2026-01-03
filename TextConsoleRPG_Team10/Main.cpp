@@ -31,7 +31,7 @@ int main()
     SetConsoleOutputCP(65001);
 
     // 2. 콘솔 창 크기 고정
-    SetConsoleWindowSize(106, 65);
+    SetConsoleWindowSize(150, 45);
 
     // 3. DataManager 초기화
     if (!DataManager::GetInstance()->Initialize()) {

@@ -1,8 +1,8 @@
-﻿#include "../../include/Unit/Player.h"
+#include "../../include/Unit/Player.h"
 #include <iostream>
 #include "../../include/Manager/PrintManager.h"
 
-Player::Player(const std::string& Name) : _Inventory(10)
+Player::Player(const std::string& Name, bool enableInventory)
 {
     _Name = Name;
     // To-Do : csv 파일에서 플레이어 초기 스탯 불러오기
@@ -14,7 +14,14 @@ Player::Player(const std::string& Name) : _Inventory(10)
     _CurrentExp = 0;
     _Gold = 100;
 
-    // 버프 초기화
+    // 인벤토리 활성화 여부에 따라 생성
+    if (enableInventory)
+    {
+        _Inventory = std::make_unique<Inventory>(10);  // 10슬롯 인벤토리
+    }
+    // else: _Inventory는 nullptr (동료 캐릭터)
+
+       // 버프 초기화
     _TempAtkBonus = 0;
     _BuffRoundsRemaining = 0;
 }
@@ -62,19 +69,16 @@ void Player::ProcessLevelUp()
     if (_Level >= 10)
     {
         // To-Do : 최대 레벨 도달 시 처리
+        return;
     }
-    else
-    {
-        _Level++;
-        //_MaxHP += (_Level * 20);
-        _CurrentHP = _MaxHP;
-        _Atk += (_Level * 5);
-        //_MaxExp += static_cast<int>(_MaxExp * 1.2f);
 
-        // 로그 출력
-        PrintManager::GetInstance()->PrintLogLine(_Name + "은(는) "+"LV" + std::to_string(_Level)+"이(가) 되었습니다!");
-        PrintManager::GetInstance()->EndLine();
-    }
+    _Level++;
+    //_MaxHP += (_Level * 20);
+    _CurrentHP = _MaxHP;
+    _Atk += (_Level * 5);
+    //_MaxExp += static_cast<int>(_MaxExp * 1.2f);
+
+    // PrintManager 제거 - Scene에서 표시
 }
 
 void Player::GainExp(const int Amount)
@@ -88,9 +92,23 @@ void Player::GainGold(const int Amount)
     ModifyGold(Amount);
 }
 
-void Player::UseItem(const int SlotIndex)
+bool Player::TryGetInventory(Inventory*& outInventory)
 {
-    _Inventory.UseItem(SlotIndex, *this);
+    outInventory = _Inventory.get();
+    return outInventory != nullptr;
+}
+
+bool Player::UseItem(const int SlotIndex)
+{
+    // 인벤토리 확인 (한 번에 처리)
+    Inventory* inventory = nullptr;
+    if (!TryGetInventory(inventory))
+    {
+        return false;  // 인벤토리 없음
+ }
+    
+    // 인벤토리에서 아이템 사용
+    return inventory->UseItem(SlotIndex, *this);
 }
 
 // 범용 스탯 수정 메서드들
@@ -156,7 +174,7 @@ void Player::ProcessRoundEnd()
     if (_BuffRoundsRemaining > 0)
     {
         _BuffRoundsRemaining--;
-    
+
         // 버프가 끝났다면 효과 제거
         if (_BuffRoundsRemaining == 0)
         {

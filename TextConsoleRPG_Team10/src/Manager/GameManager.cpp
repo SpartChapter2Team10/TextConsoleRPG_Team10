@@ -11,7 +11,37 @@
 #include "../../include/UI/Scenes/ShopScene.h"
 #include "../../include/UI/Scenes/CompanionRecruitScene.h"
 #include "../../include/UI/Scenes/ResultScene.h"
+#include "../../include/Unit/Player.h"
 #include <Windows.h>
+#include <algorithm>
+
+// ===== 파티 관리 구현 (Player 정의 필요) =====
+void GameManager::RemoveDeadCompanions()
+{
+    // 메인 플레이어(0번)는 제외하고 동료들만 검사 - 메인 플레이어 죽으면 게임 끝남!
+    if (_Party.size() <= 1) return;  // 메인 플레이어만 있으면 스킵
+    
+    auto it = _Party.begin() + 1;  // 1번 인덱스부터 시작 (0번은 메인 플레이어)
+    while (it != _Party.end())
+    {
+        if (*it && (*it)->IsDead())
+        {
+            it = _Party.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
+size_t GameManager::GetAliveCount() const
+{
+    return std::count_if(_Party.begin(), _Party.end(),
+        [](const std::shared_ptr<Player>& member) {
+            return member && !member->IsDead();
+        });
+}
 
 // ===== 게임 초기화 (씬 등록) =====
 void GameManager::Initialize()
@@ -23,7 +53,7 @@ void GameManager::Initialize()
 
     // UIDrawer 초기화
     UIDrawer* drawer = UIDrawer::GetInstance();
-    if (!drawer->Initialize(106, 65))
+    if (!drawer->Initialize(150, 45))
     {
         PrintManager::GetInstance()->PrintLogLine(
             "UIDrawer 초기화 실패!",
@@ -86,9 +116,6 @@ void GameManager::StartGame()
 
         // 씬 렌더링
         sm->Render();
-
-        // FPS 제한 (~60fps)
-        Sleep(16);
 
         // 종료 조건 확인
         UIScene* currentScene = sm->GetCurrentScene();

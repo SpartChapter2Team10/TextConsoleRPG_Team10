@@ -24,24 +24,24 @@ void SceneManager::RegisterScene(ESceneType type, std::unique_ptr<UIScene> scene
 
 void SceneManager::ChangeScene(ESceneType type)
 {
- // 이전 Scene 종료
+    // 이전 Scene 종료
     if (_CurrentScene && _CurrentScene->IsActive())
     {
-   _CurrentScene->Exit();
- }
+        _CurrentScene->Exit();
+    }
 
     // Scene 존재 확인
     auto it = _Scenes.find(type);
     if (it == _Scenes.end())
     {
         PrintManager::GetInstance()->PrintLogLine(
-     "SceneManager: Scene not found!", 
+            "SceneManager: Scene not found!",
             ELogImportance::WARNING
         );
-  return;
+        return;
     }
 
- // 새 Scene 시작
+    // 새 Scene 시작
     _CurrentScene = it->second.get();
     _CurrentSceneType = type;
     _CurrentScene->Enter();
@@ -50,7 +50,7 @@ void SceneManager::ChangeScene(ESceneType type)
 void SceneManager::Update()
 {
     if (_CurrentScene && _CurrentScene->IsActive())
- {
+    {
         _CurrentScene->Update();
     }
 }

@@ -8,13 +8,18 @@
 
 bool AsciiArtRenderer::LoadFromFile(const std::string& folderPath, const std::string& fileName)
 {
+    _LastFilePath = folderPath + "/" + fileName;  // 경로 저장
+
     std::string content = DataManager::GetInstance()->LoadTextFile(folderPath, fileName);
     if (content.empty()) {
-        PrintManager::GetInstance()->PrintLogLine(
-            "AsciiArtRenderer: Failed to load " + fileName, ELogImportance::WARNING);
+        // 에러 정보 저장
+        _LastError = "Failed to load file: " + _LastFilePath;
+        _HasError = true;
         return false;
     }
 
+    _HasError = false;
+    _LastError.clear();
     return LoadFromString(content);
 }
 
@@ -32,6 +37,15 @@ bool AsciiArtRenderer::LoadFromString(const std::string& artContent)
         _ArtLines.push_back(line);
     }
 
+    if (_ArtLines.empty()) {
+        _LastError = "Art content is empty";
+        _HasError = true;
+        _IsDirty = true;
+        return false;
+    }
+
+    _HasError = false;
+    _LastError.clear();
     _IsDirty = true;
     return !_ArtLines.empty();
 }
@@ -115,14 +129,14 @@ void AsciiArtRenderer::Update(float deltaTime)
 
 void AsciiArtRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
 {
-    if (!_IsDirty) return;
+    // _IsDirty 체크 제거 - TextRenderer와 동일한 패턴
 
     // 애니메이션 모드
     if (_IsAnimating && !_AnimationFrames.empty()) {
         RenderFrame(buffer, bounds, _AnimationFrames[_CurrentFrame]);
     }
     // 단일 아트 모드
-    else {
+    else if (!_ArtLines.empty()) {
         RenderFrame(buffer, bounds, _ArtLines);
     }
 
@@ -141,18 +155,46 @@ void AsciiArtRenderer::RenderFrame(ScreenBuffer& buffer, const PanelBounds& boun
 
     if (contentWidth <= 0 || contentHeight <= 0) return;
 
-    // 아트 크기 검증
+    // 아트 크기 검증 - 실제 화면 너비 계산 (UTF-8 고려)
     int artHeight = static_cast<int>(frame.size());
     int artWidth = 0;
+
+    // 각 줄의 실제 화면 너비 계산
     for (const auto& line : frame) {
-        artWidth = (std::max)(artWidth, static_cast<int>(line.length()));
+        int lineVisualWidth = 0;
+        size_t i = 0;
+
+        while (i < line.length()) {
+            unsigned char ch = static_cast<unsigned char>(line[i]);
+            int charLen = 1;
+            int visualWidth = 1;
+
+            // UTF-8 문자 너비 계산
+            if (ch >= 0x80) {
+                if ((ch & 0xF0) == 0xE0) {
+                    charLen = 3;  // 한글, Box Drawing 등 (3바이트)
+                    visualWidth = 2;
+                }
+                else if ((ch & 0xE0) == 0xC0) {
+                    charLen = 2;  // 기타 유니코드
+                    visualWidth = 2;
+                }
+                else if ((ch & 0xF8) == 0xF0) {
+                    charLen = 4;  // 이모지 등
+                    visualWidth = 2;
+                }
+            }
+
+            lineVisualWidth += visualWidth;
+            i += charLen;
+        }
+
+        artWidth = (std::max)(artWidth, lineVisualWidth);
     }
 
     // 패널보다 크면 경고
     if (artHeight > contentHeight || artWidth > contentWidth) {
-        PrintManager::GetInstance()->PrintLogLine(
-            "AsciiArtRenderer: Art size exceeds panel bounds (will be clipped)",
-            ELogImportance::WARNING);
+        // 경고만 출력, 렌더링은 계속 진행
     }
 
     // 정렬 계산
@@ -171,6 +213,10 @@ void AsciiArtRenderer::RenderFrame(ScreenBuffer& buffer, const PanelBounds& boun
     default:
         break;
     }
+
+    // 시작 위치가 음수면 보정
+    if (startX < contentX) startX = contentX;
+    if (startY < contentY) startY = contentY;
 
     // 렌더링
     int currentY = startY;
