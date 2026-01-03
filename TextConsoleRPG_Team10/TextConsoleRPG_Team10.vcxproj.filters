@@ -168,10 +168,7 @@
     <ClInclude Include="include\UI\Scenes\CompanionRecruitScene.h">
       <Filter>Header Files\UI\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="include\UI\Scenes\GameOverScene.h">
-      <Filter>Header Files\UI\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="include\UI\Scenes\VictoryScene.h">
+    <ClInclude Include="include\UI\Scenes\ResultScene.h">
       <Filter>Header Files\UI\Scenes</Filter>
     </ClInclude>
     <!-- Root Headers -->
@@ -285,15 +282,16 @@
     <ClCompile Include="src\UI\Scenes\CompanionRecruitScene.cpp">
       <Filter>Source Files\UI\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\UI\Scenes\GameOverScene.cpp">
-      <Filter>Source Files\UI\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UI\Scenes\VictoryScene.cpp">
+    <ClCompile Include="src\UI\Scenes\ResultScene.cpp">
       <Filter>Source Files\UI\Scenes</Filter>
     </ClCompile>
     <!-- Main and Examples -->
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="UIDrawer_TestExample.cpp" />
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDrawer_TestExample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="UIDrawer_README.md" />

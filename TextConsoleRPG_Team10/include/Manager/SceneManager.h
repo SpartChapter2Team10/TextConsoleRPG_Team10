@@ -13,19 +13,18 @@ enum class ESceneType
     MainMenu,           // 메인 메뉴
     PlayerNameInput,// 이름 입력
     CharacterSelect,    // 직업 선택
- StoryProgress,      // 스토리 진행
+    StoryProgress,      // 스토리 진행
     StageSelect,  // 스테이지 선택
     Battle,      // 전투
     Shop,          // 상점
     CompanionRecruit,   // 동료 영입
-    GameOver,   // 게임 오버
-  Victory   // 승리
+    Result   // 게임 결과 (승리/패배 통합)
 };
 
 class SceneManager : public Singleton<SceneManager>
 {
 private:
- std::map<ESceneType, std::unique_ptr<UIScene>> _Scenes;
+    std::map<ESceneType, std::unique_ptr<UIScene>> _Scenes;
     UIScene* _CurrentScene;
     ESceneType _CurrentSceneType;
     Player* _GamePlayer;  // 게임 전역 플레이어

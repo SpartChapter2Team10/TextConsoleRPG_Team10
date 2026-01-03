@@ -2,7 +2,7 @@
 #include "../UIScene.h"
 #include <string>
 
-// 플레이어 이름 입력 Scene
+// 플레이어 이름 입력 Scene (완전 구현)
 class PlayerNameInputScene : public UIScene
 {
 private:

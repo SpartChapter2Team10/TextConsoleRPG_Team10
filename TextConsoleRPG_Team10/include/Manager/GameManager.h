@@ -1,6 +1,5 @@
 #pragma once
 #include "../Singleton.h"
-
 #include <memory>
 #include <random>
 
@@ -11,8 +10,9 @@ class Player;
 class GameManager : public Singleton<GameManager>
 {
 private:
-    std::shared_ptr<Player> _MainPlayer;
+    std::shared_ptr<Player> _MainPlayer;  // 레거시 호환용
     bool _IsGameOver = false;
+    bool _IsRunning = false;
 
 private:
     GameManager() = default;
@@ -22,7 +22,12 @@ private:
     GameManager& operator=(const GameManager&) = delete;
 
 public:
-    void StartGame();
-    void RunMainLoop();
-    void EndGame();
+    // ===== Scene 기반 게임 시스템 =====
+    void Initialize();   // 씬 등록
+    void StartGame();    // 메인 루프 시작
+    void EndGame();      // 게임 종료
+    
+  // ===== Getter/Setter =====
+    inline bool IsRunning() const { return _IsRunning; }
+    inline bool IsGameOver() const { return _IsGameOver; }
 };
