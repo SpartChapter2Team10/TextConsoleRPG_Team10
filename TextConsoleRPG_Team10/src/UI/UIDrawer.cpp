@@ -134,12 +134,35 @@ void UIDrawer::Render()
 {
     if (!_ScreenBuffer) return;
 
+    // dirty한 패널이 있는지 확인
+    bool anyDirty = false;
+    for (const auto& pair : _Panels) {
+        Panel* panel = pair.second.get();
+
+        // 패널 자체가 dirty하거나 콘텐츠 렌더러가 dirty한 경우
+        if (panel->IsDirty() ||
+            (panel->GetContentRenderer() && panel->GetContentRenderer()->IsDirty())) {
+            anyDirty = true;
+            break;
+        }
+    }
+
+    // 변경사항이 없으면 렌더링 스킵
+    if (!anyDirty) return;
+
     // 화면 클리어
     _ScreenBuffer->Clear();
 
-    // 모든 패널 렌더링
+    // 모든 패널 렌더링 (Clear했으므로 전체 재구성 필요)
     for (auto& pair : _Panels) {
-        pair.second->RenderToBuffer(*_ScreenBuffer);
+        Panel* panel = pair.second.get();
+        panel->RenderToBuffer(*_ScreenBuffer);
+
+        // 렌더링 후 dirty 플래그 클리어
+        panel->ClearDirty();
+        if (panel->GetContentRenderer()) {
+            // IContentRenderer의 Render()에서 _IsDirty = false 처리됨
+        }
     }
 
     // 화면에 출력

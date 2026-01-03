@@ -28,7 +28,6 @@ void StatRenderer::Clear()
 
 void StatRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
 {
-    if (!_IsDirty) return;
 
     // 패널 내부 영역
     int contentX = bounds.X + 1;
@@ -36,20 +35,23 @@ void StatRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
     int contentWidth = bounds.Width - 2;
     int contentHeight = bounds.Height - 2;
 
-    if (contentWidth <= 0 || contentHeight <= 0) return;
+    if (contentWidth <= 0 || contentHeight <= 0) {
+        _IsDirty = false;
+     return;
+    }
 
     int currentY = contentY;
     for (const auto& pair : _Stats) {
         if (currentY >= contentY + contentHeight) break;
 
         // "Key: Value" 형식
-        std::string line = pair.first + ": " + pair.second;
+      std::string line = pair.first + ": " + pair.second;
 
         // 키 부분 색상
-        buffer.WriteString(contentX, currentY, pair.first + ": ", _KeyColor);
+    buffer.WriteString(contentX, currentY, pair.first + ": ", _KeyColor);
 
         // 값 부분 색상
-        int valueX = contentX + static_cast<int>(pair.first.length()) + 2;
+   int valueX = contentX + static_cast<int>(pair.first.length()) + 2;
         buffer.WriteString(valueX, currentY, pair.second, _ValueColor);
 
         currentY++;

@@ -20,6 +20,7 @@
 void TestScene_BasicPanelsAndText()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
     drawer->ClearScreen();
     drawer->RemoveAllPanels();
 
@@ -71,13 +72,20 @@ void TestScene_BasicPanelsAndText()
     bottomPanel->SetContentRenderer(std::move(bottomText));
 
     drawer->Render();
-    _getch(); // 키 입력 대기
+
+    // InputManager로 키 대기
+    while (!inputMgr->IsKeyPressed())
+    {
+        Sleep(16);
+    }
+    inputMgr->GetKeyCode(); // 키 소비
 }
 
 // 테스트 씬 2: StatRenderer 및 동적 업데이트
 void TestScene_StatRendererAndDynamicUpdate()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
     drawer->ClearScreen();
     drawer->RemoveAllPanels();
 
@@ -133,10 +141,11 @@ void TestScene_StatRendererAndDynamicUpdate()
     infoPanel->SetBorder(true, 7);
     auto infoText = std::make_unique<TextRenderer>();
     infoText->AddLine("스페이스 바를 누르면 전투가 진행됩니다 (5턴)");
-    infoText->AddLine("ESC를 누르면 다음 테스트로 이동합니다.");
+    infoText->AddLine("ESC를 누르면 메인 메뉴로 돌아갑니다.");
     infoText->SetTextColor(15);
     infoPanel->SetContentRenderer(std::move(infoText));
 
+    // 최초 렌더링
     drawer->Render();
 
     // 시뮬레이션 데이터
@@ -147,9 +156,10 @@ void TestScene_StatRendererAndDynamicUpdate()
     bool running = true;
     while (running)
     {
-        if (_kbhit())
+        // InputManager의 논블로킹 메서드 사용
+        if (inputMgr->IsKeyPressed())
         {
-            int key = _getch();
+            int key = inputMgr->GetKeyCode();
 
             if (key == 27) // ESC
             {
@@ -204,15 +214,59 @@ void TestScene_StatRendererAndDynamicUpdate()
                     log->AddLine("");
                 }
 
-                // 패널 재렌더링
+                // 모든 패널 재렌더링 (정적 패널 포함)
+                titlePanel->Redraw();
                 playerPanel->Redraw();
                 monsterPanel->Redraw();
                 logPanel->Redraw();
+                infoPanel->Redraw();
                 drawer->Render();
 
+                // 전투 종료 처리
                 if (playerHP <= 0 || monsterHP <= 0)
                 {
-                    Sleep(2000);
+                    // 안내 패널 업데이트
+                    TextRenderer* info = dynamic_cast<TextRenderer*>(infoPanel->GetContentRenderer());
+                    if (info)
+                    {
+                        info->Clear();
+                        info->AddLine("전투가 종료되었습니다!");
+                        info->AddLine("아무 키나 눌러 메인 메뉴로 돌아갑니다...");
+                        infoPanel->Redraw();
+                    }
+
+                    // 로그에 종료 메시지 추가
+                    TextRenderer* log = dynamic_cast<TextRenderer*>(logPanel->GetContentRenderer());
+                    if (log)
+                    {
+                        log->AddLine("");
+                        if (playerHP <= 0)
+                        {
+                            log->AddLineWithColor("패배했습니다...", 12);
+                        }
+                        else
+                        {
+                            log->AddLineWithColor("승리했습니다!", 10);
+                        }
+                        log->AddLine("");
+                        logPanel->Redraw();
+                    }
+
+                    // 모든 패널 재렌더링
+                    titlePanel->Redraw();
+                    playerPanel->Redraw();
+                    monsterPanel->Redraw();
+                    logPanel->Redraw();
+                    infoPanel->Redraw();
+                    drawer->Render();
+
+                    // InputManager로 키 대기
+                    while (!inputMgr->IsKeyPressed())
+                    {
+                        Sleep(16);
+                    }
+                    inputMgr->GetKeyCode(); // 키 소비
+
                     running = false;
                 }
             }
@@ -225,6 +279,7 @@ void TestScene_StatRendererAndDynamicUpdate()
 void TestScene_Colors()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
     drawer->ClearScreen();
     drawer->RemoveAllPanels();
 
@@ -251,7 +306,7 @@ void TestScene_Colors()
 
     // 색상 예제 - 초록색
     Panel* greenPanel = drawer->CreatePanel("Green", 35, 5, 36, 15);
-    greenPanel->SetBorder(true, 10); // 밝은 초록색
+    greenPanel->SetBorder(true, 10); // 빨간색
     auto greenText = std::make_unique<TextRenderer>();
     greenText->AddLine("초록색 패널");
     greenText->AddLine("");
@@ -303,13 +358,20 @@ void TestScene_Colors()
     infoPanel->SetContentRenderer(std::move(infoText));
 
     drawer->Render();
-    _getch();
+
+    // InputManager로 키 대기
+    while (!inputMgr->IsKeyPressed())
+    {
+        Sleep(16);
+    }
+    inputMgr->GetKeyCode(); // 키 소비
 }
 
 // 테스트 씬 4: AsciiArtRenderer (리소스가 있는 경우에만 표시)
 void TestScene_AsciiArt()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
     drawer->ClearScreen();
     drawer->RemoveAllPanels();
 
@@ -334,6 +396,7 @@ void TestScene_AsciiArt()
 
     // 일반적인 몬스터 이름 시도
     std::vector<std::string> monsterNames = { "Goblin", "Slime", "Dragon", "Monster" };
+
     for (const auto& name : monsterNames)
     {
         std::string fileName = name + ".txt";
@@ -377,13 +440,20 @@ void TestScene_AsciiArt()
     infoPanel->SetContentRenderer(std::move(infoText));
 
     drawer->Render();
-    _getch();
+
+    // InputManager로 키 대기
+    while (!inputMgr->IsKeyPressed())
+    {
+        Sleep(16);
+    }
+    inputMgr->GetKeyCode(); // 키 소비
 }
 
 // 테스트 씬 5: 복합 레이아웃 (실전 예제)
 void TestScene_ComplexLayout()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
     drawer->ClearScreen();
     drawer->RemoveAllPanels();
 
@@ -489,7 +559,13 @@ void TestScene_ComplexLayout()
     commandPanel->SetContentRenderer(std::move(commandText));
 
     drawer->Render();
-    _getch();
+
+    // InputManager로 키 대기
+    while (!inputMgr->IsKeyPressed())
+    {
+        Sleep(16);
+    }
+    inputMgr->GetKeyCode(); // 키 소비
 }
 
 // 테스트 씬 6: InputBridge를 사용한 입력 처리
@@ -621,6 +697,7 @@ void TestScene_InputBridge()
 void TestScene_AdvancedTextRenderer()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
     drawer->ClearScreen();
     drawer->RemoveAllPanels();
 
@@ -718,13 +795,20 @@ void TestScene_AdvancedTextRenderer()
     guidePanel->SetContentRenderer(std::move(guideText));
 
     drawer->Render();
-    _getch();
+
+    // InputManager로 키 대기
+    while (!inputMgr->IsKeyPressed())
+    {
+        Sleep(16);
+    }
+    inputMgr->GetKeyCode(); // 키 소비
 }
 
 // 테스트 씬 8: 타이핑 효과 실시간 데모 ⭐ NEW!
 void TestScene_TypingEffectDemo()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
     drawer->ClearScreen();
     drawer->RemoveAllPanels();
 
@@ -801,26 +885,28 @@ void TestScene_TypingEffectDemo()
             }
         }
 
-        // ESC 키로 중단 가능
-        if (_kbhit())
+        // InputManager로 ESC 키 체크
+        if (inputMgr->IsKeyDown(27))  // ESC
         {
-            int key = _getch();
-            if (key == 27)  // ESC
-            {
-                typingComplete = true;
-            }
+            typingComplete = true;
         }
 
         Sleep(16);  // ~60 FPS
     }
 
-    _getch();
+    // InputManager로 키 대기
+    while (!inputMgr->IsKeyPressed())
+    {
+        Sleep(16);
+    }
+    inputMgr->GetKeyCode(); // 키 소비
 }
 
 // 메인 메뉴
 void ShowMainMenu()
 {
     UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* inputMgr = InputManager::GetInstance();
 
     bool running = true;
     while (running)
@@ -864,8 +950,12 @@ void ShowMainMenu()
 
         drawer->Render();
 
-        // 입력 처리
-        int key = _getch();
+        // InputManager로 입력 처리
+        while (!inputMgr->IsKeyPressed())
+        {
+            Sleep(16);
+        }
+        int key = inputMgr->GetKeyCode();
 
         switch (key)
         {
@@ -905,11 +995,11 @@ void RunUIDrawerTest()
 {
     // 1. UIDrawer 초기화 (콘솔 창 크기와 일치: 106x60)
     UIDrawer* drawer = UIDrawer::GetInstance();
- if (!drawer->Initialize(106, 60))  // ✅ 60으로 변경 (콘솔 창과 일치)
+    if (!drawer->Initialize(106, 60))  // ✅ 60으로 변경 (콘솔 창과 일치)
     {
         std::cerr << "UIDrawer 초기화 실패!" << std::endl;
         return;
- }
+    }
 
     // 2. UI 모드 활성화
     drawer->Activate();

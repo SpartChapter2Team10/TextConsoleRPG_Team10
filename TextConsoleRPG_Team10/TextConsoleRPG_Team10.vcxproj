@@ -217,6 +217,7 @@
     <None Include="AsyncInput_Design.md" />
     <None Include="InputBridge_FAQ.md" />
     <None Include="TextRenderer_Advanced_Guide.md" />
+    <None Include="UIDrawer_Flowchart.md" />
     <None Include="UIDrawer_README.md" />
     <None Include="UIDrawer_TestExample_README.md" />
   </ItemGroup>
