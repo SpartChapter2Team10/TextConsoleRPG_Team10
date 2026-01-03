@@ -211,9 +211,14 @@
     <ClCompile Include="src\Manager\DataManager.cpp" />
     <ClCompile Include="src\Factory\ItemFactory.cpp" />
     <ClCompile Include="src\Unit\Boss.cpp" />
+    <ClCompile Include="UIDrawer_TestExample.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AsyncInput_Design.md" />
+    <None Include="InputBridge_FAQ.md" />
+    <None Include="TextRenderer_Advanced_Guide.md" />
     <None Include="UIDrawer_README.md" />
+    <None Include="UIDrawer_TestExample_README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,6 +2,7 @@
 #include "../Singleton.h"
 #include <string>
 #include <functional>
+#include <vector>
 
 class Panel;
 class TextRenderer;
@@ -31,6 +32,10 @@ public:
     std::string RequestInput(const std::string& prompt);
     int RequestIntInput(const std::string& prompt, int min, int max);
     char RequestCharInput(const std::string& prompt, const std::string& validChars);
+    
+    // 누락된 InputManager 메서드 추가
+    std::string RequestStringInput(const std::string& prompt, const std::vector<std::string>& validOptions);
+    bool RequestYesNoInput(const std::string& prompt);
 
     // 입력 패널 설정
     void SetInputPanel(Panel* panel);

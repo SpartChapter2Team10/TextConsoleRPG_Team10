@@ -24,12 +24,12 @@ public:
     virtual void Exit() = 0;      // Scene 종료 시
     virtual void Update() = 0;    // 매 프레임
     virtual void Render() = 0;    // 화면 출력
-    
+
     // 입력 처리 (선택적)
     virtual void HandleInput() {}
 
-  // Getter
-  inline bool IsActive() const { return _IsActive; }
+    // Getter
+    inline bool IsActive() const { return _IsActive; }
     inline void SetActive(bool active) { _IsActive = active; }
     inline const std::string& GetName() const { return _SceneName; }
 };

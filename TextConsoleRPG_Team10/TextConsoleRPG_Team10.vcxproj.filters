@@ -67,7 +67,6 @@
     <ClInclude Include="include\Item\MonsterSpawnData.h">
       <Filter>Header Files\Item</Filter>
     </ClInclude>
-
     <!-- Unit Headers -->
     <ClInclude Include="include\Unit\ICharacter.h">
       <Filter>Header Files\Unit</Filter>
@@ -84,7 +83,6 @@
     <ClInclude Include="include\Unit\Boss.h">
       <Filter>Header Files\Unit</Filter>
     </ClInclude>
-
     <!-- Manager Headers -->
     <ClInclude Include="include\Manager\BattleManager.h">
       <Filter>Header Files\Manager</Filter>
@@ -110,7 +108,6 @@
     <ClInclude Include="include\Manager\SceneManager.h">
       <Filter>Header Files\Manager</Filter>
     </ClInclude>
-
     <!-- Factory Headers -->
     <ClInclude Include="include\Factory\Factory.h">
       <Filter>Header Files\Factory</Filter>
@@ -118,7 +115,6 @@
     <ClInclude Include="include\Factory\ItemFactory.h">
       <Filter>Header Files\Factory</Filter>
     </ClInclude>
-
     <!-- UI Headers -->
     <ClInclude Include="include\UI\ScreenBuffer.h">
       <Filter>Header Files\UI</Filter>
@@ -147,7 +143,6 @@
     <ClInclude Include="include\UI\InputBridge.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
-
     <!-- UI Scene Headers -->
     <ClInclude Include="include\UI\Scenes\MainMenuScene.h">
       <Filter>Header Files\UI\Scenes</Filter>
@@ -179,7 +174,6 @@
     <ClInclude Include="include\UI\Scenes\VictoryScene.h">
       <Filter>Header Files\UI\Scenes</Filter>
     </ClInclude>
-    
     <!-- Root Headers -->
     <ClInclude Include="include\Singleton.h">
       <Filter>Header Files</Filter>
@@ -188,7 +182,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-
   <ItemGroup>
     <!-- Item Sources -->
     <ClCompile Include="src\Item\AttackUp.cpp">
@@ -203,7 +196,6 @@
     <ClCompile Include="src\Item\ItemSlot.cpp">
       <Filter>Source Files\Item</Filter>
     </ClCompile>
-
     <!-- Unit Sources -->
     <ClCompile Include="src\Unit\NormalMonster.cpp">
       <Filter>Source Files\Unit</Filter>
@@ -214,7 +206,6 @@
     <ClCompile Include="src\Unit\Boss.cpp">
       <Filter>Source Files\Unit</Filter>
     </ClCompile>
-
     <!-- Manager Sources -->
     <ClCompile Include="src\Manager\BattleManager.cpp">
       <Filter>Source Files\Manager</Filter>
@@ -240,12 +231,10 @@
     <ClCompile Include="src\Manager\SceneManager.cpp">
       <Filter>Source Files\Manager</Filter>
     </ClCompile>
-
     <!-- Factory Sources -->
     <ClCompile Include="src\Factory\ItemFactory.cpp">
       <Filter>Source Files\Factory</Filter>
     </ClCompile>
-
     <!-- UI Sources -->
     <ClCompile Include="src\UI\ScreenBuffer.cpp">
       <Filter>Source Files\UI</Filter>
@@ -271,7 +260,6 @@
     <ClCompile Include="src\UI\InputBridge.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
-
     <!-- UI Scene Sources -->
     <ClCompile Include="src\UI\Scenes\MainMenuScene.cpp">
       <Filter>Source Files\UI\Scenes</Filter>
@@ -303,12 +291,15 @@
     <ClCompile Include="src\UI\Scenes\VictoryScene.cpp">
       <Filter>Source Files\UI\Scenes</Filter>
     </ClCompile>
-
     <!-- Main and Examples -->
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="UIDrawer_TestExample.cpp" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="UIDrawer_README.md" />
+    <None Include="UIDrawer_TestExample_README.md" />
+    <None Include="AsyncInput_Design.md" />
+    <None Include="InputBridge_FAQ.md" />
+    <None Include="TextRenderer_Advanced_Guide.md" />
   </ItemGroup>
 </Project>

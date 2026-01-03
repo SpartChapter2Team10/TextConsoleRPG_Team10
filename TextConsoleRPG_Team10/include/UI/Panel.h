@@ -18,7 +18,7 @@ struct PanelBounds {
     PanelBounds(int x, int y, int w, int h) : X(x), Y(y), Width(w), Height(h) {}
 
     bool Contains(int x, int y) const {
- return x >= X && x < X + Width && y >= Y && y < Y + Height;
+        return x >= X && x < X + Width && y >= Y && y < Y + Height;
     }
 };
 
@@ -41,7 +41,7 @@ public:
     void SetContentRenderer(std::unique_ptr<IContentRenderer> renderer);
 
     // 패널을 화면 버퍼에 렌더링
- void RenderToBuffer(ScreenBuffer& buffer);
+    void RenderToBuffer(ScreenBuffer& buffer);
 
     // 강제 재렌더링
     void Redraw() { _IsDirty = true; }

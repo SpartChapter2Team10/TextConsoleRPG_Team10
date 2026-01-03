@@ -42,7 +42,7 @@ public:
     // 영역 채우기
     void FillRect(int x, int y, int width, int height, char fillChar = ' ', WORD attribute = 7);
 
-// 테두리 그리기 (싱글 라인 박스)
+    // 테두리 그리기 (싱글 라인 박스)
     void DrawBox(int x, int y, int width, int height, WORD attribute = 7);
 
     // 화면에 실제 렌더링 (더블 버퍼링)

@@ -7,7 +7,7 @@ ScreenBuffer::ScreenBuffer(int width, int height)
 {
     _Buffer.resize(_Height);
     for (auto& row : _Buffer) {
-row.resize(_Width);
+        row.resize(_Width);
     }
 }
 
@@ -15,7 +15,7 @@ void ScreenBuffer::Clear()
 {
     for (auto& row : _Buffer) {
         for (auto& cell : row) {
-       cell = CharCell(' ');
+            cell = CharCell(' ');
         }
     }
 }
@@ -25,17 +25,17 @@ int ScreenBuffer::ParseUTF8Char(const char* str, int& byteCount, int& visualWidt
     if (!str || str[0] == '\0') {
         byteCount = 0;
         visualWidth = 0;
-     return -1;
+        return -1;
     }
 
     unsigned char ch = static_cast<unsigned char>(str[0]);
 
     // UTF-8 첫 바이트 분석
-if (ch < 0x80) {
-      // ASCII (1바이트)
+    if (ch < 0x80) {
+        // ASCII (1바이트)
         byteCount = 1;
-   visualWidth = 1;
-}
+        visualWidth = 1;
+    }
     else if ((ch & 0xE0) == 0xC0) {
         // 2바이트 문자
         byteCount = 2;
@@ -44,14 +44,14 @@ if (ch < 0x80) {
     else if ((ch & 0xF0) == 0xE0) {
         // 3바이트 문자 (한글 등)
         byteCount = 3;
-   visualWidth = 2;
-    }
-    else if ((ch & 0xF8) == 0xF0) {
-      // 4바이트 문자 (이모지 등)
-      byteCount = 4;
         visualWidth = 2;
     }
-  else {
+    else if ((ch & 0xF8) == 0xF0) {
+        // 4바이트 문자 (이모지 등)
+        byteCount = 4;
+        visualWidth = 2;
+    }
+    else {
         // 잘못된 UTF-8
         byteCount = 1;
         visualWidth = 1;
@@ -73,7 +73,7 @@ int ScreenBuffer::WriteChar(int x, int y, const char* utf8Char, int byteCount, W
     if (x + visualWidth > _Width) return 0;
 
     CharCell& cell = _Buffer[y][x];
-  for (int i = 0; i < byteCount && i < 4; ++i) {
+    for (int i = 0; i < byteCount && i < 4; ++i) {
         cell.Bytes[i] = utf8Char[i];
     }
     cell.ByteCount = byteCount;
@@ -102,17 +102,17 @@ int ScreenBuffer::WriteString(int x, int y, const std::string& text, WORD attrib
 
     while (i < text.length() && currentX < _Width) {
         int byteCount = 1;
-  int visualWidth = 1;
+        int visualWidth = 1;
 
-    ParseUTF8Char(&text[i], byteCount, visualWidth);
+        ParseUTF8Char(&text[i], byteCount, visualWidth);
 
-     // 개행 처리
-  if (text[i] == '\n') {
+        // 개행 처리
+        if (text[i] == '\n') {
             break;  // 자동 개행 없음
         }
 
         // 쓸 공간 확인
-     if (currentX + visualWidth > _Width) {
+        if (currentX + visualWidth > _Width) {
             break;
         }
 
@@ -127,12 +127,12 @@ int ScreenBuffer::WriteString(int x, int y, const std::string& text, WORD attrib
 
 void ScreenBuffer::FillRect(int x, int y, int width, int height, char fillChar, WORD attribute)
 {
-  for (int row = y; row < y + height && row < _Height; ++row) {
+    for (int row = y; row < y + height && row < _Height; ++row) {
         for (int col = x; col < x + width && col < _Width; ++col) {
-     if (row >= 0 && col >= 0) {
+            if (row >= 0 && col >= 0) {
                 WriteChar(col, row, &fillChar, 1, attribute);
-  }
-      }
+            }
+        }
     }
 }
 
@@ -146,7 +146,7 @@ void ScreenBuffer::DrawBox(int x, int y, int width, int height, WORD attribute)
     const char* bottomLeft = "+";
     const char* bottomRight = "+";
     const char* horizontal = "-";
-const char* vertical = "|";
+    const char* vertical = "|";
 
     // 상단
     WriteChar(x, y, topLeft, 1, attribute);
@@ -161,7 +161,7 @@ const char* vertical = "|";
         WriteChar(x + width - 1, y + i, vertical, 1, attribute);
     }
 
-// 하단
+    // 하단
     WriteChar(x, y + height - 1, bottomLeft, 1, attribute);
     for (int i = 1; i < width - 1; ++i) {
         WriteChar(x + i, y + height - 1, horizontal, 1, attribute);
@@ -189,31 +189,31 @@ void ScreenBuffer::Render()
 
     WORD currentAttr = 7;
     for (int y = 0; y < _Height; ++y) {
-    for (int x = 0; x < _Width; ++x) {
-  const CharCell& cell = _Buffer[y][x];
+        for (int x = 0; x < _Width; ++x) {
+            const CharCell& cell = _Buffer[y][x];
 
-   // 색상 변경
- if (cell.Attribute != currentAttr) {
-    // 실시간 색상 변경은 성능 저하 → 일단 무시 또는 ANSI 이스케이프 코드 사용
-      currentAttr = cell.Attribute;
-  }
+            // 색상 변경
+            if (cell.Attribute != currentAttr) {
+                // 실시간 색상 변경은 성능 저하 → 일단 무시 또는 ANSI 이스케이프 코드 사용
+                currentAttr = cell.Attribute;
+            }
 
-       // 문자 출력
-     if (cell.ByteCount > 0 && cell.Bytes[0] != '\0') {
-      for (int i = 0; i < cell.ByteCount; ++i) {
-           output += cell.Bytes[i];
-    }
+            // 문자 출력
+            if (cell.ByteCount > 0 && cell.Bytes[0] != '\0') {
+                for (int i = 0; i < cell.ByteCount; ++i) {
+                    output += cell.Bytes[i];
+                }
             }
             else if (cell.Bytes[0] == '\0') {
-           // 이전 칸에 속하는 경우 (한글 2칸 처리) → 공백 출력하지 않음
-    continue;
-    }
+                // 이전 칸에 속하는 경우 (한글 2칸 처리) → 공백 출력하지 않음
+                continue;
+            }
             else {
-       output += ' ';
+                output += ' ';
             }
         }
-  if (y < _Height - 1) {
-    output += '\n';
+        if (y < _Height - 1) {
+            output += '\n';
         }
     }
 
@@ -234,7 +234,7 @@ const CharCell& ScreenBuffer::GetCell(int x, int y) const
 {
     static CharCell dummy;
     if (x < 0 || x >= _Width || y < 0 || y >= _Height) {
-  return dummy;
-  }
+        return dummy;
+    }
     return _Buffer[y][x];
 }

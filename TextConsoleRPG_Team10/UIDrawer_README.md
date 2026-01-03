@@ -8,6 +8,7 @@ UIDrawer는 기존 텍스트 기반 출력 시스템과 **완벽하게 호환**�
 - ✅ **기존 코드 수정 불필요**: PrintManager와 독립적으로 동작
 - ✅ **패널 기반 레이아웃**: 절대 좌표로 자유롭게 배치
 - ✅ **다양한 콘텐츠**: 텍스트, 스탯, ASCII 아트, 애니메이션
+- ✅ **InputBridge 통합**: InputManager와 연동하여 입력 처리
 - ✅ **UTF-8 한글 지원**: 한글 2칸 처리 자동화
 - ✅ **더블 버퍼링**: 깜빡임 없는 부드러운 렌더링
 
@@ -21,7 +22,7 @@ UIDrawer는 기존 텍스트 기반 출력 시스템과 **완벽하게 호환**�
 
 UIDrawer* drawer = UIDrawer::GetInstance();
 drawer->Initialize(106, 65);  // 콘솔 크기
-drawer->Activate();           // UI 모드 활성화
+drawer->Activate();       // UI 모드 활성화
 ```
 
 ### 2. 패널 생성
@@ -48,10 +49,210 @@ panel->SetContentRenderer(std::move(textRenderer));
 drawer->Render();  // 화면에 출력
 ```
 
-### 5. 종료
+### 5. 입력 처리 (NEW!)
+```cpp
+#include "include/Manager/InputManager.h"
+
+InputManager* input = InputManager::GetInstance();
+std::string name = input->GetInput("이름을 입력하세요: ");
+int level = input->GetIntInput("레벨 (1-50): ", 1, 50);
+```
+
+### 6. 종료
 ```cpp
 drawer->Deactivate();  // 레거시 모드로 복귀
 ```
+
+---
+
+## 💡 InputBridge 사용법
+
+### InputBridge란?
+`InputBridge`는 UIDrawer와 InputManager를 연결하는 브릿지 클래스입니다.  
+UI 화면을 유지하면서 사용자 입력을 받을 수 있게 해줍니다.
+
+### ⚠️ 중요: 현재 InputBridge의 한계
+
+**현재 InputBridge는 동기식(blocking) 입력만 지원합니다:**
+- ✅ UI 화면과 입력을 통합
+- ❌ 입력 대기 중 애니메이션 정지
+- ❌ 입력 대기 중 게임 루프 정지
+
+**비동기 입력이 필요한 경우:**
+```
+┌─────────────────────────────────────┐
+│  [애니메이션 패널]            │ ← 계속 애니메이션 재생
+│   ⚔️ 전투 중...         │
+├─────────────────────────────────────┤
+│  [입력 패널]       │ ← 동시에 입력 대기
+│  > 명령을 입력하세요: _       │
+└─────────────────────────────────────┘
+```
+
+이런 기능이 필요하다면 **`AsyncInput_Design.md`**를 참고하여 비동기 입력 시스템을 구현하세요.
+
+### InputManager 메서드 (완전 지원 ✅)
+
+InputBridge는 이제 InputManager의 **모든 메서드**를 지원합니다:
+
+#### GetInput(prompt) / RequestInput(prompt)
+```cpp
+std::string name = input->GetInput("이름: ");
+// 또는
+std::string name = bridge->RequestInput("이름: ");
+```
+- **용도**: 자유 문자열 입력
+- **반환**: `std::string`
+
+#### GetIntInput(prompt, min, max) / RequestIntInput(...)
+```cpp
+int age = input->GetIntInput("나이 (1-99): ", 1, 99);
+```
+- **용도**: 정수 입력 (범위 제한)
+- **반환**: `int`
+- **검증**: 숫자가 아니거나 범위 초과 시 재입력 요청
+
+#### GetCharInput(prompt, validChars) / RequestCharInput(...)
+```cpp
+char choice = input->GetCharInput("[Y/N]: ", "YNyn");
+```
+- **용도**: 단일 문자 입력 (유효성 검증)
+- **반환**: `char`
+- **검증**: validChars에 없는 문자 입력 시 재입력 요청
+
+#### GetStringInput(prompt, validOptions) / RequestStringInput(...) ⭐ NEW
+```cpp
+std::vector<std::string> jobs = {"전사", "마법사", "궁수"};
+std::string job = input->GetStringInput("직업: ", jobs);
+// 또는
+std::string job = bridge->RequestStringInput("직업: ", jobs);
+```
+- **용도**: 문자열 입력 (옵션 검증)
+- **반환**: `std::string`
+- **검증**: validOptions에 있는 문자열만 허용
+
+#### GetYesNoInput(prompt) / RequestYesNoInput(prompt) ⭐ NEW
+```cpp
+bool confirm = input->GetYesNoInput("계속하시겠습니까? ");
+// 또는
+bool confirm = bridge->RequestYesNoInput("계속하시겠습니까? ");
+```
+- **용도**: Yes/No 입력
+- **반환**: `bool`
+- **허용**: "yes", "Yes", "YES", "no", "No", "NO"
+
+### InputManager vs InputBridge 비교
+
+| 특성 | InputManager (직접 사용) | InputBridge (래퍼) |
+|------|------------------------|-------------------|
+| **사용 목적** | 레거시 모드 | UIDrawer 모드 |
+| **UI 통합** | ❌ 없음 | ✅ 있음 (패널 연동) |
+| **입력 방식** | 동기식 (blocking) | 동기식 (blocking) |
+| **애니메이션 지원** | ❌ 정지됨 | ❌ 정지됨 |
+| **권장 사용** | 간단한 입력 | UI 화면이 있는 경우 |
+
+### 실전 예제: UI + 입력 처리
+```cpp
+void CreateCharacterWithUI()
+{
+UIDrawer* drawer = UIDrawer::GetInstance();
+    InputManager* input = InputManager::GetInstance();
+    
+ drawer->Initialize();
+    drawer->Activate();
+    
+    // UI 구성
+    Panel* titlePanel = drawer->CreatePanel("Title", 0, 0, 106, 5);
+ titlePanel->SetBorder(true, 14);
+    auto titleText = std::make_unique<TextRenderer>();
+    titleText->AddLine("=== 캐릭터 생성 ===");
+    titleText->SetTextColor(14);
+    titlePanel->SetContentRenderer(std::move(titleText));
+    
+    Panel* logPanel = drawer->CreatePanel("Log", 0, 5, 106, 50);
+    logPanel->SetBorder(true, 7);
+    auto log = std::make_unique<TextRenderer>();
+    log->AddLine("[입력 로그]");
+    log->AddLine("");
+    logPanel->SetContentRenderer(std::move(log));
+    
+    drawer->Render();
+    
+    // 입력 받기
+    TextRenderer* logContent = dynamic_cast<TextRenderer*>(logPanel->GetContentRenderer());
+    
+    // 1. 이름 입력
+    logContent->AddLine("이름을 입력하세요:");
+    logPanel->Redraw();
+    drawer->Render();
+    
+    std::string name = input->GetInput("");
+    logContent->AddLine("입력: " + name);
+    logPanel->Redraw();
+ drawer->Render();
+    
+    // 2. 레벨 입력
+    logContent->AddLine("");
+    logContent->AddLine("레벨을 선택하세요 (1-50):");
+  logPanel->Redraw();
+ drawer->Render();
+    
+    int level = input->GetIntInput("", 1, 50);
+    logContent->AddLine("입력: " + std::to_string(level));
+    logPanel->Redraw();
+    drawer->Render();
+    
+    // 3. 직업 선택 (옵션 목록 사용)
+    logContent->AddLine("");
+logContent->AddLine("직업을 선택하세요:");
+    logPanel->Redraw();
+    drawer->Render();
+    
+    std::vector<std::string> jobs = {"전사", "마법사", "궁수"};
+    std::string job = input->GetStringInput("", jobs);
+    logContent->AddLine("입력: " + job);
+    
+    // 4. 확인
+    logContent->AddLine("");
+    logContent->AddLine("이대로 진행하시겠습니까?");
+    logPanel->Redraw();
+    drawer->Render();
+    
+    bool confirm = input->GetYesNoInput("");
+    
+ // 결과
+    logContent->AddLine("");
+    if (confirm)
+    {
+        logContent->AddLine("=== 캐릭터 생성 완료 ===");
+ logContent->AddLine("이름: " + name);
+ logContent->AddLine("레벨: " + std::to_string(level));
+   logContent->AddLine("직업: " + job);
+    }
+    else
+ {
+  logContent->AddLine("캐릭터 생성이 취소되었습니다.");
+    }
+    
+    logPanel->Redraw();
+    drawer->Render();
+ 
+    drawer->Deactivate();
+}
+```
+
+### 비동기 입력이 필요한가?
+
+대부분의 턴제 RPG는 **동기식 입력으로 충분**합니다:
+- ✅ 플레이어 턴 → 명령 입력 → 처리 → 적 턴
+- ✅ 입력 대기 중 화면이 정지해도 문제없음
+
+**비동기 입력이 필요한 경우:**
+- ❌ 입력 대기 중에도 애니메이션 재생
+- ❌ 실시간으로 UI 업데이트
+- ❌ 타이머, 카운트다운 표시
+
+이런 기능이 필요하다면 **`AsyncInput_Design.md`**를 참고하세요.
 
 ---
 
@@ -84,7 +285,7 @@ drawer->Deactivate();  // 레거시 모드로 복귀
 
 ## 🎨 콘텐츠 렌더러 종류
 
-### 1. TextRenderer (텍스트 로그)
+### 1. TextRenderer (템플릿)
 ```cpp
 auto textRenderer = std::make_unique<TextRenderer>();
 textRenderer->AddLine("첫 번째 줄");

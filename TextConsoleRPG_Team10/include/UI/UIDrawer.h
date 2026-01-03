@@ -15,7 +15,7 @@ class UIDrawer : public Singleton<UIDrawer>
 private:
     std::unique_ptr<ScreenBuffer> _ScreenBuffer;
     std::map<std::string, std::unique_ptr<Panel>> _Panels;
-    
+
     bool _IsActive = false;  // UI Drawer 활성화 여부
     float _TargetFPS = 30.0f;
     std::chrono::steady_clock::time_point _LastFrameTime;
@@ -38,7 +38,7 @@ public:
     Panel* CreatePanel(const std::string& id, int x, int y, int width, int height);
     Panel* GetPanel(const std::string& id);
     void RemovePanel(const std::string& id);
- void RemoveAllPanels();
+    void RemoveAllPanels();
 
     // 렌더링
     void Update();           // 애니메이션 업데이트 + 렌더링
@@ -50,7 +50,7 @@ public:
     void Deactivate();       // UI Drawer 모드 비활성화
     inline bool IsActive() const { return _IsActive; }
 
-  // FPS 설정
+    // FPS 설정
     void SetTargetFPS(float fps) { _TargetFPS = fps; }
 
     // 화면 클리어

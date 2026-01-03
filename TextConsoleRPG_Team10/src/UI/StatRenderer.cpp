@@ -42,17 +42,17 @@ void StatRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
     for (const auto& pair : _Stats) {
         if (currentY >= contentY + contentHeight) break;
 
- // "Key: Value" 형식
+        // "Key: Value" 형식
         std::string line = pair.first + ": " + pair.second;
 
         // 키 부분 색상
- buffer.WriteString(contentX, currentY, pair.first + ": ", _KeyColor);
-     
+        buffer.WriteString(contentX, currentY, pair.first + ": ", _KeyColor);
+
         // 값 부분 색상
         int valueX = contentX + static_cast<int>(pair.first.length()) + 2;
-   buffer.WriteString(valueX, currentY, pair.second, _ValueColor);
+        buffer.WriteString(valueX, currentY, pair.second, _ValueColor);
 
-     currentY++;
+        currentY++;
     }
 
     _IsDirty = false;

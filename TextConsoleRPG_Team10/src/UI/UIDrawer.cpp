@@ -20,33 +20,33 @@ bool UIDrawer::Initialize(int width, int height)
 {
     try {
         _ScreenBuffer = std::make_unique<ScreenBuffer>(width, height);
-        
-     // 콘솔 설정
+
+        // 콘솔 설정
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-        
+
         // 콘솔 크기 설정
         COORD bufferSize = { static_cast<SHORT>(width), static_cast<SHORT>(height) };
-SetConsoleScreenBufferSize(hConsole, bufferSize);
+        SetConsoleScreenBufferSize(hConsole, bufferSize);
 
         SMALL_RECT windowSize = { 0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height - 1) };
         SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 
-     // 커서 숨기기
-  CONSOLE_CURSOR_INFO cursorInfo;
+        // 커서 숨기기
+        CONSOLE_CURSOR_INFO cursorInfo;
         GetConsoleCursorInfo(hConsole, &cursorInfo);
         cursorInfo.bVisible = FALSE;
         SetConsoleCursorInfo(hConsole, &cursorInfo);
 
         PrintManager::GetInstance()->PrintLogLine(
-          "UIDrawer initialized: " + std::to_string(width) + "x" + std::to_string(height),
- ELogImportance::DISPLAY);
+            "UIDrawer initialized: " + std::to_string(width) + "x" + std::to_string(height),
+            ELogImportance::DISPLAY);
 
-   return true;
+        return true;
     }
     catch (const std::exception& ex) {
-   PrintManager::GetInstance()->PrintLogLine(
-      "UIDrawer initialization failed: " + std::string(ex.what()),
-   ELogImportance::WARNING);
+        PrintManager::GetInstance()->PrintLogLine(
+            "UIDrawer initialization failed: " + std::string(ex.what()),
+            ELogImportance::WARNING);
         return false;
     }
 }
@@ -70,7 +70,7 @@ Panel* UIDrawer::CreatePanel(const std::string& id, int x, int y, int width, int
     PanelBounds bounds(x, y, width, height);
     auto panel = std::make_unique<Panel>(id, bounds);
     Panel* ptr = panel.get();
-    
+
     _Panels[id] = std::move(panel);
     return ptr;
 }
@@ -98,29 +98,29 @@ void UIDrawer::Update()
 {
     if (!_IsActive || !_ScreenBuffer) return;
 
-float deltaTime = CalculateDeltaTime();
+    float deltaTime = CalculateDeltaTime();
 
     // 모든 패널의 콘텐츠 업데이트 (애니메이션 등)
     for (auto& pair : _Panels) {
         Panel* panel = pair.second.get();
         if (panel->GetContentRenderer()) {
-        panel->GetContentRenderer()->Update(deltaTime);
-         
-        // 콘텐츠가 dirty면 패널도 dirty
+            panel->GetContentRenderer()->Update(deltaTime);
+
+            // 콘텐츠가 dirty면 패널도 dirty
             if (panel->GetContentRenderer()->IsDirty()) {
- panel->SetDirty();
-    }
+                panel->SetDirty();
+            }
         }
     }
 
     Render();
 
     // FPS 제한
- float targetFrameTime = 1.0f / _TargetFPS;
+    float targetFrameTime = 1.0f / _TargetFPS;
     float sleepTime = targetFrameTime - deltaTime;
     if (sleepTime > 0) {
         std::this_thread::sleep_for(
-   std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
+            std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
     }
 }
 
@@ -150,7 +150,7 @@ void UIDrawer::RedrawAll()
 
 void UIDrawer::Activate()
 {
- _IsActive = true;
+    _IsActive = true;
     ClearScreen();
     PrintManager::GetInstance()->PrintLogLine("UI Drawer activated", ELogImportance::DISPLAY);
 }
@@ -171,7 +171,7 @@ void UIDrawer::ClearScreen()
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     DWORD dwConSize;
 
- GetConsoleScreenBufferInfo(hConsole, &csbi);
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
     dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
 
     FillConsoleOutputCharacter(hConsole, ' ', dwConSize, coordScreen, &cCharsWritten);
@@ -184,6 +184,6 @@ float UIDrawer::CalculateDeltaTime()
 {
     auto now = std::chrono::steady_clock::now();
     std::chrono::duration<float> elapsed = now - _LastFrameTime;
-  _LastFrameTime = now;
+    _LastFrameTime = now;
     return elapsed.count();
 }
