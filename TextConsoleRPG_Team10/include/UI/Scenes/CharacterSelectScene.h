@@ -1,13 +1,9 @@
 #pragma once
 #include "../UIScene.h"
 
-// 직업 선택 Scene
+// 직업 선택 Scene (미구현 - 확장용 껍데기)
 class CharacterSelectScene : public UIScene
 {
-private:
-    int _SelectedClass;
-    bool _SelectionComplete;
-
 public:
     CharacterSelectScene();
     ~CharacterSelectScene() override;

@@ -133,6 +133,18 @@ void TextRenderer::FlushColoredLine()
     }
 }
 
+// ===== 플리커링 효과 =====
+
+void TextRenderer::EnableFlicker(bool enable, float interval, WORD alternateColor)
+{
+    _FlickerEnabled = enable;
+    _FlickerInterval = interval;
+    _FlickerAlternateColor = alternateColor;
+    _FlickerTimer = 0.0f;
+    _FlickerState = true;
+    _IsDirty = true;
+}
+
 // ===== 타이핑 효과 =====
 
 int TextRenderer::GetTypingInterval() const
@@ -206,7 +218,28 @@ bool TextRenderer::UpdateTypingEffect()
 
 void TextRenderer::Update(float deltaTime)
 {
+    bool needsRedraw = false;
+
+    // 타이핑 효과 업데이트
     if (UpdateTypingEffect())
+    {
+        needsRedraw = true;
+    }
+
+    // 플리커링 효과 업데이트
+    if (_FlickerEnabled)
+    {
+        _FlickerTimer += deltaTime;
+
+        if (_FlickerTimer >= _FlickerInterval)
+        {
+            _FlickerTimer = 0.0f;
+            _FlickerState = !_FlickerState;  // 상태 전환
+            needsRedraw = true;
+        }
+    }
+
+    if (needsRedraw)
     {
         _IsDirty = true;
     }
@@ -308,8 +341,15 @@ void TextRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
             displayText = line.Text.substr(0, _CurrentTypingChar);
         }
 
+        // 플리커링 효과 적용
+        WORD renderColor = line.Color;
+        if (_FlickerEnabled && !_FlickerState)
+        {
+            renderColor = _FlickerAlternateColor;
+        }
+
         // 텍스트 쓰기 (패널 너비 초과 시 자름)
-        buffer.WriteString(contentX, currentY, displayText, line.Color);
+        buffer.WriteString(contentX, currentY, displayText, renderColor);
 
         currentY++;
     }

@@ -1,12 +1,9 @@
 #pragma once
 #include "../UIScene.h"
 
-// 동료 영입 Scene (향후 확장용)
+// 동료 영입 Scene (미구현 - 확장용 껍데기)
 class CompanionRecruitScene : public UIScene
 {
-private:
-    bool _RecruitComplete;
-
 public:
     CompanionRecruitScene();
     ~CompanionRecruitScene() override;

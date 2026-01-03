@@ -11,9 +11,92 @@ std::string InputManager::GetInput(const std::string& Prompt)
 {
     std::string str = "";
     PrintManager::GetInstance()->PrintLog(Prompt);
-    // getline(std::cin, str);  // getline은 입력버퍼를 비우지 않아도 됨.
-
     return GetUTFInput();
+}
+
+// 특정 좌표에서 문자열 입력 (UI용)
+std::string InputManager::GetInputAt(int x, int y, int maxLength, bool showCursor)
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+
+    // 커서를 지정 위치로 이동
+    COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+    SetConsoleCursorPosition(hConsole, pos);
+
+    // 커서 표시 설정
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    bool originalCursorVisible = cursorInfo.bVisible;
+    cursorInfo.bVisible = showCursor;
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
+
+    // UTF-8 입력 받기
+    wchar_t wbuffer[1024];
+    DWORD charactersRead = 0;
+
+    if (!ReadConsoleW(hInput, wbuffer, 1024, &charactersRead, NULL))
+    {
+        // 커서 원래대로 복원
+        cursorInfo.bVisible = originalCursorVisible;
+        SetConsoleCursorInfo(hConsole, &cursorInfo);
+        return "";
+    }
+
+    std::wstring wstr(wbuffer, charactersRead);
+
+    // 개행 문자 제거
+    while (!wstr.empty() && (wstr.back() == L'\r' || wstr.back() == L'\n'))
+    {
+        wstr.pop_back();
+    }
+
+    if (wstr.empty())
+    {
+        // 커서 원래대로 복원
+        cursorInfo.bVisible = originalCursorVisible;
+        SetConsoleCursorInfo(hConsole, &cursorInfo);
+        return "";
+    }
+
+    // UTF-8로 변환
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.size()), NULL, 0, NULL, NULL);
+    std::string utf8Str(size_needed, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.size()), &utf8Str[0], size_needed, NULL, NULL);
+
+    // 길이 제한 (시각적 칸 수)
+    int visualLength = 0;
+    size_t i = 0;
+    std::string result;
+
+    while (i < utf8Str.length() && visualLength < maxLength)
+    {
+        unsigned char ch = static_cast<unsigned char>(utf8Str[i]);
+        int charLen = 1;
+        int charWidth = 1;
+
+        if (ch >= 0x80)
+        {
+            if ((ch & 0xE0) == 0xE0) charLen = 3; // 한글 (3바이트)
+            else if ((ch & 0xC0) == 0xC0) charLen = 2;
+            charWidth = 2;  // 한글은 2칸
+        }
+
+        if (visualLength + charWidth > maxLength)
+        {
+            break;
+        }
+
+        result += utf8Str.substr(i, charLen);
+        visualLength += charWidth;
+        i += charLen;
+    }
+
+    // 커서 원래대로 복원
+    cursorInfo.bVisible = originalCursorVisible;
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
+
+    return result;
 }
 
 // 정수 입력, 지정된 범위내의 값 받기
@@ -176,7 +259,7 @@ int InputManager::GetKeyCode()
     {
         return 0;  // 키 입력 없음
     }
-    
+
     return _getch();  // 키 코드 반환 및 버퍼에서 제거
 }
 
@@ -185,9 +268,9 @@ bool InputManager::IsKeyDown(int keyCode)
 {
     if (!IsKeyPressed())
     {
-      return false;
+        return false;
     }
-    
+
     int pressedKey = _getch();
     return pressedKey == keyCode;
 }
@@ -198,21 +281,21 @@ bool InputManager::IsCharPressed(char ch)
     if (!IsKeyPressed())
     {
         return false;
-  }
-    
+    }
+
     int pressedKey = _getch();
-    
+
     // 대소문자 구분 없이 비교
     if (pressedKey >= 'A' && pressedKey <= 'Z')
     {
-    pressedKey = pressedKey - 'A' + 'a';  // 소문자로 변환
+        pressedKey = pressedKey - 'A' + 'a';  // 소문자로 변환
     }
-    
+
     char targetChar = ch;
-  if (targetChar >= 'A' && targetChar <= 'Z')
+    if (targetChar >= 'A' && targetChar <= 'Z')
     {
         targetChar = targetChar - 'A' + 'a';  // 소문자로 변환
     }
-    
+
     return pressedKey == targetChar;
 }

@@ -2,21 +2,24 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+    <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common">
+   <UniqueIdentifier>{00000000-1111-2222-3333-444444444444}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Item">
       <UniqueIdentifier>{A1B1C1D1-E1F1-11D1-AAAA-00A0C913D1F8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Unit">
       <UniqueIdentifier>{B2B2C2D2-E2F2-22D2-BBBB-00A0C913D1F8}</UniqueIdentifier>
-    </Filter>
+ </Filter>
     <Filter Include="Header Files\Manager">
       <UniqueIdentifier>{C3B3C3D3-E3F3-33D3-CCCC-00A0C913D1F8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Factory">
       <UniqueIdentifier>{A7B7C7D7-E7F7-77D7-AAAA-00A0C913D1F8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\UI">
+ <Filter Include="Header Files\UI">
       <UniqueIdentifier>{11111111-2222-3333-4444-555555555555}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\UI\Scenes">
@@ -45,6 +48,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <!-- Root Headers -->
+    <ClInclude Include="include\Singleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    
+    <!-- Common Headers -->
+    <ClInclude Include="include\Common\TextColor.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    
     <!-- Item Headers -->
     <ClInclude Include="include\Item\AttackUp.h">
       <Filter>Header Files\Item</Filter>
@@ -168,10 +184,7 @@
     <ClInclude Include="include\UI\Scenes\CompanionRecruitScene.h">
       <Filter>Header Files\UI\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="include\UI\Scenes\GameOverScene.h">
-      <Filter>Header Files\UI\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="include\UI\Scenes\VictoryScene.h">
+    <ClInclude Include="include\UI\Scenes\ResultScene.h">
       <Filter>Header Files\UI\Scenes</Filter>
     </ClInclude>
     <!-- Root Headers -->
@@ -181,6 +194,7 @@
     <ClInclude Include="include\Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Common\TextColor.h" />
   </ItemGroup>
   <ItemGroup>
     <!-- Item Sources -->
@@ -285,22 +299,21 @@
     <ClCompile Include="src\UI\Scenes\CompanionRecruitScene.cpp">
       <Filter>Source Files\UI\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\UI\Scenes\GameOverScene.cpp">
-      <Filter>Source Files\UI\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UI\Scenes\VictoryScene.cpp">
+    <ClCompile Include="src\UI\Scenes\ResultScene.cpp">
       <Filter>Source Files\UI\Scenes</Filter>
     </ClCompile>
     <!-- Main and Examples -->
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="UIDrawer_TestExample.cpp" />
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDrawer_TestExample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="UIDrawer_README.md" />
-    <None Include="UIDrawer_TestExample_README.md" />
-    <None Include="AsyncInput_Design.md" />
-    <None Include="InputBridge_FAQ.md" />
-    <None Include="TextRenderer_Advanced_Guide.md" />
     <None Include="UIDrawer_Flowchart.md" />
+    <None Include="SCENE_IMPLEMENTATION_GUIDE.md" />
+    <None Include="PROJECT_GUIDELINE.md" />
+    <None Include="QUICK_REFERENCE.md" />
   </ItemGroup>
 </Project>

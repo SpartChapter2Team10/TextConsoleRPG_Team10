@@ -4,11 +4,13 @@
 #include "../../../include/UI/TextRenderer.h"
 #include "../../../include/Manager/SceneManager.h"
 #include "../../../include/Manager/InputManager.h"
+#include "../../../include/Manager/PrintManager.h"
+#include "../../../include/Common/TextColor.h"
 #include "../../../include/Unit/Player.h"
+#include <Windows.h>
 
 PlayerNameInputScene::PlayerNameInputScene()
     : UIScene("PlayerNameInput")
-    , _InputComplete(false)
 {
 }
 
@@ -18,87 +20,122 @@ PlayerNameInputScene::~PlayerNameInputScene()
 
 void PlayerNameInputScene::Enter()
 {
-    _Drawer->Initialize();
+    _Drawer->ClearScreen();
+    _Drawer->RemoveAllPanels();
     _Drawer->Activate();
     _IsActive = true;
-    _InputComplete = false;
+    _PlayerName.clear();
 
-    // 배경 패널
-    Panel* bgPanel = _Drawer->CreatePanel("Background", 0, 0, 106, 65);
-    auto bg = std::make_unique<TextRenderer>();
-    bg->AddLine("");
-  bg->SetTextColor(7);
-  bgPanel->SetContentRenderer(std::move(bg));
+    // 중앙 안내 패널
+    Panel* infoPanel = _Drawer->CreatePanel("Info", 35, 15, 80, 8);
+    infoPanel->SetBorder(true, ETextColor::LIGHT_CYAN);
 
-    // 입력 안내 패널
-    Panel* promptPanel = _Drawer->CreatePanel("Prompt", 20, 20, 66, 15);
-    promptPanel->SetBorder(true, 10);
-  auto prompt = std::make_unique<TextRenderer>();
-    prompt->AddLine("=== 캐릭터 생성 ===");
-  prompt->AddLine("");
-    prompt->AddLine("용감한 모험가여, 당신의 이름은 무엇입니까?");
-    prompt->AddLine("");
-    prompt->AddLine("이름을 입력하세요:");
-    prompt->AddLine("(빈 칸으로 입력 시 'Player'로 설정됩니다)");
-    prompt->SetTextColor(14);
-    promptPanel->SetContentRenderer(std::move(prompt));
+    auto infoText = std::make_unique<TextRenderer>();
+    infoText->AddLine("");
+    infoText->AddLine("       [유저 이름 입력 관련 안내 문구]");
+    infoText->AddLine("");
+    infoText->AddLine("       당신의 이름을 입력해주세요 (최대 10자)");
+    infoText->SetTextColor(static_cast<WORD>(ETextColor::LIGHT_CYAN));
+    infoPanel->SetContentRenderer(std::move(infoText));
+
+    // 플레이어 이름 입력 영역
+    Panel* inputPanel = _Drawer->CreatePanel("Input", 35, 25, 80, 8);
+    inputPanel->SetBorder(true, ETextColor::LIGHT_GREEN);
+
+    auto inputText = std::make_unique<TextRenderer>();
+    inputText->AddLine("");
+    inputText->AddLine("      [플레이어 이름 입력 관련 영역]");
+    inputText->AddLine("");
+    inputText->AddLine("      > ");
+    inputText->SetTextColor(static_cast<WORD>(ETextColor::LIGHT_GREEN));
+    inputPanel->SetContentRenderer(std::move(inputText));
 
     _Drawer->Render();
+    
+    // Enter에서 바로 입력 처리 (동기 입력)
+    HandleInput();
 }
 
 void PlayerNameInputScene::Exit()
 {
     _Drawer->RemoveAllPanels();
-    _Drawer->Deactivate();
     _IsActive = false;
 }
 
 void PlayerNameInputScene::Update()
 {
-    if (!_InputComplete)
- {
-        HandleInput();
-    }
-    else
+    if (_IsActive)
     {
-        // 플레이어 생성 완료 메시지
-        Panel* completePanel = _Drawer->CreatePanel("Complete", 30, 30, 46, 8);
- completePanel->SetBorder(true, 10);
-    auto complete = std::make_unique<TextRenderer>();
-        complete->AddLine("캐릭터 생성 완료!");
-        complete->AddLine("");
-        complete->AddLine("이름: " + _PlayerName);
-        complete->AddLine("");
-        complete->AddLine("[Enter]를 눌러 계속...");
-        complete->SetTextColor(14);
-        completePanel->SetContentRenderer(std::move(complete));
-        
- _Drawer->Render();
-        
-        _Input->GetInput("");  // 대기
-        
-        // 플레이어 생성
-    Player* newPlayer = new Player(_PlayerName);
-        SceneManager::GetInstance()->SetPlayer(newPlayer);
-        
-        // 다음 Scene으로 (스토리 또는 전투)
-        SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
+        _Drawer->Update();
     }
 }
 
 void PlayerNameInputScene::Render()
 {
-    _Drawer->Render();
+    // UIDrawer::Update()에서 자동 렌더링
 }
 
 void PlayerNameInputScene::HandleInput()
 {
-    _PlayerName = _Input->GetInput("이름: ");
-    
-  if (_PlayerName.empty())
+    // InputManager를 통해 좌표 기반 입력 (동기/블로킹)
+    // Panel 위치: (35, 25)
+    // 테두리: +1 → (36, 26)
+    // 첫 줄 (빈 줄): 26 - 7
+    // 둘째 줄 ("[...]"): 28
+    // 셋째 줄 (빈 줄): 29
+    // 넷째 줄 ("> "): 30
+    // "      > " = 공백 6칸 + "> " 2칸 → X: 36 + 6 + 2 = 44
+
+    // maxLength = 10: 최대 10칸 (영문 10자 또는 한글 5자)
+    // 10자 넘어가면 짤립니다.
+    _PlayerName = _Input->GetInputAt(44, 30, 10, true);
+
+    // 빈 이름 처리
+    if (_PlayerName.empty())
     {
         _PlayerName = "Player";
- }
-    
-    _InputComplete = true;
+    }
+
+    // 확인 화면 표시
+    ShowConfirmation();
+}
+
+void PlayerNameInputScene::ShowConfirmation()
+{
+    // 기존 패널 제거
+    _Drawer->RemoveAllPanels();
+
+    // 확인 패널
+    Panel* confirmPanel = _Drawer->CreatePanel("Confirm", 35, 18, 80, 10);
+    confirmPanel->SetBorder(true, ETextColor::LIGHT_YELLOW);
+
+    auto confirmText = std::make_unique<TextRenderer>();
+    confirmText->AddLine("");
+    confirmText->AddLine("     모험가 " + _PlayerName + "의 여정이 시작됩니다...");
+    confirmText->AddLine("");
+    confirmText->AddLine("     [아무 키나 눌러 계속...]");
+    confirmText->SetTextColor(static_cast<WORD>(ETextColor::LIGHT_YELLOW));
+    confirmPanel->SetContentRenderer(std::move(confirmText));
+
+    _Drawer->Render();
+
+    // 키 입력 대기
+    while (!_Input->IsKeyPressed())
+    {
+        Sleep(50);
+    }
+    _Input->GetKeyCode();
+
+    // 플레이어 생성 (인벤토리 활성화)
+    Player* newPlayer = new Player(_PlayerName, true);  // ← enableInventory = true
+    SceneManager::GetInstance()->SetPlayer(newPlayer);
+
+    PrintManager::GetInstance()->PrintLogLine("플레이어 '" + _PlayerName + "' 생성 완료", ELogImportance::DISPLAY);
+
+    // 다음 씬으로 전환
+    _IsActive = false;
+    Exit();
+
+    // TODO: 다음 씬으로 변경
+    // SceneManager::GetInstance()->ChangeScene(ESceneType::CharacterSelect);
 }

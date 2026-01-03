@@ -7,7 +7,9 @@ class PlayerNameInputScene : public UIScene
 {
 private:
     std::string _PlayerName;
-    bool _InputComplete;
+
+    // 확인 화면 표시
+    void ShowConfirmation();
 
 public:
     PlayerNameInputScene();

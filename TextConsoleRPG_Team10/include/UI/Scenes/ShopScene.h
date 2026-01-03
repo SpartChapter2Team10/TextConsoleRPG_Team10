@@ -1,14 +1,11 @@
 #pragma once
 #include "../UIScene.h"
 
-// 상점 Scene
+// 상점 Scene (미구현 - 확장용 껍데기)
 class ShopScene : public UIScene
 {
-private:
-    bool _StayInShop;
-
 public:
-  ShopScene();
+    ShopScene();
     ~ShopScene() override;
 
     void Enter() override;
@@ -16,9 +13,4 @@ public:
     void Update() override;
     void Render() override;
     void HandleInput() override;
-
-    // 상점 메뉴
-    void ShowShopMenu();
-    void BuyItem();
-    void SellItem();
 };

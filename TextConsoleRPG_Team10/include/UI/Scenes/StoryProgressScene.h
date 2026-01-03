@@ -1,15 +1,11 @@
 #pragma once
 #include "../UIScene.h"
 
-// 스토리 진행 Scene
+// 스토리 진행 Scene (미구현 - 확장용 껍데기)
 class StoryProgressScene : public UIScene
 {
-private:
-    int _CurrentStoryIndex;
-    bool _StoryComplete;
-
 public:
-    StoryProgressScene();
+  StoryProgressScene();
     ~StoryProgressScene() override;
 
     void Enter() override;

@@ -6,6 +6,9 @@
 #include <Windows.h>
 #include <thread>
 
+// 전역 deltaTime 변수
+static float g_DeltaTime = 0.0f;
+
 UIDrawer::UIDrawer()
 {
     _LastFrameTime = std::chrono::steady_clock::now();
@@ -19,35 +22,35 @@ UIDrawer::~UIDrawer()
 bool UIDrawer::Initialize(int width, int height)
 {
     try {
-        _ScreenBuffer = std::make_unique<ScreenBuffer>(width, height);
+     _ScreenBuffer = std::make_unique<ScreenBuffer>(width, height);
 
-        // 콘솔 설정
-        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  // 콘솔 설정
+      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
         // 콘솔 크기 설정
         COORD bufferSize = { static_cast<SHORT>(width), static_cast<SHORT>(height) };
         SetConsoleScreenBufferSize(hConsole, bufferSize);
 
-        SMALL_RECT windowSize = { 0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height - 1) };
+    SMALL_RECT windowSize = { 0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height - 1) };
         SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 
         // 커서 숨기기
         CONSOLE_CURSOR_INFO cursorInfo;
         GetConsoleCursorInfo(hConsole, &cursorInfo);
-        cursorInfo.bVisible = FALSE;
-        SetConsoleCursorInfo(hConsole, &cursorInfo);
+  cursorInfo.bVisible = FALSE;
+SetConsoleCursorInfo(hConsole, &cursorInfo);
 
         PrintManager::GetInstance()->PrintLogLine(
-            "UIDrawer initialized: " + std::to_string(width) + "x" + std::to_string(height),
+          "UIDrawer initialized: " + std::to_string(width) + "x" + std::to_string(height),
             ELogImportance::DISPLAY);
 
         return true;
     }
     catch (const std::exception& ex) {
         PrintManager::GetInstance()->PrintLogLine(
-            "UIDrawer initialization failed: " + std::string(ex.what()),
+       "UIDrawer initialization failed: " + std::string(ex.what()),
             ELogImportance::WARNING);
-        return false;
+      return false;
     }
 }
 
@@ -67,7 +70,7 @@ void UIDrawer::Shutdown()
 
 Panel* UIDrawer::CreatePanel(const std::string& id, int x, int y, int width, int height)
 {
-    PanelBounds bounds(x, y, width, height);
+ PanelBounds bounds(x, y, width, height);
     auto panel = std::make_unique<Panel>(id, bounds);
     Panel* ptr = panel.get();
 
@@ -86,7 +89,7 @@ Panel* UIDrawer::GetPanel(const std::string& id)
 
 void UIDrawer::RemovePanel(const std::string& id)
 {
-    _Panels.erase(id);
+  _Panels.erase(id);
 }
 
 void UIDrawer::RemoveAllPanels()
@@ -98,21 +101,18 @@ void UIDrawer::Update()
 {
     if (!_IsActive || !_ScreenBuffer) return;
 
-    float deltaTime = CalculateDeltaTime();
+    // 전역 deltaTime 계산 및 저장
+    g_DeltaTime = CalculateDeltaTime();
 
     bool needsRedraw = false;
 
-    // 모든 패널의 콘텐츠 업데이트 (애니메이션 등)
+    // 모든 패널 업데이트 (각 패널이 내부의 모든 렌더러를 업데이트)
     for (auto& pair : _Panels) {
-        Panel* panel = pair.second.get();
-        if (panel->GetContentRenderer()) {
-            panel->GetContentRenderer()->Update(deltaTime);
+   Panel* panel = pair.second.get();
+     panel->Update(g_DeltaTime);
 
-            // 콘텐츠가 dirty면 패널도 dirty
-            if (panel->GetContentRenderer()->IsDirty()) {
-                panel->SetDirty();
-                needsRedraw = true;
-            }
+        if (panel->IsDirty()) {
+       needsRedraw = true;
         }
     }
 
@@ -123,10 +123,10 @@ void UIDrawer::Update()
 
     // FPS 제한
     float targetFrameTime = 1.0f / _TargetFPS;
-    float sleepTime = targetFrameTime - deltaTime;
+    float sleepTime = targetFrameTime - g_DeltaTime;
     if (sleepTime > 0) {
         std::this_thread::sleep_for(
-            std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
+      std::chrono::milliseconds(static_cast<int>(sleepTime * 1000)));
     }
 }
 
@@ -137,11 +137,7 @@ void UIDrawer::Render()
     // dirty한 패널이 있는지 확인
     bool anyDirty = false;
     for (const auto& pair : _Panels) {
-        Panel* panel = pair.second.get();
-
-        // 패널 자체가 dirty하거나 콘텐츠 렌더러가 dirty한 경우
-        if (panel->IsDirty() ||
-            (panel->GetContentRenderer() && panel->GetContentRenderer()->IsDirty())) {
+        if (pair.second->IsDirty()) {
             anyDirty = true;
             break;
         }
@@ -153,16 +149,11 @@ void UIDrawer::Render()
     // 화면 클리어
     _ScreenBuffer->Clear();
 
-    // 모든 패널 렌더링 (Clear했으므로 전체 재구성 필요)
+    // 모든 패널 렌더링
     for (auto& pair : _Panels) {
-        Panel* panel = pair.second.get();
-        panel->RenderToBuffer(*_ScreenBuffer);
-
-        // 렌더링 후 dirty 플래그 클리어
+  Panel* panel = pair.second.get();
+   panel->RenderToBuffer(*_ScreenBuffer);
         panel->ClearDirty();
-        if (panel->GetContentRenderer()) {
-            // IContentRenderer의 Render()에서 _IsDirty = false 처리됨
-        }
     }
 
     // 화면에 출력
@@ -193,7 +184,7 @@ void UIDrawer::Deactivate()
 
 void UIDrawer::ClearScreen()
 {
-    // 콘솔 화면 완전 클리어
+  // 콘솔 화면 완전 클리어
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD coordScreen = { 0, 0 };
     DWORD cCharsWritten;

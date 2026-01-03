@@ -183,22 +183,12 @@ int PrintManager::GetIntervalTime() const
     switch (_CurrentSpeed)
     {
     case ETypingSpeed::Slow:
-    {
         return 100;
-    }
-    break;
     case ETypingSpeed::Normal:
-    {
         return 50;
-    }
-
-    break;
     case ETypingSpeed::Fast:
-    {
         return 20;
-    }
-    break;
     default:
-        break;
+        return 50;  // 기본값 (Normal)
     }
 }
