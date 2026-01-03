@@ -20,7 +20,7 @@ private:
     float _TargetFPS = 30.0f;
     std::chrono::steady_clock::time_point _LastFrameTime;
 
-private:
+protected:
     UIDrawer();
     friend class Singleton<UIDrawer>;
 

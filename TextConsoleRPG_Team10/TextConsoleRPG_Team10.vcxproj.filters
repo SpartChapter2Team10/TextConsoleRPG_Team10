@@ -301,5 +301,6 @@
     <None Include="AsyncInput_Design.md" />
     <None Include="InputBridge_FAQ.md" />
     <None Include="TextRenderer_Advanced_Guide.md" />
+    <None Include="UIDrawer_Flowchart.md" />
   </ItemGroup>
 </Project>

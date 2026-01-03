@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <Windows.h>
+#include <conio.h>
 #include "../../include/Manager/InputManager.h"
 #include "../../include/Manager/PrintManager.h"
 
@@ -158,4 +159,60 @@ std::string InputManager::GetUTFInput() {
     std::string utf8Str(size_needed, 0);
     WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.size()), &utf8Str[0], size_needed, NULL, NULL);
     return utf8Str;
+}
+
+// ===== 논블로킹 입력 메서드 구현 =====
+
+// 키가 눌렸는지 확인 (논블로킹)
+bool InputManager::IsKeyPressed() const
+{
+    return _kbhit() != 0;
+}
+
+// 눌린 키 코드 가져오기 (논블로킹)
+int InputManager::GetKeyCode()
+{
+    if (!IsKeyPressed())
+    {
+        return 0;  // 키 입력 없음
+    }
+    
+    return _getch();  // 키 코드 반환 및 버퍼에서 제거
+}
+
+// 특정 키가 눌렸는지 확인 및 소비 (논블로킹)
+bool InputManager::IsKeyDown(int keyCode)
+{
+    if (!IsKeyPressed())
+    {
+      return false;
+    }
+    
+    int pressedKey = _getch();
+    return pressedKey == keyCode;
+}
+
+// 특정 문자 키가 눌렸는지 확인 및 소비 (대소문자 구분 없음)
+bool InputManager::IsCharPressed(char ch)
+{
+    if (!IsKeyPressed())
+    {
+        return false;
+  }
+    
+    int pressedKey = _getch();
+    
+    // 대소문자 구분 없이 비교
+    if (pressedKey >= 'A' && pressedKey <= 'Z')
+    {
+    pressedKey = pressedKey - 'A' + 'a';  // 소문자로 변환
+    }
+    
+    char targetChar = ch;
+  if (targetChar >= 'A' && targetChar <= 'Z')
+    {
+        targetChar = targetChar - 'A' + 'a';  // 소문자로 변환
+    }
+    
+    return pressedKey == targetChar;
 }

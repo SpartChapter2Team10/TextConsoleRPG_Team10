@@ -19,11 +19,6 @@ void Panel::SetContentRenderer(std::unique_ptr<IContentRenderer> renderer)
 
 void Panel::RenderToBuffer(ScreenBuffer& buffer)
 {
-    // Dirty가 아니면 스킵 (최적화)
-    if (!_IsDirty) {
-        return;
-    }
-
     // 패널 영역 클리어 (배경)
     buffer.FillRect(_Bounds.X, _Bounds.Y, _Bounds.Width, _Bounds.Height, ' ', 7);
 
@@ -36,8 +31,6 @@ void Panel::RenderToBuffer(ScreenBuffer& buffer)
     if (_ContentRenderer) {
         _ContentRenderer->Render(buffer, _Bounds);
     }
-
-    _IsDirty = false;
 }
 
 void Panel::SetBorder(bool enable, WORD color)
