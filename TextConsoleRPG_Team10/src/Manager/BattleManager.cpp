@@ -4,6 +4,8 @@
 #include "../../include/Unit/Boss.h"
 #include "../../include/Item/HealPotion.h"
 #include "../../include/Item/AttackUp.h"
+#include "../../include/Item/IItem.h"
+#include "../../include/Item/Inventory.h"
 #include "../../include/Unit/Player.h"
 #include "../../include/Manager/GameManager.h"
 #include "../../include/Manager/DataManager.h"
@@ -11,53 +13,91 @@
 #include <iostream>
 #include <tuple>
 #include <memory>
+#include <algorithm>
 #include <Windows.h>
 
-// ===== Scene 친화적 인터페이스 구현 =====
+// ========================================
+// ===== 레거시 인터페이스 (참고용) =====
+// ========================================
+// 과거 구현 담당자를 위한 레거시 코드
+// Scene 기반 시스템으로 전환 예정
 
-bool BattleManager::StartBattle(EBattleType type)
+bool BattleManager::StartAutoBattle(Player* P)
 {
-    // TODO: 팀원 구현 필요
-    // 1. 이미 전투 중이면 false 반환
-    // 2. GameManager에서 메인 플레이어 가져오기
-    // 3. 플레이어 레벨 기반으로 몬스터 생성
-    //    - Normal: DataManager::GetRandomStageAndMonster() → NormalMonster 생성
-    //    - Boss: Boss 생성
-    // 4. _CurrentMonster, _BattleType, _IsBattleActive, _Result 초기화
-    // 5. 성공 시 true 반환
+    if (!P) return false;
 
-    return false;  // TODO: 구현 후 실제 결과 반환
+    DataManager* dm = DataManager::GetInstance();
+    auto [stage, monsterName] = dm->GetRandomStageAndMonster();
+    if (stage.empty() || monsterName.empty()) return false;
+
+    auto NM = std::make_unique<NormalMonster>(P->GetLevel(), stage, monsterName);
+    ICharacter* Target = NM.get();
+    PrintManager::GetInstance()->PrintLogLine(NM->GetStage());
+    PrintManager::GetInstance()->PrintLogLine(Target->GetName() + "이(가) 출현했습니다.. ");
+
+    while (true)
+    {
+        // === 플레이어 턴 ===
+        ProcessTurn(P, Target);
+        if (Target->IsDead())
+        {
+            // 플레이어 승리
+            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) " + Target->GetName() + "를 쓰러뜨렸습니다!!");
+            CalculateReward(P, dynamic_cast<IMonster*>(Target));
+            P->ResetBuffs();
+            return true;
+        }
+
+        // === 몬스터 턴 ===
+        ProcessAttack(Target, P);
+        if (P->IsDead())
+        {
+            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) 패배했습니다...");
+            P->ResetBuffs();
+            return false;
+        }
+
+        // === 라운드 종료 ===
+        P->ProcessRoundEnd();
+    }
 }
 
-void BattleManager::EndBattle()
+bool BattleManager::StartBossBattle(Player* P)
 {
-    // TODO: 팀원 구현 필요
-    // 1. 전투 중이 아니면 즉시 반환
-    // 2. GameManager에서 파티 가져오기
-    // 3. 모든 파티원 버프 초기화 (ResetBuffs)
-    // 4. 승리 시 CalculateReward 호출
-    // 5. GameManager::RemoveDeadCompanions() 호출
-    // 6. _CurrentMonster.reset(), _BattleType = None, _IsBattleActive = false
+    if (!P) return false;
+
+    std::unique_ptr<Boss> boss = std::make_unique<Boss>(P->GetLevel());
+
+    ICharacter* Target = boss.get();
+    PrintManager::GetInstance()->PrintLogLine("보스 출현");
+    PrintManager::GetInstance()->PrintLogLine(boss->GetStage());
+    PrintManager::GetInstance()->PrintLogLine(Target->GetName() + "이(가) 출현했습니다.. ");
+
+    while (true)
+    {
+        // === 플레이어 턴 ===
+        ProcessTurn(P, Target);
+        if (Target->IsDead())
+        {
+            // 플레이어 승리
+            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) " + Target->GetName() + "를 쓰러뜨렸습니다!!");
+            P->ResetBuffs();
+            return true;
+        }
+
+        // === 몬스터 턴 ===
+        ProcessAttack(Target, P);
+        if (P->IsDead())
+        {
+            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) 패배했습니다...");
+            P->ResetBuffs();
+            return false;
+        }
+
+        // === 라운드 종료 ===
+        P->ProcessRoundEnd();
+    }
 }
-
-bool BattleManager::ProcessBattleTurn()
-{
-    // TODO: 팀원 구현 필요
-    // 1. 전투 중이 아니거나 몬스터가 없으면 false 반환
-    // 2. GameManager에서 메인 플레이어 가져오기
-    // 3. 플레이어 턴: ProcessTurn(Player, Monster)
-    // 4. 몬스터 사망 확인
-    // - 사망 시: _Result.Victory = true, IsCompleted = true, 승리 메시지 출력, false 반환
-    // 5. 몬스터 턴: ProcessAttack(Monster, Player)
-    // 6. 플레이어 사망 확인
-    //    - 사망 시: _Result.Victory = false, IsCompleted = true, 패배 메시지 출력, false 반환
-    // 7. 라운드 종료: 파티 전체 ProcessRoundEnd()
-    // 8. 전투 계속: true 반환
-
-    return false;  // TODO: 구현 후 실제 결과 반환
-}
-
-// ===== 내부 로직 (팀원이 구현 예정) =====
 
 void BattleManager::ProcessTurn(ICharacter* Atk, ICharacter* Def)
 {
@@ -170,7 +210,7 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
 
     // TODO: GameManager에서 메인 플레이어 및 파티 가져오기
     // TODO: 경험치 파티 전체 분배
-    // TODO: 골드 메인 플레이어에게만 지급
+  // TODO: 골드 메인 플레이어에게만 지급
     // TODO: 아이템 메인 플레이어 인벤토리에 추가
 
     /* ===== 레거시 코드 (참고용) =====
@@ -186,26 +226,26 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
     {
         if (party.size() > 1)
         {
-            PrintManager::GetInstance()->PrintLog("파티원 모두 ");
-        }
+  PrintManager::GetInstance()->PrintLog("파티원 모두 ");
+      }
         else
         {
-            PrintManager::GetInstance()->PrintLog(mainPlayer->GetName() + "은(는) ");
+       PrintManager::GetInstance()->PrintLog(mainPlayer->GetName() + "은(는) ");
         }
         PrintManager::GetInstance()->PrintColorText(std::to_string(Exp), ETextColor::LIGHT_GREEN);
-        PrintManager::GetInstance()->PrintLogLine("의 경험치를 획득했습니다.");
+      PrintManager::GetInstance()->PrintLogLine("의 경험치를 획득했습니다.");
 
         // 파티 전체에 경험치 분배
-        for (const auto& member : party)
+   for (const auto& member : party)
         {
-            if (member)
-            {
+     if (member)
+   {
                 member->GainExp(Exp);
-                PrintManager::GetInstance()->PrintLogLine(
-                    member->GetName() + "의 EXP: " +
+        PrintManager::GetInstance()->PrintLogLine(
+         member->GetName() + "의 EXP: " +
                 std::to_string(member->GetExp()) + "/" +
-                std::to_string(member->GetMaxExp()));
-            }
+      std::to_string(member->GetMaxExp()));
+     }
         }
         PrintManager::GetInstance()->EndLine();
     }
@@ -216,11 +256,11 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
         PrintManager::GetInstance()->PrintLog(mainPlayer->GetName() + "은(는) ");
         PrintManager::GetInstance()->PrintColorText(std::to_string(Gold), ETextColor::YELLOW);
         PrintManager::GetInstance()->PrintLogLine("G를 획득했습니다.");
-        mainPlayer->GainGold(Gold);
+    mainPlayer->GainGold(Gold);
         PrintManager::GetInstance()->PrintLog(mainPlayer->GetName() + "의 소지 골드량은 ");
         PrintManager::GetInstance()->PrintColorText(std::to_string(mainPlayer->GetGold()) + " G", ETextColor::YELLOW);
         PrintManager::GetInstance()->PrintLogLine("입니다.");
-    }
+ }
 
     // ===== 아이템: 메인 플레이어 인벤토리에만 추가 =====
     if (DroppedItem && mainPlayer)
@@ -229,7 +269,7 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
 
         // 메인 플레이어 인벤토리 접근
         Inventory* inventory = nullptr;
-        if (!mainPlayer->TryGetInventory(inventory))
+    if (!mainPlayer->TryGetInventory(inventory))
         {
         PrintManager::GetInstance()->PrintLogLine(
         mainPlayer->GetName() + "은(는) 인벤토리가 없어 아이템을 얻지 못했습니다.",
@@ -238,100 +278,224 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
         return;
         }
 
-        int Remain;
+    int Remain;
         if (inventory->AddItem(std::move(DroppedItem), 1, Remain))
         {
-            PrintManager::GetInstance()->PrintLogLine(
-                mainPlayer->GetName() + "은(는) " + ItemName + "을 보상으로 얻었습니다.",
-                ELogImportance::DISPLAY); 
-        }
+    PrintManager::GetInstance()->PrintLogLine(
+           mainPlayer->GetName() + "은(는) " + ItemName + "을 보상으로 얻었습니다.",
+  ELogImportance::DISPLAY);
+      }
         else
         {
-            PrintManager::GetInstance()->PrintLogLine(
-                mainPlayer->GetName() + "은(는) 인벤토리가 가득 차 있어 아이템을 얻지 못했습니다.",
-                ELogImportance::WARNING);
+   PrintManager::GetInstance()->PrintLogLine(
+      mainPlayer->GetName() + "은(는) 인벤토리가 가득 차 있어 아이템을 얻지 못했습니다.",
+            ELogImportance::WARNING);
         }
-        PrintManager::GetInstance()->PrintLogLine("");
+     PrintManager::GetInstance()->PrintLogLine("");
     }
 
     ===== 레거시 코드 끝 ===== */
 }
 
-// ===== 레거시 인터페이스 (하위 호환용 - 제거 예정) =====
+// ========================================
+// ===== Scene 기반 신규 인터페이스 =====
+// ========================================
 
-bool BattleManager::StartAutoBattle(Player* P)
+bool BattleManager::StartBattle(EBattleType type)
 {
-    if (!P) return false;
+    // TODO: 팀원 구현 필요
+    // 1. 이미 전투 중이면 false 반환
+  // 2. GameManager에서 메인 플레이어 가져오기
+    // 3. 플레이어 레벨 기반으로 몬스터 생성
+    //    - Normal: DataManager::GetRandomStageAndMonster() → NormalMonster 생성
+ //    - Boss: Boss 생성
+  // 4. _CurrentMonster, _BattleType, _IsBattleActive, _Result 초기화
+    // 5. _CurrentRound = 0, _ItemReservations.clear() 초기화
+    // 6. 성공 시 true 반환
 
-    DataManager* dm = DataManager::GetInstance();
-    auto [stage, monsterName] = dm->GetRandomStageAndMonster();
-    if (stage.empty() || monsterName.empty()) return false;
-
-    auto NM = std::make_unique<NormalMonster>(P->GetLevel(), stage, monsterName);
-    ICharacter* Target = NM.get();
-    PrintManager::GetInstance()->PrintLogLine(NM->GetStage());
-    PrintManager::GetInstance()->PrintLogLine(Target->GetName() + "이(가) 출현했습니다.. ");
-
-    while (true)
-    {
-        // === 플레이어 턴 ===
-        ProcessTurn(P, Target);
-        if (Target->IsDead())
-        {
-            // 플레이어 승리
-            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) " + Target->GetName() + "를 쓰러뜨렸습니다!!");
-            CalculateReward(P, dynamic_cast<IMonster*>(Target));
-            P->ResetBuffs();
-            return true;
-        }
-
-        // === 몬스터 턴 ===
-        ProcessAttack(Target, P);
-        if (P->IsDead())
-        {
-            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) 패배했습니다...");
-            P->ResetBuffs();
-            return false;
-        }
-
-        // === 라운드 종료 ===
-        P->ProcessRoundEnd();
-    }
+    return false;  // TODO: 구현 후 실제 결과 반환
 }
 
-bool BattleManager::StartBossBattle(Player* P)
+void BattleManager::EndBattle()
 {
-    if (!P) return false;
+    // TODO: 팀원 구현 필요
+    // 1. 전투 중이 아니면 즉시 반환
+    // 2. GameManager에서 파티 가져오기
+// 3. 모든 파티원 버프 초기화 (ResetBuffs)
+    // 4. 승리 시 CalculateReward 호출
+    // 5. GameManager::RemoveDeadCompanions() 호출
+    // 6. 예약 목록 정리: 모든 예약된 아이템 CancelReservation() 호출
+    // 7. _ItemReservations.clear(), _CurrentRound = 0
+    // 8. _CurrentMonster.reset(), _BattleType = None, _IsBattleActive = false
+}
 
-    std::unique_ptr<Boss> boss = std::make_unique<Boss>(P->GetLevel());
+bool BattleManager::ProcessBattleTurn()
+{
+    // TODO: 팀원 구현 필요
+    // 1. 전투 중이 아니거나 몬스터가 없으면 false 반환
+    // 2. _CurrentRound++ (라운드 증가)
+    // 3. ProcessReservedItems() 호출 (예약된 아이템 자동 처리)
+    // 4. GameManager에서 메인 플레이어 가져오기
+    // 5. 플레이어 턴: ProcessTurn(Player, Monster)
+    // 6. 몬스터 사망 확인
+    //- 사망 시: _Result.Victory = true, IsCompleted = true, 승리 메시지 출력, false 반환
+    // 7. 몬스터 턴: ProcessAttack(Monster, Player)
+    // 8. 플레이어 사망 확인
+    //    - 사망 시: _Result.Victory = false, IsCompleted = true, 패배 메시지 출력, false 반환
+    // 9. 라운드 종료: 파티 전체 ProcessRoundEnd()
+    // 10. 전투 계속: true 반환
 
-    ICharacter* Target = boss.get();
-    PrintManager::GetInstance()->PrintLogLine("보스 출현");
-    PrintManager::GetInstance()->PrintLogLine(boss->GetStage());
-    PrintManager::GetInstance()->PrintLogLine(Target->GetName() + "이(가) 출현했습니다.. ");
+    return false;  // TODO: 구현 후 실제 결과 반환
+}
 
-    while (true)
-    {
-        // === 플레이어 턴 ===
-        ProcessTurn(P, Target);
-        if (Target->IsDead())
-        {
-            // 플레이어 승리
-            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) " + Target->GetName() + "를 쓰러뜨렸습니다!!");
-            P->ResetBuffs();
+// ========================================
+// ===== 아이템 예약 시스템 =====
+// ========================================
+
+bool BattleManager::ReserveItemUse(Player* player, int slotIndex)
+{
+    if (!player) {
+        PrintManager::GetInstance()->PrintLogLine("플레이어가 유효하지 않습니다.", ELogImportance::WARNING);
+        return false;
+    }
+
+    // 인벤토리 확인
+    Inventory* inventory = nullptr;
+    if (!player->TryGetInventory(inventory)) {
+        PrintManager::GetInstance()->PrintLogLine("인벤토리가 없습니다.", ELogImportance::WARNING);
+        return false;
+    }
+
+    // 슬롯 유효성 검증
+    IItem* item = inventory->GetItemAtSlot(slotIndex);
+    if (!item) {
+        PrintManager::GetInstance()->PrintLogLine("해당 슬롯에 아이템이 없습니다.", ELogImportance::WARNING);
+        return false;
+    }
+
+    // 이미 예약되어 있는지 확인
+    if (item->IsReserved()) {
+        PrintManager::GetInstance()->PrintLogLine(
+            item->GetName() + "은(는) 이미 예약되어 있습니다.",
+            ELogImportance::WARNING
+        );
+        return false;
+    }
+
+    // 예약 등록
+    item->Reserve(_CurrentRound);
+    _ItemReservations.push_back({ slotIndex, player, true });
+
+    PrintManager::GetInstance()->PrintLogLine(
+        item->GetName() + " 사용 예약 완료! (조건: " +
+        item->GetUseConditionDescription() + ")",
+        ELogImportance::DISPLAY
+    );
+
+    return true;
+}
+
+bool BattleManager::CancelItemReservation(Player* player, int slotIndex)
+{
+    if (!player) return false;
+
+    Inventory* inventory = nullptr;
+    if (!player->TryGetInventory(inventory)) return false;
+
+    IItem* item = inventory->GetItemAtSlot(slotIndex);
+    if (!item || !item->IsReserved()) {
+        PrintManager::GetInstance()->PrintLogLine(
+            "해당 슬롯에 예약된 아이템이 없습니다.",
+            ELogImportance::WARNING
+        );
+        return false;
+    }
+
+    // 예약 목록에서 제거
+    for (auto& reservation : _ItemReservations) {
+        if (reservation.User == player &&
+            reservation.SlotIndex == slotIndex &&
+            reservation.IsActive) {
+
+            reservation.IsActive = false;
+            item->CancelReservation();
+
+            PrintManager::GetInstance()->PrintLogLine(
+                item->GetName() + " 예약이 취소되었습니다.",
+                ELogImportance::DISPLAY
+            );
             return true;
         }
+    }
 
-        // === 몬스터 턴 ===
-        ProcessAttack(Target, P);
-        if (P->IsDead())
-        {
-            PrintManager::GetInstance()->PrintLogLine(P->GetName() + "이(가) 패배했습니다...");
-            P->ResetBuffs();
-            return false;
+    return false;
+}
+
+void BattleManager::ProcessReservedItems()
+{
+    if (_ItemReservations.empty()) return;
+
+    PrintManager::GetInstance()->EndLine();
+    PrintManager::GetInstance()->PrintLogLine("=== 예약된 아이템 처리 중 ===", ELogImportance::DISPLAY);
+
+    // 활성화된 예약만 처리
+    for (auto& reservation : _ItemReservations) {
+        if (!reservation.IsActive) continue;
+
+        Player* user = reservation.User;
+        Inventory* inventory = nullptr;
+
+        if (!user->TryGetInventory(inventory)) continue;
+
+        // 아이템 가져오기
+        IItem* item = inventory->GetItemAtSlot(reservation.SlotIndex);
+        if (!item) {
+            // 아이템이 사라짐 → 예약 취소
+            PrintManager::GetInstance()->PrintLogLine(
+                "슬롯 [" + std::to_string(reservation.SlotIndex) + "]의 아이템이 없어져 예약이 취소되었습니다.",
+                ELogImportance::WARNING
+            );
+            reservation.IsActive = false;
+            continue;
         }
 
-        // === 라운드 종료 ===
-        P->ProcessRoundEnd();
+        // ===== 조건 체크 (IItem::CanUse) =====
+        if (!item->CanUse(*user, _CurrentRound)) {
+            // 조건 불만족 → 예약 유지 (다음 턴 재시도)
+            PrintManager::GetInstance()->PrintLogLine(
+                item->GetName() + " - 조건 미달 (" +
+                item->GetUseConditionDescription() + ") → 대기 중",
+                ELogImportance::DISPLAY
+            );
+            continue;
+        }
+
+        // ===== 조건 만족 → 자동 사용 =====
+        PrintManager::GetInstance()->PrintLogLine(
+            ">>> " + user->GetName() + "의 " + item->GetName() + " 자동 사용! (" +
+            item->GetUseConditionDescription() + " 만족)",
+            ELogImportance::DISPLAY
+        );
+
+        // 효과 적용
+        item->ApplyEffect(*user);
+
+        // 인벤토리에서 제거
+        inventory->RemoveItem(reservation.SlotIndex, 1);
+
+        // 예약 취소
+        item->CancelReservation();
+
+        // 예약 완료 → 비활성화
+        reservation.IsActive = false;
     }
+
+    // 비활성화된 예약 정리
+    _ItemReservations.erase(
+        std::remove_if(_ItemReservations.begin(), _ItemReservations.end(),
+            [](const ItemReservation& r) { return !r.IsActive; }),
+        _ItemReservations.end()
+    );
+
+    PrintManager::GetInstance()->EndLine();
 }

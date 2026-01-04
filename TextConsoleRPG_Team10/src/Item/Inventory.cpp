@@ -76,6 +76,20 @@ IItem* Inventory::GetItemAtSlot(int SlotIndex) const
     return _Slots[SlotIndex].GetItem();
 }
 
+/// <summary>
+/// 아이템 사용 가능 여부 체크
+/// 슬롯의 아이템이 현재 조건을 만족하는지 확인
+/// </summary>
+bool Inventory::CanUseItem(int SlotIndex, const Player& player, int currentRound) const
+{
+    IItem* item = GetItemAtSlot(SlotIndex);
+    if (!item) {
+        return false; // 아이템 없음
+    }
+    
+    return item->CanUse(player, currentRound);
+}
+
 // 아이템 인벤토리에 추가
 // return: 모두 추가 성공 시 true, 일부만 추가되면 false
 // remain: 인벤토리에 다 못 넣은 남은 개수(ref out)

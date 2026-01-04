@@ -13,3 +13,22 @@ std::unique_ptr<IItem> AttackUp::Clone() const
     // 각 슬롯이 독립적인 아이템 객체를 소유하도록 함
     return std::make_unique<AttackUp>();
 }
+
+bool AttackUp::CanUse(const Player& player, int currentRound) const
+{
+    // 예약되지 않았으면 사용 불가
+    if (!IsReserved()) {
+        return false;
+    }
+    
+    // 예약 후 경과한 턴 수 계산
+    int turnsSinceReserved = currentRound - GetReservedRound();
+  
+    // 예약 후 1턴 경과 시 사용 가능
+  return turnsSinceReserved >= 1;
+}
+
+std::string AttackUp::GetUseConditionDescription() const
+{
+    return "예약 후 1턴 경과";
+}
