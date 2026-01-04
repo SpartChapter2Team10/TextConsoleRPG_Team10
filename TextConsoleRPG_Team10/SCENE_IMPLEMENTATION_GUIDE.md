@@ -6,9 +6,10 @@
 3. [구현해야 할 Scene 목록](#-구현해야-할-scene-목록)
 4. [Scene 구현 단계별 가이드](#-scene-구현-단계별-가이드)
 5. [Manager 활용 방법](#-manager-활용-방법)
-6. [**Scene 진행 중 동적 업데이트**](#-scene-진행-중-동적-업데이트) ⭐ **NEW**
-7. [실전 예제](#-실전-예제)
-8. [주의사항 및 팁](#-주의사항-및-팁)
+6. [**Scene 진행 중 동적 업데이트**](#-scene-진행-중-동적-업데이트) ⭐
+7. [**아이템 예약 시스템**](#-아이템-예약-시스템) ⭐ **NEW**
+8. [실전 예제](#-실전-예제)
+9. [주의사항 및 팁](#-주의사항-및-팁)
 
 ---
 
@@ -461,7 +462,7 @@ void BattleScene::ChangeMonsterAnimation(const std::string& animType)
     {
         artRenderer->LoadAnimationFromFolder(
       dm->GetResourcePath("Animations") + "/MonsterAttack", 
-  0.2f  // 빠른 공격 애니메이션 (0.2초/프레임)
+         0.2f  // 빠른 공격 애니메이션 (0.2초/프레임)
      );
   }
     else if (animType == "idle")
@@ -1156,140 +1157,441 @@ if (!result.ItemName.empty())
 
 ---
 
-## ⚠️ 주의사항 및 팁
+## 🎒 아이템 예약 시스템
 
-### 필수 체크리스트
+### 개요
 
-- [ ] `_IsActive = true` 설정 (Enter)
-- [ ] `_IsActive = false` 설정 (Exit)
-- [ ] `_Drawer->RemoveAllPanels()` 호출 (Exit)
-- [ ] Panel ID를 고유하게 설정
-- [ ] dynamic_cast 시 nullptr 체크
-- [ ] Scene 전환 전 `Exit()` 호출
+플레이어가 전투 중 아이템 사용을 **미리 예약**하고, 조건이 만족되면 **자동으로 사용**되는 시스템입니다.
 
-### 일반적인 실수
+### 핵심 개념
 
-#### ❌ 잘못된 예
 ```cpp
-void MyScene::Enter()
-{
-    // _IsActive 설정 누락!
-    _Drawer->CreatePanel(...);
+// 아이템은 "예약 상태"를 가짐
+IItem* item = inventory->GetItemAtSlot(slotIndex);
+
+// 1. 예약 등록 (BattleManager가 호출)
+item->Reserve(currentRound);  // 현재 라운드 기록
+
+// 2. 예약 상태 확인
+if (item->IsReserved()) {
+    // 예약되어 있음!
 }
 
-void MyScene::Exit()
-{
-    // 패널 제거 누락!
-    _IsActive = false;
+// 3. 조건 체크 (매 라운드마다)
+if (item->CanUse(player, currentRound)) {
+    // 조건 만족 → 자동 사용
+    item->ApplyEffect(player);
+    item->CancelReservation();
 }
+
+// 4. 예약 취소
+item->CancelReservation();
 ```
 
-#### ✅ 올바른 예
+---
+
+### IItem 인터페이스
+
 ```cpp
-void MyScene::Enter()
-{
-    _Drawer->ClearScreen();
-    _Drawer->RemoveAllPanels();
-    _Drawer->Activate();
-    _IsActive = true;  // ← 필수!
+class IItem {
+protected:
+    mutable int _ReservedAtRound = -1;  // 예약된 라운드 (-1 = 예약 안 됨)
     
-    // UI 구성...
+public:
+    // 예약 등록
+    // reservedRound: 예약된 라운드 번호
+    void Reserve(int reservedRound) const;
+
+    // 예약 취소
+    void CancelReservation() const;
+    
+    // 예약 여부 확인
+    // return: 예약되어 있으면 true
+    bool IsReserved() const;
+    
+    // 예약된 라운드 반환
+    // return: 예약된 라운드 (-1이면 예약 안 됨)
+    int GetReservedRound() const;
+    
+  // 아이템 사용 가능 여부 판단
+    // player: 사용자
+    // currentRound: 현재 라운드 (0부터 시작)
+    // return: 사용 가능하면 true
+    virtual bool CanUse(const Player& player, int currentRound) const = 0;
+    
+  // 사용 조건 설명 반환
+    // return: 조건 설명 문자열 (UI 표시용)
+    virtual std::string GetUseConditionDescription() const = 0;
+};
+```
+
+---
+
+### 아이템별 조건 구현 예시
+
+#### 1. HealPotion - HP 30% 이하
+
+```cpp
+bool HealPotion::CanUse(const Player& player, int currentRound) const
+{
+    // 예약되지 않았으면 사용 불가
+    if (!IsReserved()) {
+        return false;
+    }
+    
+    // HP 30% 이하일 때만 사용 가능 (턴 무관)
+    return player.GetCurrentHP() <= player.GetMaxHP() * 0.3;
 }
 
-void MyScene::Exit()
+std::string HealPotion::GetUseConditionDescription() const
 {
-    _Drawer->RemoveAllPanels();  // ← 필수!
-    _IsActive = false;
+    return "HP 30% 이하";
 }
 ```
 
-### 유용한 팁
+#### 2. AttackUp - 예약 후 1턴 경과
 
-#### 1. 패널 재사용
 ```cpp
-// 패널 가져오기
-Panel* panel = _Drawer->GetPanel("MyPanel");
-if (panel)
+bool AttackUp::CanUse(const Player& player, int currentRound) const
 {
-    TextRenderer* text = dynamic_cast<TextRenderer*>(panel->GetContentRenderer());
-    if (text)
- {
-        text->AddLine("새 내용");
-        panel->Redraw();
+{
+// 예약되지 않았으면 사용 불가
+    if (!IsReserved()) {
+     return false;
+    }
+    
+    // 예약 후 경과한 턴 수 계산
+  int turnsSinceReserved = currentRound - GetReservedRound();
+    
+    // 예약 후 1턴 경과 시 사용 가능
+    return turnsSinceReserved >= 1;
+}
+
+std::string AttackUp::GetUseConditionDescription() const
+{
+    return "예약 후 1턴 경과";
+}
+```
+
+#### 3. 복합 조건 예시 - HP 50% 이하 + 2턴 경과
+
+```cpp
+bool ShieldDefense::CanUse(const Player& player, int currentRound) const
+{
+    if (!IsReserved()) {
+        return false;
+    }
+    
+    // HP 조건
+    bool hpCondition = player.GetCurrentHP() <= player.GetMaxHP() * 0.5;
+    
+    // 턴 조건
+    int turnsSinceReserved = currentRound - GetReservedRound();
+    bool turnCondition = turnsSinceReserved >= 2;
+    
+  // 둘 다 만족해야 사용 가능
+    return hpCondition && turnCondition;
+}
+
+std::string ShieldDefense::GetUseConditionDescription() const
+{
+    return "HP 50% 이하 + 예약 후 2턴 경과";
+}
+```
+
+---
+
+### BattleManager 구현 가이드
+
+#### 예약 구조체
+
+```cpp
+// BattleManager.h
+struct ItemReservation {
+  int SlotIndex;        // 인벤토리 슬롯 인덱스
+  Player* User;   // 사용자
+    bool IsActive;      // 예약 활성화 여부
+};
+
+class BattleManager {
+private:
+    int _CurrentRound = 0;  // 현재 라운드
+    std::vector<ItemReservation> _ItemReservations;  // 예약 목록  
+public:
+    // 아이템 사용 예약
+    // player: 사용자
+    // slotIndex: 예약할 슬롯 인덱스
+    // return: 예약 성공 시 true
+    bool ReserveItemUse(Player* player, int slotIndex);
+    
+    // 예약 취소
+    // player: 사용자
+    // slotIndex: 취소할 슬롯
+    // return: 취소 성공 시 true
+    bool CancelItemReservation(Player* player, int slotIndex);
+    
+    // 예약된 아이템 처리 (턴 시작 시 내부 호출)
+    void ProcessReservedItems();
+    
+ // 현재 라운드 반환
+    int GetCurrentRound() const { return _CurrentRound; }
+};
+```
+
+#### 예약 등록 구현
+
+```cpp
+bool BattleManager::ReserveItemUse(Player* player, int slotIndex)
+{
+    if (!player) return false;
+    
+    Inventory* inventory = nullptr;
+    if (!player->TryGetInventory(inventory)) {
+        PrintManager::GetInstance()->PrintLogLine("인벤토리가 없습니다.");
+        return false;
+    }
+    
+    // 슬롯 유효성 검증
+    IItem* item = inventory->GetItemAtSlot(slotIndex);
+    if (!item) {
+        PrintManager::GetInstance()->PrintLogLine("해당 슬롯에 아이템이 없습니다.");
+        return false;
+    }
+    
+    // 이미 예약되어 있는지 확인
+    if (item->IsReserved()) {
+PrintManager::GetInstance()->PrintLogLine("이미 예약된 아이템입니다.");
+ return false;
+    }
+    
+    // 예약 등록
+    item->Reserve(_CurrentRound);
+    _ItemReservations.push_back({slotIndex, player, true});
+    
+    PrintManager::GetInstance()->PrintLogLine(
+        item->GetName() + " 사용 예약 완료! (" + 
+        item->GetUseConditionDescription() + ")"
+    );
+    
+    return true;
+}
+```
+
+#### 예약 취소 구현
+
+```cpp
+bool BattleManager::CancelItemReservation(Player* player, int slotIndex)
+{
+    if (!player) return false;
+    
+    Inventory* inventory = nullptr;
+    if (!player->TryGetInventory(inventory)) return false;
+    
+    IItem* item = inventory->GetItemAtSlot(slotIndex);
+    if (!item || !item->IsReserved()) return false;
+    
+    // 예약 목록에서 제거
+    for (auto& reservation : _ItemReservations) {
+        if (reservation.User == player && 
+        reservation.SlotIndex == slotIndex && 
+          reservation.IsActive) {
+  reservation.IsActive = false;
+  item->CancelReservation();
+         
+  PrintManager::GetInstance()->PrintLogLine(
+  item->GetName() + " 예약이 취소되었습니다."
+    );
+         return true;
+        }
+    }
+    
+    return false;
+}
+```
+
+#### 예약 처리 구현 (핵심!)
+
+```cpp
+void BattleManager::ProcessReservedItems()
+{
+    if (_ItemReservations.empty()) return;
+    
+    // 활성화된 예약만 처리
+    for (auto& reservation : _ItemReservations) {
+        if (!reservation.IsActive) continue;
+        
+   Player* user = reservation.User;
+        Inventory* inventory = nullptr;
+        
+        if (!user->TryGetInventory(inventory)) continue;
+   
+        // 아이템 가져오기
+        IItem* item = inventory->GetItemAtSlot(reservation.SlotIndex);
+    if (!item) {
+      // 아이템이 사라짐 → 예약 취소
+      reservation.IsActive = false;
+            continue;
+        }
+   
+        // ===== 조건 체크 (IItem::CanUse) =====
+   if (!item->CanUse(*user, _CurrentRound)) {
+            // 조건 불만족 → 예약 유지 (다음 턴 재시도)
+  continue;
+        }
+      
+     // ===== 조건 만족 → 자동 사용 =====
+        PrintManager::GetInstance()->PrintLogLine(
+     user->GetName() + "의 " + item->GetName() + " 자동 사용! (" +
+            item->GetUseConditionDescription() + " 만족)"
+    );
+        
+        item->ApplyEffect(*user);
+        inventory->RemoveItem(reservation.SlotIndex, 1);
+   item->CancelReservation();
+        
+    // 예약 완료 → 비활성화
+      reservation.IsActive = false;
+    }
+    
+    // 비활성화된 예약 정리
+    _ItemReservations.erase(
+        std::remove_if(_ItemReservations.begin(), _ItemReservations.end(),
+   [](const ItemReservation& r) { return !r.IsActive; }),
+    _ItemReservations.end()
+    );
+}
+```
+
+#### 전투 턴 처리에 통합
+
+```cpp
+bool BattleManager::ProcessBattleTurn()
+{
+    // 라운드 시작
+    _CurrentRound++;
+    
+    // ===== 1. 예약된 아이템 먼저 처리 =====
+    ProcessReservedItems();
+    
+    // ===== 2. 플레이어 턴 =====
+    ProcessTurn(player, monster);
+    
+    // ===== 3. 몬스터 턴 =====
+    ProcessAttack(monster, player);
+    
+    // ===== 4. 라운드 종료 =====
+    player->ProcessRoundEnd();
+    
+    return !isGameOver;
+}
+```
+
+---
+
+### Inventory 헬퍼 메서드
+
+```cpp
+// Inventory.h
+// 아이템 사용 가능 여부 체크
+// SlotIndex: 슬롯 인덱스
+// player: 사용자
+// currentRound: 현재 라운드
+// return: 사용 가능하면 true
+bool CanUseItem(int SlotIndex, const Player& player, int currentRound) const;
+```
+
+```cpp
+// Inventory.cpp
+bool Inventory::CanUseItem(int SlotIndex, const Player& player, int currentRound) const
+{
+    IItem* item = GetItemAtSlot(SlotIndex);
+    if (!item) {
+        return false;  // 아이템 없음
+    }
+    
+    return item->CanUse(player, currentRound);
+}
+```
+
+---
+
+### 사용 예시 (BattleScene)
+
+```cpp
+void BattleScene::HandleInput()
+{
+    InputManager* input = InputManager::GetInstance();
+    BattleManager* bm = BattleManager::GetInstance();
+    Player* player = SceneManager::GetInstance()->GetPlayer();
+    
+    int choice = input->GetIntInput(
+        "[1] 공격 [2] 아이템 예약 [3] 예약 취소: ", 1, 3
+    );
+    
+    if (choice == 2) {
+        // 아이템 예약
+        Inventory* inventory = nullptr;
+        if (player->TryGetInventory(inventory)) {
+    // 인벤토리 표시 (생략)
+            
+       int slotIndex = input->GetIntInput("예약할 슬롯 번호: ", 0, 9);
+ 
+    if (bm->ReserveItemUse(player, slotIndex)) {
+        // 예약 성공!
+       } else {
+                // 예약 실패 (조건 표시)
+   IItem* item = inventory->GetItemAtSlot(slotIndex);
+      if (item) {
+    PrintManager::GetInstance()->PrintLogLine(
+            "사용 조건: " + item->GetUseConditionDescription()
+       );
+       }
+     }
+ }
+    }
+    else if (choice == 3) {
+        // 예약 취소
+        int slotIndex = input->GetIntInput("취소할 슬롯 번호: ", 0, 9);
+        bm->CancelItemReservation(player, slotIndex);
     }
 }
 ```
 
-#### 2. 입력 검증 활용
-```cpp
-// InputManager가 자동으로 검증
-int choice = input->GetIntInput("선택 (1-5): ", 1, 5);
-// 1~5 외 입력 시 자동으로 재입력 요청
-```
+---
 
-#### 3. 색상 Enum 사용
-```cpp
-#include "include/Common/TextColor.h"
+### 예약 시스템 체크리스트
 
-panel->SetBorder(true, static_cast<WORD>(ETextColor::LIGHT_YELLOW));
-textRenderer->SetTextColor(static_cast<WORD>(ETextColor::LIGHT_GREEN));
-```
+**IItem 구현 시:**
+- [ ] `_ReservedAtRound` 초기값 -1 확인
+- [ ] `CanUse`에서 `IsReserved()` 체크
+- [ ] 턴 기반 조건은 `currentRound - GetReservedRound()` 사용
+- [ ] `GetUseConditionDescription()` 명확하게 작성
 
-#### 4. 디버깅
-```cpp
-// 디버그 패널 만들기
-Panel* debugPanel = _Drawer->CreatePanel("Debug", 0, 0, 50, 10);
-auto debugText = std::make_unique<TextRenderer>();
-debugText->AddLine("Debug: value=" + std::to_string(value));
-debugPanel->SetContentRenderer(std::move(debugText));
-```
+**BattleManager 구현 시:**
+- [ ] `ProcessReservedItems()`를 턴 시작 시 호출
+- [ ] 예약 시 `item->Reserve(currentRound)` 호출
+- [ ] 조건 만족 후 `item->CancelReservation()` 호출
+- [ ] 비활성화된 예약 정리 (`erase-remove idiom`)
+
+**디버깅:**
+- [ ] `item->IsReserved()` 상태 확인
+- [ ] `item->GetReservedRound()` 값 확인
+- [ ] 조건 미달 시 로그 출력
 
 ---
 
-## 📞 추가 리소스
+### 아이템 조건 예시 테이블
 
-### 문서
-- **[UIDrawer_TestExample_README.md](./UIDrawer_TestExample_README.md)**: UIDrawer 사용 예제
-- **[UIDrawer_Flowchart.md](./UIDrawer_Flowchart.md)**: 렌더링 파이프라인
-
-### 참고 파일
-| 파일 | 설명 |
-|------|------|
-| `src/UI/Scenes/MainMenuScene.cpp` | Scene 구현 예제 |
-| `src/UI/Scenes/PlayerNameInputScene.cpp` | 입력 처리 예제 |
-| `include/Manager/BattleManager.h` | 전투 관리 API |
-| `include/Manager/ShopManager.h` | 상점 관리 API |
+| 아이템명 | 효과 | 사용 조건 | 구현 코드 |
+|---------|------|-----------|-----------|
+| HP회복 포션 | HP +50 | HP 30% 이하 | `player.GetCurrentHP() <= player.GetMaxHP() * 0.3` |
+| 드워프의 맥주 | ATK +10 | 예약 후 1턴 경과 | `currentRound - GetReservedRound() >= 1` |
+| 광휘의 방패 | DEF +15 | HP 50% 이하 | `player.GetCurrentHP() <= player.GetMaxHP() * 0.5` |
+| 집중의 룬 | 민첩 +20 | 전투 시작 시 | `currentRound == GetReservedRound()` |
+| 행운의 부적 | 운 +10 | 50% 랜덤 | `(rand() % 100) < 50` |
+| 요정의 정수 | MP +40 | MP 40% 이하 | `player.GetCurrentMP() <= player.GetMaxMP() * 0.4` |
+| 타이탄의 각성제 | ATK+5, DEF+5 | HP 50% 이하 | `player.GetCurrentHP() <= player.GetMaxHP() * 0.5` |
 
 ---
 
-## 🎯 구현 순서 권장
-
-1. **CharacterSelectScene** (가장 간단)
-   - 직업 선택만 구현
-- 입력 처리 연습
-
-2. **StageSelectScene** (중급)
-   - 스테이지 목록 표시
-   - Scene 전환 연습
-
-3. **ShopScene** (중급)
-   - ShopManager 연동
-   - 동적 UI 업데이트
-
-4. **BattleScene** (고급)
-   - BattleManager 연동
-   - 턴 기반 업데이트
-   - 전투 로직 통합
-
-5. **나머지 Scene** (선택)
-   - CompanionRecruitScene
-   - StoryProgressScene
-   - ResultScene
-
----
-
-**작성일**: 2025-01-28  
-**버전**: 1.0  
-**작성자**: Development Team  
-
-**질문이나 문제가 있으면 팀 채팅방에서 문의하세요!** 🚀
+## 💡 실전 예제
