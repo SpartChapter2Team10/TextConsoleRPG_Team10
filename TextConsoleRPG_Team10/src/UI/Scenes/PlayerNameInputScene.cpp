@@ -137,5 +137,5 @@ void PlayerNameInputScene::ShowConfirmation()
     Exit();
 
     // BattleScene 테스트를 위해 바로 전환
-    SceneManager::GetInstance()->ChangeScene(ESceneType::Battle);
+    SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
 }
