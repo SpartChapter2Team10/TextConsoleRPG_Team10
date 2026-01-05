@@ -10,6 +10,8 @@
 #include "../../../include/Manager/StageManager.h"
 #include "../../../include/Manager/SoundPlayer.h"
 #include "../../../include/Common/TextColor.h"
+#include "../../../include/Unit/Player.h"
+#include <memory>
 
 StoryProgressScene::StoryProgressScene()
     : UIScene("StoryProgress")
@@ -28,11 +30,14 @@ void StoryProgressScene::Enter()
     _Drawer->RemoveAllPanels();
     _Drawer->Activate();
     _IsActive = true;
-    
+
     // 출력할 스토리 텍스트 가져오기
-    GetStoriesData();
+    int Floor = StageManager::GetInstance()->GetCurrentFloor();
+    GetStoriesData(Floor);
+
     // BGM 변경
-    SoundPlayer::GetInstance()->PlayBGM(_BGMID);
+    std::string BGMID = "BGM_" + std::to_string(Floor);
+    SoundPlayer::GetInstance()->PlayBGM(BGMID);
 
     // =============================================================================
     // 패널 레이아웃 (150x45 화면 기준)
@@ -70,8 +75,7 @@ void StoryProgressScene::Enter()
     std::string UIPath = DataManager::GetInstance()->GetResourcePath("UI");
     
      // _CurrentStoryIndex에 따라 파일명 결정 (예: "Story1.txt", "Story2.txt")
-     //std::string fileName = "Story" + std::to_string(_CurrentStoryIndex + 1) + ".txt";
-    std::string FileName = "Sewer.txt";
+    std::string FileName = "Story" + std::to_string(Floor) + ".txt";
     if (ArtRenderer->LoadFromFile(UIPath, FileName)) {
         ArtRenderer->SetAlignment(ArtAlignment::CENTER);
         ArtRenderer->SetColor(ETextColor::LIGHT_CYAN);
@@ -84,12 +88,12 @@ void StoryProgressScene::Enter()
     TextPanel->SetBorder(true, ETextColor::LIGHT_CYAN);
 
     auto StoryText = std::make_unique<TextRenderer>();
-   /* StoryText->AddLine("");
-    StoryText->AddLineWithColor("    스토리 텍스트",
-        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
-    StoryText->AddLine("");
-    StoryText->AddLine("  → 1~2 문장씩 출력하여 출력되게끔");
-    StoryText->AddLine("");*/
+    //StoryText->AddLine("");
+    //StoryText->AddLineWithColor("    스토리 텍스트",
+    //    MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+    //StoryText->AddLine("");
+    //StoryText->AddLine("  → 1~2 문장씩 출력하여 출력되게끔");
+    //StoryText->AddLine("");
 
     // textPanel->SetContentRenderer(std::move(storyText));
     // textPanel->Redraw();
@@ -105,31 +109,16 @@ void StoryProgressScene::Enter()
     // storyText->AddLine("");
     // storyText->AddLineWithTyping("어둠의 탑 '에레보스'가 등장했다...", 
     // MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
-        
+    
+    // 자동 줄바꿈 활성화 및 너비 설정
+    StoryText->EnableAutoWrap(true);
+    StoryText->SetWrapWidth(96);
     // 타이핑 효과 활성화
     StoryText->EnableTypingEffect(true);
     StoryText->SetTypingSpeed(ETypingSpeed::Normal);
-    
-    // 플로어 설명 추가
-    StoryText->AddLineWithTyping(_StoryTexts[0][4],
-        static_cast<int>(ETextColor::LIGHT_YELLOW));
-
-    // 파티 여부에 따른 텍스트 추가
-    const auto& Party = GameManager::GetInstance()->GetParty();
-    if (Party.size() > 1)
-    {
-        StoryText->AddLineWithTyping(_StoryTexts[1][4]);
-    }
-    else
-    {
-        StoryText->AddLineWithTyping(_StoryTexts[2][4]);
-    }
-    StoryText->AddLineWithTyping(_StoryTexts[3][4]);
-
-    // Todo 파티(플레이어 제외) 내 직업에 따른 텍스트 출력
-
 
     TextPanel->SetContentRenderer(std::move(StoryText));
+    UpdateUIWithCurrentStory();
     TextPanel->Redraw();
         //
         // // CSV 파일에서 스토리 로드:
@@ -162,127 +151,129 @@ void StoryProgressScene::Render()
     // UIDrawer::Update()에서 자동 렌더링
 }
 
-void StoryProgressScene::HandleInput()
-{
-    
+void StoryProgressScene::HandleInput() {
     InputManager* input = InputManager::GetInstance();
     if (!input->IsKeyPressed()) return;
     int keyCode = input->GetKeyCode();
-    
-     if (keyCode == VK_SPACE || keyCode == VK_RETURN) {  // Space or Enter
-       // 타이핑 효과가 진행 중이면 즉시 완료
-         if (!_TextComplete) {
-           _TextComplete = true;
-             // 텍스트 즉시 표시
-             return;
-         }
-    
-         // 다음 스토리 단계로
-       _CurrentStoryIndex++;
-    
-         // 스토리 끝났으면 다음 씬으로
-     //    if (_CurrentStoryIndex >= 총스토리수) {
-     //SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
-     //    }
-     //    else {
-     //        // 이미지 패널 업데이트 (위의 TODO 참고)
-     // // 텍스트 패널 업데이트 (위의 TODO 참고)
-     //        _TextComplete = false;
-     //     _Drawer->Render();
-     //    }
-     }
-     else if (keyCode == VK_ESCAPE) {  // ESC - 스토리 스킵
-         SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
-     }
+
+    if (keyCode == VK_SPACE || keyCode == VK_RETURN) {
+        Panel* panel = _Drawer->GetPanel("StoryText");
+        auto* renderer = static_cast<TextRenderer*>(panel->GetContentRenderer());
+
+        // 1. 타이핑 중이면 스킵
+        if (!renderer->IsTypingFinished()) {
+            renderer->SkipTyping();
+        }
+        // 2. 타이핑이 끝났으면 다음 행으로
+        else {
+            _CurrentStoryIndex++;
+            if (_CurrentStoryIndex < _StoryTexts.size()) {
+                UpdateUIWithCurrentStory();
+            }
+            else {
+                // 더 이상 보여줄 데이터가 없으면 다음 씬으로
+                SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+            }
+        }
+        _Drawer->Render();
+    }
 }
 
-void StoryProgressScene::GetStoriesData()
+void StoryProgressScene::UpdateUIWithCurrentStory()
+{
+    if (_CurrentStoryIndex >= _StoryTexts.size()) return;
+
+    // 패널에서 렌더러 꺼내오기
+    Panel* panel = _Drawer->GetPanel("StoryText");
+    auto* renderer = static_cast<TextRenderer*>(panel->GetContentRenderer());
+
+    // CSV 구조: 0:ID, 1:Floor, 2:Type, 3:Speaker, 4:Content
+    const auto& row = _StoryTexts[_CurrentStoryIndex];
+    std::string Speaker = row[3];
+    std::string Content = row[4];
+
+    // 화자 이름 포맷팅 (예: [System] : ...)
+    std::string prefix = (Speaker == "System") ? "" : "[" + Speaker + "] : ";
+
+    std::vector<std::string> Lines;
+    SplitText(Lines, Content, "\\n");
+
+    for (const auto& Line : Lines) {
+        renderer->AddLineWithTyping(prefix + Line, (row[2] == "Desc" ? 14 : 15));
+    }
+}
+
+void StoryProgressScene::GetStoriesData(int FloorIndex)
 {
     if (DataManager::GetInstance())
     {
         const auto& Datas = DataManager::GetInstance()->LoadCSVFile(
             DataManager::GetInstance()->GetResourcePath("Stories"),
             "Stories.csv");
-        GetFloorData(StageManager::GetInstance()->GetCurrentFloor());
 
-        for (auto Row : Datas)
+        // 0번째는 Column 이름
+        for (int i = 1; i < Datas.size(); ++i)
         {
-            if (Row[1] == _FloorName)
+            if (stoi(Datas[i][1]) == FloorIndex)
             {
-                _StoryTexts.push_back(Row);
+                _StoryTexts.push_back(Datas[i]);
             }
         }
     }
 }
 
-void StoryProgressScene::GetFloorData(int FloorIndex)
+void StoryProgressScene::SplitText(std::vector<std::string>& OutList, const std::string& Content, const std::string& Delimiter)
 {
-    switch (FloorIndex)
+    OutList.clear();
+    if (Content.empty()) return;
+
+    std::string temp = "";
+    for (size_t i = 0; i < Content.length(); ++i)
     {
-        case 1:
+        // 1. 구분자(\\n) 검색: 역슬래시(\)를 만났을 때 다음 문자가 n인지 확인
+        if (Content[i] == '\\' && i + 1 < Content.length() && Content[i + 1] == 'n')
         {
-            _FloorName = "Sewer";
-            _BGMID = "BGM_Sewer";
+            OutList.push_back(temp);
+            temp.clear();
+            i++; // 'n' 위치까지 점프
+            continue;
         }
-        break;
-        case 2:
+
+        // 2. 한글 및 멀티바이트 보호
+        // 바이트 값이 128(0x80) 이상이면 한글의 일부입니다.
+        if (static_cast<unsigned char>(Content[i]) >= 0x80)
         {
-            _FloorName = "Mine";
-            _BGMID = "BGM_Mine";
+            temp += Content[i]; // 첫 바이트 저장
+            if (i + 1 < Content.length())
+            {
+                temp += Content[++i]; // 다음 바이트까지 세트로 저장 (한글 보존)
+            }
         }
-        break;
-        case 3:
+        else
         {
-            _FloorName = "Grave";
-            _BGMID = "BGM_Grave";
-        }
-        break;
-        case 4:
-        {
-            _FloorName = "Ruin";
-            _BGMID = "BGM_Ruin";
-        }
-        break;
-        case 5:
-        {
-            _FloorName = "Nest";
-            _BGMID = "BGM_Nest";
-        }
-        break;
-        case 6:
-        {
-            _FloorName = "SnowField";
-            _BGMID = "BGM_SnowField";
-        }
-        break;
-        case 7:
-        {
-            _FloorName = "BloodyMoon";
-            _BGMID = "BGM_BloodyMoon";
-        }
-        break;
-        case 8:
-        {
-            _FloorName = "Fog";
-            _BGMID = "BGM_Fog";
-        }
-        break;
-        case 9:
-        {
-            _FloorName = "Altar";
-            _BGMID = "BGM_Altar";
-        }
-        break;
-        case 10:
-        {
-            _FloorName = "Void";
-            _BGMID = "BGM_Void";
-        }
-        break;
-        default:
-        {
-            _FloorName = "Start";
-            _BGMID = "BGM_Start";
+            temp += Content[i]; // 영문, 숫자, 기호
         }
     }
+    if (!temp.empty()) OutList.push_back(temp);
 }
+
+std::vector<std::vector<std::string>>  StoryProgressScene::CheckPartyInfo()
+{
+    // 파티 정보 분석
+    const auto& PartyList = GameManager::GetInstance()->GetParty();
+    bool IsSolo = GameManager::GetInstance()->GetPartySize() == 1;
+
+    // 직업별 이름 저장용 (Warrior: 0, Mage: 1, Archer: 2, Priest: 3)
+    std::vector<std::vector<std::string>> NamePerJob(4);
+
+    //for (size_t i = 1; i < PartyList.size(); i++) // 0번 Player 제외
+    //{
+    //    if (dynamic_pointer_cast<Warrior>(PartyList[i])) NamePerJob[0].push_back(PartyList[i]->GetName());
+    //    else if (dynamic_pointer_cast<Mage>(PartyList[i])) NamePerJob[1].push_back(PartyList[i]->GetName());
+    //    else if (dynamic_pointer_cast<Archer>(PartyList[i])) NamePerJob[2].push_back(PartyList[i]->GetName());
+    //    else if (dynamic_pointer_cast<Priest>(PartyList[i])) NamePerJob[3].push_back(PartyList[i]->GetName());
+    //}
+
+    return NamePerJob;
+}
+

@@ -108,6 +108,8 @@ public:
     // 타이핑 효과 설정
     void EnableTypingEffect(bool enable) { _TypingEnabled = enable; }
     void SetTypingSpeed(ETypingSpeed speed) { _TypingSpeed = speed; }
+    void SkipTyping();
+    bool IsTypingFinished() const;
 
     // 자동 줄바꿈 설정
     void EnableAutoWrap(bool enable) { _AutoWrap = enable; }
