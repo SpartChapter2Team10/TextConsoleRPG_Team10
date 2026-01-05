@@ -148,7 +148,7 @@ void SoundPlayer::StopAll()
 
 std::string SoundPlayer::GetFullSoundPath(const std::string& FileName) {
     // DataManager의 리소스 경로 시스템 활용
-    return DataManager::GetInstance()->GetResourcePath("Sound") + FileName;
+    return DataManager::GetInstance()->GetResourcePath("Sounds") + FileName;
 }
 
 bool SoundPlayer::GetSoundData(const std::string& InID, std::string& OutFileName, float& OutPlayTime, float& OutVolume)
@@ -156,8 +156,8 @@ bool SoundPlayer::GetSoundData(const std::string& InID, std::string& OutFileName
     if (Initialize())
     {
         const auto& Datas = DataManager::GetInstance()->LoadCSVFile(
-            DataManager::GetInstance()->GetResourcePath("Sound"),
-            "Sound.csv");
+            DataManager::GetInstance()->GetResourcePath("Sounds"),
+            "Sounds.csv");
         for (auto Row : Datas)
         {
             if (Row[0] == InID)
