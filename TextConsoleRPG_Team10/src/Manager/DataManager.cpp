@@ -1,4 +1,5 @@
-﻿#include "../../include/Manager/DataManager.h"
+﻿#include "../../include/Item/MonsterSpawnData.h"
+#include "../../include/Manager/DataManager.h"
 #include "../../include/Manager/PrintManager.h"
 #include "../../include/Item/ItemData.h"
 #include "../../include/Item/MonsterSpawnData.h"

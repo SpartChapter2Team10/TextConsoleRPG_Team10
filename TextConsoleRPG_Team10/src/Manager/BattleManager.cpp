@@ -313,6 +313,7 @@ bool BattleManager::ProcessBattleTurn()
     Player* mainPlayer = gm->GetMainPlayer().get();
     // 5. 플레이어 턴: ProcessTurn(Monster)
     ProcessTurn(_CurrentMonster.get());
+    
     // 6. 몬스터 사망 확인
     //- 사망 시: _Result.Victory = true, IsCompleted = true, 승리 메시지 출력, true 반환
     if(_CurrentMonster->IsDead())
