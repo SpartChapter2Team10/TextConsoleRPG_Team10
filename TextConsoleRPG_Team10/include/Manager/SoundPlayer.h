@@ -43,6 +43,11 @@ public:
     // 매 프레임 호출: 수명이 다한 사운드 리소스 해제
     void Update();
 
+    // 효과음 재생 전용 
+    void PlaySFX(const std::string& EffectID);
+    void PlayBGM(const std::string& BGMID);
+
 private:
     std::string GetFullSoundPath(const std::string& FileName);
+    bool GetSoundData(const std::string& InID, std::string& OutFileName, float& OutPlayTime, float& OutVolume);
 };

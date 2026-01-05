@@ -73,11 +73,11 @@ ExitShop
 
 
 동료 영입
-문 흔드는 소리(구조 요청) - not encoding 
-- creak2
+ RecruitEvent 문 흔드는 소리(구조 요청)
+- Creak2
 - https://opengameart.org/content/50-rpg-sound-effects
-문 여는 소리(동료 영입) - not encoding 
-- doorOpen_2
+ Recruit 문 여는 소리(동료 영입) - not encoding 
+- DoorOpen_2
 - https://opengameart.org/content/50-rpg-sound-effects
 
 ==========================================================
