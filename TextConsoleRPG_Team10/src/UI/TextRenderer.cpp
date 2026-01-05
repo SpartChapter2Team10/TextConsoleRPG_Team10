@@ -102,18 +102,30 @@ void TextRenderer::AddLogLine(const std::string& line, ELogImportance importance
 
 void TextRenderer::AddLineWithTyping(const std::string& line, WORD color)
 {
-    TextLine textLine(line, color);
-    textLine.HasTypingEffect = true;
-    _Lines.push_back(textLine);
+    if (_AutoWrap && !line.empty())
+    {
+        // 타이핑 줄도 자동 줄바꿈을 적용하여 쪼개서 넣어야 합니다.
+        auto wrappedLines = WrapText(line, _WrapWidth);
+        for (const auto& wrapped : wrappedLines)
+        {
+            TextLine textLine(wrapped, color);
+            textLine.HasTypingEffect = true;
+            _Lines.push_back(textLine);
+        }
+    }
+    else
+    {
+        TextLine textLine(line, color);
+        textLine.HasTypingEffect = true;
+        _Lines.push_back(textLine);
+    }
 
     if (_TypingEnabled && _CurrentTypingLine < 0)
     {
-        // 타이핑 효과 시작
-        _CurrentTypingLine = static_cast<int>(_Lines.size()) - 1;
+        _CurrentTypingLine = 0;
         _CurrentTypingChar = 0;
         _LastTypingTime = std::chrono::steady_clock::now();
     }
-
     _IsDirty = true;
 }
 
@@ -196,11 +208,12 @@ bool TextRenderer::UpdateTypingEffect()
         else
         {
             // 현재 줄 타이핑 완료
+            int lastFinishedLine = _CurrentTypingLine;
             _CurrentTypingLine = -1;
             _CurrentTypingChar = 0;
 
             // 다음 타이핑 효과 줄 찾기
-            for (size_t i = _CurrentTypingLine + 1; i < _Lines.size(); ++i)
+            for (size_t i = lastFinishedLine + 1; i < _Lines.size(); ++i)
             {
                 if (_Lines[i].HasTypingEffect)
                 {
@@ -214,6 +227,21 @@ bool TextRenderer::UpdateTypingEffect()
     }
 
     return false;
+}
+
+void TextRenderer::SkipTyping()
+{
+    if (_CurrentTypingLine != -1) {
+        // 현재 라인부터 모든 라인의 타이핑 상태를 완료로 변경
+        _CurrentTypingLine = static_cast<int>(_Lines.size());
+        _IsDirty = true;
+    }
+}
+
+bool TextRenderer::IsTypingFinished() const
+{
+    if (_Lines.empty()) return true;
+    return _CurrentTypingLine >= static_cast<int>(_Lines.size());
 }
 
 void TextRenderer::Update(float deltaTime)
@@ -335,10 +363,16 @@ void TextRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
 
         // 타이핑 효과 처리
         std::string displayText = line.Text;
-        if (_TypingEnabled && line.HasTypingEffect && i == _CurrentTypingLine)
+        if (_TypingEnabled && line.HasTypingEffect)
         {
-            // 현재 타이핑 중인 줄은 일부만 표시
-            displayText = line.Text.substr(0, _CurrentTypingChar);
+            if (i == _CurrentTypingLine)
+            {// 현재 타이핑 중인 줄은 일부만 표시
+                displayText = line.Text.substr(0, _CurrentTypingChar);
+            }
+            else if (i > _CurrentTypingLine && _CurrentTypingLine != -1)
+            {// 아직 타이핑 차례가 오지 않은 뒷줄들: 아예 표시하지 않음
+                displayText = "";
+            }
         }
 
         // 플리커링 효과 적용
