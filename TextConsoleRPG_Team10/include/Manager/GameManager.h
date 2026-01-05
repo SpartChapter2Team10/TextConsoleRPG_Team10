@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <random>
+#include <string>
 
 static std::mt19937 gen(std::random_device{}());
 
@@ -15,6 +16,9 @@ private:
     std::vector<std::shared_ptr<Player>> _Party;  // 파티 멤버 (0번: 메인 플레이어)
     bool _IsGameOver = false;
     bool _IsRunning = false;
+
+    // 플레이어 이름 임시 저장 (CharacterSelectScene 연동용)
+    std::string _TempPlayerName;
 
 private:
     GameManager() = default;
@@ -85,8 +89,19 @@ public:
     inline bool IsRunning() const { return _IsRunning; }
     inline bool IsGameOver() const { return _IsGameOver; }
 
-    // 메인 플레이어 생성
+    // 메인 플레이어 생성 (기존 방식 - 임시로 Warrior)
     void CreateMainPlayer(const std::string& name);
+    
+    // CSV 기반 메인 플레이어 생성
+    // name: 플레이어 이름
+    // classId: 직업 ID ("warrior", "mage", "archer", "priest")
+    // return: 성공 시 true, 실패 시 false
+    bool CreateMainPlayerWithClass(const std::string& name, const std::string& classId);
+    
     // 배틀 테스트
     void StartBattleTest();
+
+    // 플레이어 이름 임시 저장/조회
+    inline void SetTempPlayerName(const std::string& name) { _TempPlayerName = name; }
+    inline std::string GetTempPlayerName() const { return _TempPlayerName; }
 };

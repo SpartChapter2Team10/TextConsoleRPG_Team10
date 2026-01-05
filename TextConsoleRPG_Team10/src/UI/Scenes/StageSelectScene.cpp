@@ -825,13 +825,17 @@ void StageSelectScene::EnterNode(const std::string& nodeId)
     switch (node->Type)
     {
     case ENodeType::Battle:
-        if (node->EnemyType == "Boss")
+    if (node->EnemyType == "Boss")
         {
-            BattleManager::GetInstance()->StartBattle(EBattleType::Boss);
+BattleManager::GetInstance()->StartBattle(EBattleType::Boss, stageMgr->GetCurrentFloor());
+        }
+        else if (node->EnemyType == "Elite")
+     {
+            BattleManager::GetInstance()->StartBattle(EBattleType::Elite, stageMgr->GetCurrentFloor());
         }
         else
         {
-            BattleManager::GetInstance()->StartBattle(EBattleType::Normal);
+            BattleManager::GetInstance()->StartBattle(EBattleType::Normal, stageMgr->GetCurrentFloor());
         }
         sceneMgr->ChangeScene(ESceneType::Battle);
         break;
@@ -839,18 +843,18 @@ void StageSelectScene::EnterNode(const std::string& nodeId)
     case ENodeType::Event:
         if (node->EventType == "Companion")
         {
-            sceneMgr->ChangeScene(ESceneType::CompanionRecruit);
-        }
-        break;
+   sceneMgr->ChangeScene(ESceneType::CompanionRecruit);
+     }
+    break;
 
     case ENodeType::Exit:
         if (stageMgr->MoveToNextFloor())
         {
-            sceneMgr->ChangeScene(ESceneType::StageSelect);
+          sceneMgr->ChangeScene(ESceneType::StageSelect);
         }
-        else
-        {
-            sceneMgr->ChangeScene(ESceneType::Result);
+     else
+ {
+     sceneMgr->ChangeScene(ESceneType::Result);
         }
         break;
 
@@ -858,7 +862,7 @@ void StageSelectScene::EnterNode(const std::string& nodeId)
         RefreshAvailableNodes();
         SelectNode(_AvailableNodeIds.empty() ? "" : _AvailableNodeIds[0]);
         _IsActive = true;
-        break;
+   break;
 
     default:
         _IsActive = true;

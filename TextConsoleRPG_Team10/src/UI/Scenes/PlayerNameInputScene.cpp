@@ -107,7 +107,7 @@ void PlayerNameInputScene::ShowConfirmation()
     confirmText->AddLine("     모험가 " + _PlayerName + "의 여정이 시작됩니다...");
     confirmText->AddLine("");
     confirmText->AddLine("     [엔터 키를 눌러 계속...]");
-    confirmText->SetTextColor(static_cast<WORD>(ETextColor::LIGHT_YELLOW));
+    confirmText->SetTextColor(MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
     confirmPanel->SetContentRenderer(std::move(confirmText));
 
     _Drawer->Render();
@@ -121,11 +121,12 @@ void PlayerNameInputScene::ShowConfirmation()
 
     FlushConsoleInputBuffer(hInput);
 
-    GameManager::GetInstance()->CreateMainPlayer(_PlayerName);
+    // GameManager에 플레이어 이름 임시 저장 (직업 선택 후 생성)
+    GameManager::GetInstance()->SetTempPlayerName(_PlayerName);
 
     _IsActive = false;
     Exit();
 
-    // BattleScene 테스트를 위해 바로 전환
-    SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+    // 직업 선택 씬으로 이동
+    SceneManager::GetInstance()->ChangeScene(ESceneType::CharacterSelect);
 }
