@@ -266,7 +266,7 @@ int InputManager::GetKeyCode()
     // 224 (0xE0) 또는 0 (0x00)이면 두 번째 바이트를 읽어야 함
     if (keyCode == 224 || keyCode == 0)
     {
-  keyCode = _getch();  // 실제 키 코드 읽기
+        keyCode = _getch();  // 실제 키 코드 읽기
     }
 
     return keyCode;
