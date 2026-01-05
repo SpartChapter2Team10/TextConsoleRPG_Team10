@@ -36,8 +36,8 @@ protected:
 public:
     virtual ~ICharacter() {}
 
-    virtual void TakeDamage(const int Amount) = 0;
-    virtual void Attack(ICharacter* Target) const = 0;
+    virtual int TakeDamage(ICharacter* Target, const int Amount) = 0;
+    virtual std::tuple<std::string, int> Attack(ICharacter* Target) const = 0;
     virtual bool IsDead() const = 0;
 
     inline const std::string& GetName() const { return _Name; }
