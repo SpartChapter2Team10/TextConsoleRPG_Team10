@@ -47,6 +47,7 @@ void CharacterSelectScene::LoadClassData()
         data._Luk = std::stoi(csvData[i][8]);
         data._CriticalRate = std::stof(csvData[i][9]);
         data._AsciiFile = csvData[i][10];
+        data._AsciiFileSelect = csvData[i][11];
         
         _ClassDataList.push_back(data);
     }
@@ -124,21 +125,21 @@ void CharacterSelectScene::Enter()
 
     // ===== 타이틀 패널 (중앙 상단) =====
     Panel* titlePanel = _Drawer->CreatePanel("Title", 45, 2, 60, 4);
-    titlePanel->SetBorder(true, ETextColor::LIGHT_CYAN);
+    titlePanel->SetBorder(true, ETextColor::WHITE);
 
     auto titleText = std::make_unique<TextRenderer>();
     titleText->AddLine("");
     titleText->AddLineWithColor("                [ 직업 선택 ]",
-        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     titleText->AddLineWithColor("                 1/" + std::to_string(_ClassDataList.size()) + " 페이지",
-        MakeColorAttribute(ETextColor::CYAN, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
 
     titlePanel->SetContentRenderer(std::move(titleText));
     titlePanel->Redraw();
 
     // ===== 이미지 패널 (왼쪽) =====
     Panel* imagePanel = _Drawer->CreatePanel("ClassImage", 10, 7, 65, 25);
-    imagePanel->SetBorder(true, ETextColor::GREEN);
+    imagePanel->SetBorder(true, ETextColor::WHITE);
 
     auto dummyImage = std::make_unique<TextRenderer>();
     dummyImage->AddLine("");
@@ -161,38 +162,38 @@ void CharacterSelectScene::Enter()
     
     // 1. 직업 클래스명 패널
     Panel* classNamePanel = _Drawer->CreatePanel("ClassName", 77, 7, 63, 3);
-    classNamePanel->SetBorder(true, ETextColor::LIGHT_YELLOW);
+    classNamePanel->SetBorder(true, ETextColor::WHITE);
     auto classNameText = std::make_unique<TextRenderer>();
     classNameText->AddLineWithColor("  직업 클래스명",
-        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     classNamePanel->SetContentRenderer(std::move(classNameText));
     classNamePanel->Redraw();
     
     // 2. 역할 패널
     Panel* rolePanel = _Drawer->CreatePanel("Role", 77, 10, 63, 3);
-    rolePanel->SetBorder(true, ETextColor::GREEN);
+    rolePanel->SetBorder(true, ETextColor::WHITE);
     auto roleText = std::make_unique<TextRenderer>();
     roleText->AddLineWithColor("  역할: ",
-        MakeColorAttribute(ETextColor::GREEN, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     rolePanel->SetContentRenderer(std::move(roleText));
     rolePanel->Redraw();
     
     // 3. 특징 패널
     Panel* descPanel = _Drawer->CreatePanel("Description", 77, 13, 63, 4);
-    descPanel->SetBorder(true, ETextColor::CYAN);
+    descPanel->SetBorder(true, ETextColor::WHITE);
     auto descText = std::make_unique<TextRenderer>();
     descText->AddLineWithColor("  특징:",
-        MakeColorAttribute(ETextColor::CYAN, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     descText->AddLine("  [직업 설명]");
     descPanel->SetContentRenderer(std::move(descText));
     descPanel->Redraw();
     
     // 4. 초기 스탯 패널
     Panel* statsPanel = _Drawer->CreatePanel("Stats", 77, 17, 63, 7);
-    statsPanel->SetBorder(true, ETextColor::LIGHT_CYAN);
+    statsPanel->SetBorder(true, ETextColor::WHITE);
     auto statsText = std::make_unique<TextRenderer>();
     statsText->AddLineWithColor("  초기 스탯:",
-        MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     statsText->AddLine("  HP: -- | MP: --");
     statsText->AddLine("  ATK: -- | DEF: --");
     statsText->AddLine("  DEX: -- | LUK: --");
@@ -202,10 +203,10 @@ void CharacterSelectScene::Enter()
     
     // 5. 고유 스킬 패널
     Panel* skillsPanel = _Drawer->CreatePanel("Skills", 77, 24, 63, 4);
-    skillsPanel->SetBorder(true, ETextColor::YELLOW);
+    skillsPanel->SetBorder(true, ETextColor::WHITE);
     auto skillsText = std::make_unique<TextRenderer>();
     skillsText->AddLineWithColor("  고유 스킬:",
-        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     skillsText->AddLine("  • 스킬1");
     skillsText->AddLine("  • 스킬2");
     skillsPanel->SetContentRenderer(std::move(skillsText));
@@ -213,11 +214,11 @@ void CharacterSelectScene::Enter()
 
     // ===== 스킬 설명 패널 (중간) =====
     Panel* skillDescPanel = _Drawer->CreatePanel("SkillDesc", 10, 33, 130, 5);
-    skillDescPanel->SetBorder(true, ETextColor::YELLOW);
+    skillDescPanel->SetBorder(true, ETextColor::WHITE);
 
     auto skillDescText = std::make_unique<TextRenderer>();
     skillDescText->AddLineWithColor("  스킬 정보:",
-        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     skillDescText->AddLine("  • 스킬1: 설명");
     skillDescText->AddLine("  • 스킬2: 설명");
 
@@ -226,11 +227,11 @@ void CharacterSelectScene::Enter()
 
     // ===== 안내 패널 (하단) =====
     Panel* guidePanel = _Drawer->CreatePanel("Guide", 10, 39, 130, 3);
-    guidePanel->SetBorder(true, ETextColor::LIGHT_CYAN);
+    guidePanel->SetBorder(true, ETextColor::WHITE);
 
     auto guideText = std::make_unique<TextRenderer>();
     guideText->AddLineWithColor("  [ ←, →: 직업 선택 ] [ Enter: 확정 ] [ ESC: 이전 ]",
-        MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
 
     guidePanel->SetContentRenderer(std::move(guideText));
     guidePanel->Redraw();
@@ -257,7 +258,7 @@ void CharacterSelectScene::UpdateClassImage(int selection)
     std::string resourcePath = DataManager::GetInstance()->GetResourcePath("Characters");
     
     // CSV에서 읽은 파일명 사용
-    std::string fileName = _ClassDataList[selection]._AsciiFile;
+    std::string fileName = _ClassDataList[selection]._AsciiFileSelect;
     
     // "Characters/" 접두사 제거
     if (fileName.find("Characters/") == 0)
@@ -271,7 +272,7 @@ void CharacterSelectScene::UpdateClassImage(int selection)
     if (loaded)
     {
         artRenderer->SetAlignment(ArtAlignment::CENTER);
-        artRenderer->SetColor(ETextColor::WHITE); // 흰색으로 변경
+        artRenderer->SetColor(ETextColor::WHITE);
         
         imagePanel->SetContentRenderer(std::move(artRenderer));
     }
@@ -309,7 +310,7 @@ void CharacterSelectScene::UpdateClassInfo(int selection)
     {
         auto classNameText = std::make_unique<TextRenderer>();
         classNameText->AddLineWithColor("  " + classData._ClassId,
-            MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         classNamePanel->SetContentRenderer(std::move(classNameText));
         classNamePanel->Redraw();
     }
@@ -320,7 +321,7 @@ void CharacterSelectScene::UpdateClassInfo(int selection)
     {
         auto roleText = std::make_unique<TextRenderer>();
         roleText->AddLineWithColor("  역할: " + classData._Role,
-            MakeColorAttribute(ETextColor::GREEN, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         rolePanel->SetContentRenderer(std::move(roleText));
         rolePanel->Redraw();
     }
@@ -331,7 +332,7 @@ void CharacterSelectScene::UpdateClassInfo(int selection)
     {
         auto descText = std::make_unique<TextRenderer>();
         descText->AddLineWithColor("  특징:",
-            MakeColorAttribute(ETextColor::CYAN, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         descText->AddLineWithColor("  " + classData._RoleDesc,
             MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         descPanel->SetContentRenderer(std::move(descText));
@@ -344,7 +345,7 @@ void CharacterSelectScene::UpdateClassInfo(int selection)
     {
         auto statsText = std::make_unique<TextRenderer>();
         statsText->AddLineWithColor("  초기 스탯:",
-            MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         
         std::ostringstream oss;
         oss << "  HP: " << classData._HP << " | MP: " << classData._MP;
@@ -377,11 +378,11 @@ void CharacterSelectScene::UpdateClassInfo(int selection)
     {
         auto skillsText = std::make_unique<TextRenderer>();
         skillsText->AddLineWithColor("  고유 스킬:",
-            MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         skillsText->AddLineWithColor("  • " + skillData._Skill1Name,
-            MakeColorAttribute(ETextColor::YELLOW, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         skillsText->AddLineWithColor("  • " + skillData._Skill2Name,
-            MakeColorAttribute(ETextColor::YELLOW, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         skillsPanel->SetContentRenderer(std::move(skillsText));
         skillsPanel->Redraw();
     }
@@ -401,7 +402,7 @@ void CharacterSelectScene::UpdateGuideMessage(int selection)
     {
         auto skillDescText = std::make_unique<TextRenderer>();
         skillDescText->AddLineWithColor("  스킬 정보:",
-            MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+            MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
         
         // 스킬 설명
         skillDescText->AddLineWithColor("  • " + skillData._Skill1Name + ": " + skillData._Skill1Desc,
@@ -422,9 +423,9 @@ void CharacterSelectScene::UpdateTitlePage(int selection)
     auto titleText = std::make_unique<TextRenderer>();
     titleText->AddLine("");
     titleText->AddLineWithColor("                [ 직업 선택 ]",
-        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     titleText->AddLineWithColor("                 " + std::to_string(selection + 1) + "/" + std::to_string(_ClassDataList.size()) + " 페이지",
-        MakeColorAttribute(ETextColor::CYAN, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     titlePanel->SetContentRenderer(std::move(titleText));
     titlePanel->Redraw();
 }
@@ -456,39 +457,31 @@ void CharacterSelectScene::HandleInput()
     
     int keyCode = input->GetKeyCode();
     
-    // 확장 키(방향키 등) 처리
-    if (keyCode == 0 || keyCode == 0xE0)
+    if (keyCode == 0x4B)  // 왼쪽 화살표
     {
-        if (input->IsKeyPressed())
-        {
-            keyCode = input->GetKeyCode();
-            
-            if (keyCode == 0x4B)  // 왼쪽 화살표
-            {
-                _CurrentSelection--;
-                if (_CurrentSelection < 0) _CurrentSelection = static_cast<int>(_ClassDataList.size()) - 1;
-                
-                UpdateClassImage(_CurrentSelection);
-                UpdateClassInfo(_CurrentSelection);
-                UpdateGuideMessage(_CurrentSelection);
-                UpdateTitlePage(_CurrentSelection);
-                
-                _Drawer->Render();
-            }
-            else if (keyCode == 0x4D)  // 오른쪽 화살표
-            {
-                _CurrentSelection++;
-                if (_CurrentSelection >= static_cast<int>(_ClassDataList.size())) _CurrentSelection = 0;
-                
-                UpdateClassImage(_CurrentSelection);
-                UpdateClassInfo(_CurrentSelection);
-                UpdateGuideMessage(_CurrentSelection);
-                UpdateTitlePage(_CurrentSelection);
-                
-                _Drawer->Render();
-            }
-        }
-    } else if (keyCode == VK_RETURN || keyCode == '\r')  // Enter - 선택 확인
+        _CurrentSelection--;
+        if (_CurrentSelection < 0) _CurrentSelection = static_cast<int>(_ClassDataList.size()) - 1;
+        
+        UpdateClassImage(_CurrentSelection);
+        UpdateClassInfo(_CurrentSelection);
+        UpdateGuideMessage(_CurrentSelection);
+        UpdateTitlePage(_CurrentSelection);
+        
+        _Drawer->Render();
+    }
+    else if (keyCode == 0x4D)  // 오른쪽 화살표
+    {
+        _CurrentSelection++;
+        if (_CurrentSelection >= static_cast<int>(_ClassDataList.size())) _CurrentSelection = 0;
+        
+        UpdateClassImage(_CurrentSelection);
+        UpdateClassInfo(_CurrentSelection);
+        UpdateGuideMessage(_CurrentSelection);
+        UpdateTitlePage(_CurrentSelection);
+        
+        _Drawer->Render();
+    }
+    else if (keyCode == VK_RETURN || keyCode == '\r')  // Enter - 선택 확인
     {
       if (_CurrentSelection >= 0 &&
           _CurrentSelection < static_cast<int>(_ClassDataList.size())) {

@@ -35,12 +35,12 @@ void BattleScene::Enter() {
 
   // ===== 스테이지 정보 & 몬스터 HP 패널 (상단) =====
   Panel* infoPanel = _Drawer->CreatePanel("BattleInfo", 0, 0, 150, 5);
-  infoPanel->SetBorder(true, ETextColor::CYAN);
+  infoPanel->SetBorder(true, ETextColor::WHITE);
 
   auto infoText = std::make_unique<TextRenderer>();
   infoText->AddLineWithColor(
       "                           [스테이지 명] - 몬스터 이름 (남은 HP/총 HP)",
-      MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   infoPanel->SetContentRenderer(std::move(infoText));
   infoPanel->Redraw();
 
@@ -60,7 +60,7 @@ void BattleScene::Enter() {
 
     Panel* charArtPanel =
         _Drawer->CreatePanel(panelName, xPos, yPos, charArtWidth, charArtHeight);
-    charArtPanel->SetBorder(true, ETextColor::DARK_GRAY);
+    charArtPanel->SetBorder(true, ETextColor::WHITE);
 
     auto charArtText = std::make_unique<TextRenderer>();
     charArtText->AddLine("");
@@ -68,7 +68,7 @@ void BattleScene::Enter() {
     charArtText->AddLine("     [캐릭터");
     charArtText->AddLine("      아트 " + std::to_string(i) + "]");
     charArtText->SetTextColor(
-        MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     charArtPanel->SetContentRenderer(std::move(charArtText));
     charArtPanel->Redraw();
   }
@@ -89,7 +89,7 @@ void BattleScene::Enter() {
 
     Panel* partyPanel =
         _Drawer->CreatePanel(panelName, xPos, partyStartY, partyWidth, partyHeight);
-    partyPanel->SetBorder(true, ETextColor::GREEN);
+    partyPanel->SetBorder(true, ETextColor::WHITE);
 
     auto partyText = std::make_unique<TextRenderer>();
     partyText->AddLine("");
@@ -117,7 +117,7 @@ void BattleScene::Enter() {
 
   // ===== 애니메이션 영역 (중앙) =====
   Panel* animPanel = _Drawer->CreatePanel("Animation", 48, 5, 62, 24);
-  animPanel->SetBorder(true, ETextColor::YELLOW);
+  animPanel->SetBorder(true, ETextColor::WHITE);
   auto animText = std::make_unique<TextRenderer>();
   animText->AddLine("");
   animText->AddLine("");
@@ -125,13 +125,13 @@ void BattleScene::Enter() {
   animText->AddLine("  [애니메이션 아스키아트 재생 영역]");
   animText->AddLine("");
   animText->SetTextColor(
-      MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK));
+      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   animPanel->SetContentRenderer(std::move(animText));
   animPanel->Redraw();
 
   // ===== 몬스터 이미지 패널 (오른쪽) =====
   Panel* enemyPanel = _Drawer->CreatePanel("Enemy", 110, 8, 40, 17);
-  enemyPanel->SetBorder(true, ETextColor::RED);
+  enemyPanel->SetBorder(true, ETextColor::WHITE);
 
   // TODO: Monsters.csv에서 몬스터 정보 읽어서 표시
   // TODO: Resources/Monsters/{FileName}.txt에서 아스키 아트 로드
@@ -143,20 +143,20 @@ void BattleScene::Enter() {
   enemyText->AddLine("");
   enemyText->AddLine("      (Resources/Monsters/*.txt)");
   enemyText->SetTextColor(
-      MakeColorAttribute(ETextColor::LIGHT_RED, EBackgroundColor::BLACK));
+      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   enemyPanel->SetContentRenderer(std::move(enemyText));
   enemyPanel->Redraw();
 
   // ===== 시스템 로그 패널 (하단 좌측-중앙), 내부 우측에 커맨드 통합 =====
   Panel* logPanel = _Drawer->CreatePanel("SystemLog", 0, 36, 113, 9);
-  logPanel->SetBorder(true, ETextColor::LIGHT_CYAN);
+  logPanel->SetBorder(true, ETextColor::WHITE);
 
   // 좌측 영역: 시스템 로그 (1 ~ 74)
   auto logText = std::make_unique<TextRenderer>();
   logText->AddLine("");
   logText->AddLineWithColor(
       "  [ 시스템 로그 출력 창 ]",
-      MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
+      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   logText->AddLine("");
   logText->AddLine("  전투가 시작되었습니다!");
   logPanel->AddRenderer(1, 0, 74, 10, std::move(logText));
@@ -166,7 +166,7 @@ void BattleScene::Enter() {
   commandText->AddLine("");
   commandText->AddLineWithColor(
       "  [ 커맨드 ]",
-      MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   commandText->AddLine("");
   commandText->AddLine("  [1] 공격");
   commandText->AddLine("  [2] 스킬");
@@ -183,7 +183,7 @@ void BattleScene::Enter() {
   inventoryCommandText->AddLine("");
   inventoryCommandText->AddLineWithColor(
       "  인벤토리",
-      MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   inventoryCommandText->AddLine("");
   inventoryCommandText->AddLine("  아이템 사용");
   inventoryCommandText->AddLine("  정보 확인");
