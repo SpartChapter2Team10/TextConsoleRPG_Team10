@@ -28,8 +28,8 @@ public:
     //       false = 인벤토리 비활성화 (동료 캐릭터)
     Player(const std::string& Name, bool enableInventory = false);
     
-    void TakeDamage(const int Amount) override;
-    void Attack(ICharacter* Target) const override;
+    int TakeDamage(ICharacter* Target, const int Amount) override;
+    std::tuple<std::string, int> Attack(ICharacter* Target) const override;
     bool IsDead() const override;
     
     void CheckLevelUp();

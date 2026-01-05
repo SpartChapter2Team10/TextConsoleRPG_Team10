@@ -86,4 +86,7 @@ public:
 
 	// 배틀 테스트
     void StartBattleTest();
+    
+    // 동료 영입 테스트
+    void StartCompanionRecruitTest();
 };
