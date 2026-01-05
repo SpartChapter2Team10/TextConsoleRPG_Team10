@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <string>
 
 // ===== 모든 캐릭터 공통 스탯 구조체 =====
@@ -54,7 +54,6 @@ public:
 
     // 공격 연출 문자열 반환 (기본값)
     virtual std::string GetAttackNarration() const { return _Name + "이(가) 공격을 시도합니다!"; }
-
     virtual void ResetTempStats()
     {
         _Stats._TempAtk = 0;
@@ -63,4 +62,6 @@ public:
         _Stats._TempLuk = 0;
         _Stats._TempCriticalRate = 0.0f;
     }
+    //virtual int TakeDamage(ICharacter * Target, const int Amount) = 0;
+    //virtual std::tuple<std::string, int> Attack(ICharacter* Target) const = 0;
 };
