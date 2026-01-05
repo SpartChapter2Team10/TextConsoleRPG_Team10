@@ -133,6 +133,16 @@ public:
     // return: 찾은 StageFloorData (nullptr 가능)
     const StageFloorData* GetFloorInfo(int floor) const;
 
+    // 현재 층의 모든 노드 가져오기 (UI 렌더링용)
+    inline const std::vector<NodeData>& GetCurrentFloorNodes() const { return _CurrentFloorNodes; }
+
+    // ===== 내부 로직 =====
+
+    // Battle 노드에 랜덤하게 Normal/Elite/Boss 타입 배정
+    // FloorInfo의 NormalCount, EliteCount, BossCount 기반
+    // floor: 배정할 층 번호
+    void AssignRandomMonsterTypes(int floor);
+
     // ===== Getter =====
 
     inline bool IsInitialized() const { return _IsInitialized; }

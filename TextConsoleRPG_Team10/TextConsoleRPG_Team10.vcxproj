@@ -191,6 +191,7 @@
     <!-- Main -->
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="src\Manager\StageManager.cpp" />
+    <ClCompile Include="src\UI\Scenes\StageSelectScene.cpp" />
     <ClCompile Include="UIDrawer_TestExample.cpp" />
     <!-- Factory -->
     <ClCompile Include="src\Factory\ItemFactory.cpp" />
@@ -225,7 +226,6 @@
     <ClCompile Include="src\UI\Scenes\PlayerNameInputScene.cpp" />
     <ClCompile Include="src\UI\Scenes\ResultScene.cpp" />
     <ClCompile Include="src\UI\Scenes\ShopScene.cpp" />
-    <ClCompile Include="src\UI\Scenes\StageSelectScene.cpp" />
     <ClCompile Include="src\UI\Scenes\StoryProgressScene.cpp" />
     <!-- Unit -->
     <ClCompile Include="src\Unit\Boss.cpp" />

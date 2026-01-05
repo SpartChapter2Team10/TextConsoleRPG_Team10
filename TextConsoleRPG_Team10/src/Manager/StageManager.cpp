@@ -1,7 +1,9 @@
 #include "../../include/Manager/StageManager.h"
 #include "../../include/Manager/DataManager.h"
 #include "../../include/Manager/PrintManager.h"
+#include "../../include/Manager/GameManager.h"
 #include <algorithm>
+#include <random>
 
 // ===== 초기화 및 게임 시작 =====
 
@@ -34,6 +36,9 @@ bool StageManager::Initialize()
             );
             return false;
         }
+
+        // ===== 랜덤 몬스터 타입 배정 =====
+        AssignRandomMonsterTypes(1);
 
         // 진행 상태 초기화
         _Progress.CurrentFloor = 1;
@@ -85,6 +90,9 @@ void StageManager::StartNewGame()
     // 1층 노드 로드
     _CurrentFloorNodes = DataManager::GetInstance()->LoadStageNodes(1);
 
+    // ===== 랜덤 몬스터 타입 배정 =====
+    AssignRandomMonsterTypes(1);
+
     // 시작 노드 찾기
     for (const auto& node : _CurrentFloorNodes)
     {
@@ -128,6 +136,9 @@ bool StageManager::MoveToNextFloor()
         );
         return false;
     }
+
+    // ===== 랜덤 몬스터 타입 배정 =====
+    AssignRandomMonsterTypes(_Progress.CurrentFloor);
 
     // 시작 노드 찾기
     _Progress.CurrentNodeId = "";
@@ -179,9 +190,9 @@ std::vector<const NodeData*> StageManager::GetAvailableNextNodes() const
 
     // 현재 노드가 미완료 전투/이벤트라면 앞으로 못 감
     bool isCurrentNodeBlocking = false;
-    
-    if (currentNode->Type == ENodeType::Battle || 
-        currentNode->Type == ENodeType::Elite || 
+
+    if (currentNode->Type == ENodeType::Battle ||
+        currentNode->Type == ENodeType::Elite ||
         currentNode->Type == ENodeType::Boss ||
         currentNode->Type == ENodeType::Event)
     {
@@ -207,7 +218,7 @@ std::vector<const NodeData*> StageManager::GetAvailableNextNodes() const
                     continue;  // 미방문 노드는 제외 (앞으로 못 감)
                 }
             }
-        
+
             result.push_back(nextNode);
         }
     }
@@ -279,30 +290,54 @@ void StageManager::CompleteNode(ENodeType nodeType)
         _Progress.CompletedNodes.push_back(currentNodeId);
     }
 
-    // 통계 업데이트
-    switch (nodeType)
+    // 현재 노드 정보 가져오기
+    const NodeData* currentNode = GetCurrentNode();
+
+    // 통계 업데이트 (Battle 노드는 EnemyType으로 구분)
+    if (currentNode && currentNode->Type == ENodeType::Battle)
     {
-    case ENodeType::Battle:
         _Progress.TotalBattlesCompleted++;
-        _Progress.NormalMonstersKilled++;
-        break;
 
-    case ENodeType::Elite:
-        _Progress.TotalBattlesCompleted++;
-        _Progress.EliteMonstersKilled++;
-        break;
+        if (currentNode->EnemyType == "Elite")
+        {
+            _Progress.EliteMonstersKilled++;
+        }
+        else if (currentNode->EnemyType == "Boss")
+        {
+            _Progress.BossesKilled++;
+        }
+        else  // "Normal" 또는 빈 값
+        {
+            _Progress.NormalMonstersKilled++;
+        }
+    }
+    else
+    {
+        // Battle이 아닌 다른 타입 (레거시 호환)
+        switch (nodeType)
+        {
+        case ENodeType::Battle:
+            _Progress.TotalBattlesCompleted++;
+            _Progress.NormalMonstersKilled++;
+            break;
 
-    case ENodeType::Boss:
-        _Progress.TotalBattlesCompleted++;
-        _Progress.BossesKilled++;
-        break;
+        case ENodeType::Elite:
+            _Progress.TotalBattlesCompleted++;
+            _Progress.EliteMonstersKilled++;
+            break;
 
-    case ENodeType::Event:
-        _Progress.EventsCleared++;
-        break;
+        case ENodeType::Boss:
+            _Progress.TotalBattlesCompleted++;
+            _Progress.BossesKilled++;
+            break;
 
-    default:
-        break;
+        case ENodeType::Event:
+            _Progress.EventsCleared++;
+            break;
+
+        default:
+            break;
+        }
     }
 
     PrintManager::GetInstance()->PrintLogLine(
@@ -317,14 +352,14 @@ bool StageManager::IsNodeVisited(const std::string& nodeId) const
 {
     return std::find(_Progress.VisitedNodes.begin(),
         _Progress.VisitedNodes.end(),
-     nodeId) != _Progress.VisitedNodes.end();
+        nodeId) != _Progress.VisitedNodes.end();
 }
 
 bool StageManager::IsNodeCompleted(const std::string& nodeId) const
 {
     return std::find(_Progress.CompletedNodes.begin(),
-    _Progress.CompletedNodes.end(),
-      nodeId) != _Progress.CompletedNodes.end();
+        _Progress.CompletedNodes.end(),
+        nodeId) != _Progress.CompletedNodes.end();
 }
 
 // ===== 유틸리티 =====
@@ -353,4 +388,85 @@ const StageFloorData* StageManager::GetFloorInfo(int floor) const
         return nullptr;
 
     return &_FloorInfoCache[index];
+}
+
+// ===== 랜덤 몬스터 타입 배정 =====
+
+void StageManager::AssignRandomMonsterTypes(int floor)
+{
+    // FloorInfo에서 몬스터 수량 정보 가져오기
+    const StageFloorData* floorInfo = GetFloorInfo(floor);
+
+    if (!floorInfo)
+    {
+        PrintManager::GetInstance()->PrintLogLine(
+            "StageManager::AssignRandomMonsterTypes - FloorInfo not found for floor " + std::to_string(floor),
+            ELogImportance::WARNING
+        );
+        return;
+    }
+
+    int normalCount = floorInfo->NormalCount;
+    int eliteCount = floorInfo->EliteCount;
+    int bossCount = floorInfo->BossCount;
+
+    // Battle 노드만 수집 (EnemyType이 비어있는 노드만)
+    std::vector<NodeData*> battleNodes;
+    for (auto& node : _CurrentFloorNodes)
+    {
+        if (node.Type == ENodeType::Battle && node.EnemyType.empty())
+        {
+            battleNodes.push_back(&node);
+        }
+    }
+
+    // 배정할 몬스터 타입 풀 생성
+    std::vector<std::string> monsterTypePool;
+
+    for (int i = 0; i < normalCount; ++i)
+        monsterTypePool.push_back("Normal");
+
+    for (int i = 0; i < eliteCount; ++i)
+        monsterTypePool.push_back("Elite");
+
+    for (int i = 0; i < bossCount; ++i)
+        monsterTypePool.push_back("Boss");
+
+    // 검증: Battle 노드 수와 몬스터 타입 풀 크기가 일치해야 함
+    if (battleNodes.size() != monsterTypePool.size())
+    {
+        PrintManager::GetInstance()->PrintLogLine(
+            "StageManager::AssignRandomMonsterTypes - Mismatch: " +
+            std::to_string(battleNodes.size()) + " empty Battle nodes vs " +
+            std::to_string(monsterTypePool.size()) + " monster types (Floor " + std::to_string(floor) + ")",
+            ELogImportance::WARNING
+        );
+    }
+
+    // 랜덤 섞기 (Fisher-Yates shuffle)
+    for (size_t i = monsterTypePool.size() - 1; i > 0; --i)
+    {
+        std::uniform_int_distribution<size_t> dist(0, i);
+        size_t j = dist(gen);
+        std::swap(monsterTypePool[i], monsterTypePool[j]);
+    }
+
+    // Battle 노드에 순서대로 배정 (EnemyType만 설정, NodeType은 Battle 유지)
+    size_t battleCount = battleNodes.size();
+    size_t poolCount = monsterTypePool.size();
+    size_t assignCount = (battleCount < poolCount) ? battleCount : poolCount;
+
+    for (size_t i = 0; i < assignCount; ++i)
+    {
+        // EnemyType만 설정 (NodeType은 Battle로 유지)
+        battleNodes[i]->EnemyType = monsterTypePool[i];
+    }
+
+    PrintManager::GetInstance()->PrintLogLine(
+        "Assigned random monster types for Floor " + std::to_string(floor) +
+        " (Normal: " + std::to_string(normalCount) +
+        ", Elite: " + std::to_string(eliteCount) +
+        ", Boss: " + std::to_string(bossCount) + ")",
+        ELogImportance::DISPLAY
+    );
 }

@@ -40,6 +40,11 @@ struct StageFloorData
     int TotalXP;   // 획득 가능한 총 경험치
     std::string Description;  // 설계 의도 / 설명
     
+    // ===== 몬스터 수량 관리 (신규 추가) =====
+    int NormalCount = 0;    // 일반 몬스터 수
+    int EliteCount = 0;     // 엘리트 몬스터 수
+    int BossCount = 0;      // 보스 몬스터 수
+    
     std::vector<NodeData> Nodes;            // 해당 층의 모든 노드
 };
 

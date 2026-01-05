@@ -524,7 +524,7 @@ std::vector<StageFloorData> DataManager::LoadStageFloorInfo()
             return result;
         }
 
-        // CSV 형식: Floor,BaseLevel,BattleCount,TotalXP,Description
+        // CSV 형식: Floor,BaseLevel,BattleCount,TotalXP,Description,NormalCount,EliteCount,BossCount
         for (size_t i = 1; i < csv.size(); ++i)
         {
             const auto& row = csv[i];
@@ -546,6 +546,11 @@ std::vector<StageFloorData> DataManager::LoadStageFloorInfo()
                 data.BattleCount = std::stoi(row[2]);
                 data.TotalXP = std::stoi(row[3]);
                 data.Description = row[4];
+
+                // ===== 신규 컬럼 파싱 (옵션: 없으면 0) =====
+                if (row.size() > 5) data.NormalCount = row[5].empty() ? 0 : std::stoi(row[5]);
+                if (row.size() > 6) data.EliteCount = row[6].empty() ? 0 : std::stoi(row[6]);
+                if (row.size() > 7) data.BossCount = row[7].empty() ? 0 : std::stoi(row[7]);
 
                 result.push_back(data);
             }
