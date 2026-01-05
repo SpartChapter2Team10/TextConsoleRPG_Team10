@@ -51,8 +51,9 @@ public:
     inline std::string GetMonstersPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), MONSTERS_FOLDER); }
     inline std::string GetUIPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), UI_FOLDER); }
     inline std::string GetItemsPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), ITEMS_FOLDER); }
-    inline std::string GetSoundPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), Sound_FOLDER); }
+    inline std::string GetSoundsPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), Sound_FOLDER); }
     inline std::string GetStagesPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), STAGES_FOLDER); }
+    inline std::string GetStoriesPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), STORIES_FOLDER); }
 
     // ===== 범용 파일 I/O (폴더 경로를 명시적으로 받음) =====
     std::string LoadTextFile(const std::string& folderPath, const std::string& fileName);

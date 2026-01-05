@@ -11,13 +11,15 @@ constexpr const char* MAPS_FOLDER = "Maps/";                  // 맵 데이터
 constexpr const char* MONSTERS_FOLDER = "Monsters/";          // 몬스터 데이터
 constexpr const char* UI_FOLDER = "UI/";                      // UI 리소스
 constexpr const char* ITEMS_FOLDER = "Items/";                // 아이템 데이터
-constexpr const char* Sound_FOLDER = "Sound/";               // 사운드 데이터
+constexpr const char* Sound_FOLDER = "Sounds/";               // 사운드 데이터
 constexpr const char* STAGES_FOLDER = "Stages/";               // 스테이지 데이터
+constexpr const char* STORIES_FOLDER = "Stories/";               // 스토리 데이터
 
 // ===================== File Names =====================
 constexpr const char* ITEMS_CSV = "Items.csv";                // 아이템 목록 CSV
 constexpr const char* MONSTERS_CSV = "Monsters.csv";          // 몬스터 목록 CSV
 constexpr const char* MAPS_CSV = "Maps.csv";                  // 맵 목록 CSV
+constexpr const char* Sounds_CSV = "Sounds.csv";                  // 사운드 목록 CSV
 
 // ===================== UI Drawer Configurations =====================
 constexpr int UI_SCREEN_WIDTH = 106;            // UI 화면 너비
