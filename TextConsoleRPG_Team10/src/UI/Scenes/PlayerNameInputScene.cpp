@@ -136,6 +136,6 @@ void PlayerNameInputScene::ShowConfirmation()
     _IsActive = false;
     Exit();
 
-    // BattleScene 테스트를 위해 바로 전환
-    SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+    // CharacterSelect 씬 전환
+    SceneManager::GetInstance()->ChangeScene(ESceneType::CharacterSelect);
 }
