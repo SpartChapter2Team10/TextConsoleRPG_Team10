@@ -21,6 +21,7 @@ private:
     // Shop 고유 패널 업데이트 함수
     void UpdateItemListPanel(Panel* itemListPanel);
     void UpdateGuidePanel(Panel* guidePanel);
+    void UpdateItemImage(int itemIndex);  // 선택된 아이템 이미지 업데이트
 
 public:
     ShopScene();

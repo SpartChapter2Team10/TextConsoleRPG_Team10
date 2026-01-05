@@ -101,7 +101,7 @@ void ShopScene::Enter()
         errorText->AddLine("");
         towerPanel->SetContentRenderer(std::move(errorText));
     }
-    
+
     // Tower 화살표 렌더링
     StageManager* stageMgr = StageManager::GetInstance();
     const StageFloorData* floorInfo = stageMgr->GetCurrentFloorInfo();
@@ -287,7 +287,7 @@ void ShopScene::UpdateTowerArrow(Panel* towerPanel, int currentFloor)
 {
     auto arrowRenderer = std::make_unique<TextRenderer>();
 
-  const int towerHeight = 25;
+    const int towerHeight = 25;
     const int maxFloor = 10;
     const int topMargin = 6;
     const int bottomMargin = 0;
@@ -301,7 +301,7 @@ void ShopScene::UpdateTowerArrow(Panel* towerPanel, int currentFloor)
     }
 
     arrowRenderer->AddLineWithColor("*----►",
-   MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
 
     towerPanel->AddRenderer(0, 0, 5, towerHeight, std::move(arrowRenderer));
     towerPanel->Redraw();
@@ -309,17 +309,17 @@ void ShopScene::UpdateTowerArrow(Panel* towerPanel, int currentFloor)
 
 void ShopScene::UpdateGuidePanel(Panel* guidePanel)
 {
- if (!guidePanel) return;
+    if (!guidePanel) return;
 
     auto guideText = std::make_unique<TextRenderer>();
 
     std::string controls = "[↑/↓] 선택   [Enter] 구매/판매   [Tab] 모드 전환   [ESC] 스테이지로 복귀";
-    guideText->AddLineWithColor(controls, 
- MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
+    guideText->AddLineWithColor(controls,
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
 
     std::string info = "구매 모드: 상점 아이템 선택 | 판매 모드: 인벤토리 아이템 선택 (판매가 = 구매가의 50%)";
     guideText->AddLineWithColor(info,
-     MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK));
+        MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK));
 
     guidePanel->ClearRenderers();
     guidePanel->AddRenderer(2, 0, 116, 4, std::move(guideText));
@@ -376,6 +376,9 @@ void ShopScene::UpdateItemListPanel(Panel* itemListPanel)
                 {
                     itemText->AddLineWithColor("> " + itemLine,
                         MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+
+                    // 선택된 아이템의 이미지 업데이트
+                    UpdateItemImage(static_cast<int>(i));
                 }
                 else
                 {
@@ -395,13 +398,63 @@ void ShopScene::UpdateItemListPanel(Panel* itemListPanel)
         itemText->AddLineWithColor("판매할 아이템을 선택하세요.",
             MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
         itemText->AddLine("");
-        itemText->AddLineWithColor("판매 가격은 구매 가격의 50%입니다.",
+        itemText->AddLineWithColor("판매 가격은 구매 가격의 60%입니다.",
             MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK));
     }
 
     itemListPanel->ClearRenderers();
     itemListPanel->AddRenderer(0, 0, 64, 23, std::move(itemText));
     itemListPanel->Redraw();
+}
+
+void ShopScene::UpdateItemImage(int itemIndex)
+{
+    Panel* imagePanel = _Drawer->GetPanel("ShopImage");
+    if (!imagePanel) return;
+
+    std::string asciiFile = ShopManager::GetInstance()->GetItemAsciiFile(itemIndex);
+
+    if (asciiFile.empty())
+    {
+        // 이미지 파일이 없으면 기본 텍스트 표시
+        auto defaultText = std::make_unique<TextRenderer>();
+        defaultText->AddLine("");
+        defaultText->AddLine("");
+        defaultText->AddLine("");
+        defaultText->AddLine("");
+        defaultText->AddLineWithColor("    [아이템 이미지]",
+            MakeColorAttribute(ETextColor::CYAN, EBackgroundColor::BLACK));
+        imagePanel->SetContentRenderer(std::move(defaultText));
+    }
+    else
+    {
+        // 아스키 아트 로드 시도
+        std::string uiPath = DataManager::GetInstance()->GetResourcePath("UI");
+        auto artRenderer = std::make_unique<AsciiArtRenderer>();
+
+        if (artRenderer->LoadFromFile(uiPath, asciiFile))
+        {
+            artRenderer->SetAlignment(ArtAlignment::CENTER);
+            artRenderer->SetColor(ETextColor::LIGHT_YELLOW);
+            imagePanel->SetContentRenderer(std::move(artRenderer));
+        }
+        else
+        {
+            // 로드 실패 시 기본 텍스트
+            auto errorText = std::make_unique<TextRenderer>();
+            errorText->AddLine("");
+            errorText->AddLine("");
+            errorText->AddLine("");
+            errorText->AddLineWithColor("    [이미지 로드 실패]",
+                MakeColorAttribute(ETextColor::LIGHT_RED, EBackgroundColor::BLACK));
+            errorText->AddLine("");
+            errorText->AddLineWithColor("    " + asciiFile,
+                MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK));
+            imagePanel->SetContentRenderer(std::move(errorText));
+        }
+    }
+
+    imagePanel->Redraw();
 }
 
 void ShopScene::HandleInput()
