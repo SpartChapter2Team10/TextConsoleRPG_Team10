@@ -44,7 +44,8 @@ public:
     void Update();
 
     // 효과음 재생 전용 
-    void PlaySFX(const std::string& EffectID);
+    float PlaySFX(const std::string& EffectID);
+    void PlaySFXWithPause(const std::string& EffectID);
     void PlayBGM(const std::string& BGMID);
 
 private:

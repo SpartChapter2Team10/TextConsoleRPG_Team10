@@ -81,7 +81,7 @@ void SoundPlayer::Update() {
     }
 }
 
-void SoundPlayer::PlaySFX(const std::string& EffectID)
+float SoundPlayer::PlaySFX(const std::string& EffectID)
 {
     std::string FileName = "";
     float PlayTime = 0.0f;
@@ -90,11 +90,20 @@ void SoundPlayer::PlaySFX(const std::string& EffectID)
     if (GetSoundData(EffectID,FileName,PlayTime,Volume))
     {
         Play(FileName, Volume);
-        Sleep(PlayTime * 1000);
     }
     else
     {
         // Todo 오류 로그 출력
+    }
+    return PlayTime;
+}
+
+void SoundPlayer::PlaySFXWithPause(const std::string& EffectID)
+{
+    float PlayTime = PlaySFX(EffectID);
+    if (PlayTime > 0.0f)
+    {
+        Sleep(PlayTime * 1000);
     }
 }
 

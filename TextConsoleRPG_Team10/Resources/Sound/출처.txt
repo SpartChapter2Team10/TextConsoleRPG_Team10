@@ -3,7 +3,9 @@
 ==========================================================
 // 씬
 Title1
-
+ TitleEnter
+-  334525__soneproject__rise5
+- https://freesound.org/people/soneproject/sounds/334525/
 
 GameOver
 
@@ -98,11 +100,11 @@ GetItem
 - Upper01
 - https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
  
- BGM_Shop - encoding 
+ BGM_Shop
 - a_small_fire_will_do
 - https://opengameart.org/content/a-small-fire-will-do-calming-loop
 
- 골드 획득 - encoding 
+ 골드 획득
 - Coin01
 - https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
 
@@ -146,7 +148,7 @@ GetItem
 일반 몬스터 종류
 
 오염된 슬라임
- SlimeHitted - not encoding
+ SlimeHitted
 - random5
 - https://opengameart.org/content/rpg-sound-pack
  SlimeAttack
@@ -157,7 +159,7 @@ GetItem
 - https://opengameart.org/content/8-wet-squish-slurp-impacts
 
 광폭한 쥐
-  RatHitted - not encoding
+  RatHitted
 - random4
 - https://opengameart.org/content/rpg-sound-pack
  RatAttack
@@ -168,13 +170,13 @@ GetItem
 - https://freesound.org/people/macohibs/sounds/728086/
 
 고블린 정찰병
- GoblinHitted- not encoding
+ GoblinHitted
 - ogre5
 - https://opengameart.org/content/rpg-sound-pack
- GoblinAttack - not encoding
+ GoblinAttack
 - ogre2
 - https://opengameart.org/content/rpg-sound-pack
- GoblinDead - not encoding
+ GoblinDead
 - ogre4
 - https://opengameart.org/content/rpg-sound-pack
 
@@ -190,7 +192,7 @@ GetItem
 - https://opengameart.org/content/8-wet-squish-slurp-impacts
 
 해골 병사
- SkeletonHitted - not encoding
+ SkeletonHitted
 - wood-small
 - https://opengameart.org/content/rpg-sound-pack
  SkeletonAttack
@@ -201,10 +203,10 @@ GetItem
 - https://opengameart.org/content/ghost
 
 부패한 좀비
- ZombieHitted - not encoding
+ ZombieHitted
 - zombie-13
 - https://opengameart.org/content/zombies-sound-pack
- ZombieAttack - not encoding
+ ZombieAttack
 - zombie-24
 - https://opengameart.org/content/zombies-sound-pack
  ZombieDead
@@ -212,7 +214,7 @@ GetItem
 - https://opengameart.org/content/zombies-sound-pack
 
 석재 가고일
- GolemHitted - not encoding
+ GolemHitted
 - metal-small1
 - https://opengameart.org/content/rpg-sound-pack
  GolemAttack
@@ -223,7 +225,7 @@ GetItem
 - https://freesound.org/people/pbmzbr/sounds/625296/
 
 유적 수호자
- GolemHitted - not encoding
+ GolemHitted
 - metal-small1
 - https://opengameart.org/content/rpg-sound-pack
  GolemAttack
@@ -256,10 +258,10 @@ GetItem
 - https://freesound.org/people/Breviceps/sounds/457531/
 
 설원 늑대
-WolfHitted - not encoding
+WolfHitted
 - wolfman
 - https://opengameart.org/content/zombies-sound-pack
- WolfAttack - not encoding
+ WolfAttack
 - mnstr5
 - https://opengameart.org/content/zombies-sound-pack
  WolfDead
@@ -267,13 +269,13 @@ WolfHitted - not encoding
 - https://opengameart.org/content/zombies-sound-pack
 
 예티
- YetiAttack - not encoding
+ YetiAttack
 - giant1
 - https://opengameart.org/content/rpg-sound-pack
- YetiHitted - not encoding
+ YetiHitted
 - giant3
 - https://opengameart.org/content/rpg-sound-pack
- YetiDead - not encoding
+ YetiDead
 - giant2
 - https://opengameart.org/content/rpg-sound-pack
 
@@ -300,7 +302,7 @@ WolfHitted - not encoding
 - https://freesound.org/people/LilMati/sounds/527636/
 
 비홀더
- GhostHitted - not encoding
+ GhostHitted
 - water/link
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
 GhostAttack
@@ -311,7 +313,7 @@ GhostAttack
 - https://opengameart.org/content/high-pitch-scream-sounds2
 
 엘드리치 호러
- GolemHitted - not encoding
+ GolemHitted
 - metal-small2
 - https://opengameart.org/content/rpg-sound-pack
  GhostAttack
@@ -322,7 +324,7 @@ GhostAttack
 - https://opengameart.org/content/ghost
 
 공허의 망령
- GhostHitted - not encoding
+ GhostHitted
 - water/link
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
  GhostAttack
@@ -333,7 +335,7 @@ GhostAttack
 - https://opengameart.org/content/ghost
 
 살아있는 조각상
- GolemHitted - not encoding
+ GolemHitted
 - metal-small2
 - https://opengameart.org/content/rpg-sound-pack
  GolemAttack
@@ -346,7 +348,7 @@ GhostAttack
 엘리트 몬스터
 
 거대 시궁쥐
-  RatHitted - not encoding
+  RatHitted
 - random4
 - https://opengameart.org/content/rpg-sound-pack
  RatAttack
@@ -357,13 +359,13 @@ GhostAttack
 - https://freesound.org/people/macohibs/sounds/728086/
 
 고블린 대장
- GoblinHitted- not encoding
+ GoblinHitted
 - ogre5
 - https://opengameart.org/content/rpg-sound-pack
- GoblinAttack - not encoding
+ GoblinAttack
 - ogre2
 - https://opengameart.org/content/rpg-sound-pack
- GoblinDead - not encoding
+ GoblinDead
 - ogre4
 - https://opengameart.org/content/rpg-sound-pack
 
@@ -379,7 +381,7 @@ GhostAttack
 - https://opengameart.org/content/ghost
 
 옵시디언 골렘
- GolemHitted - not encoding
+ GolemHitted
 - metal-small2
 - https://opengameart.org/content/rpg-sound-pack
  GolemAttack
@@ -423,10 +425,10 @@ WolfHitted - not encoding
 - https://opengameart.org/content/zombies-sound-pack
 
 카오스 아이
- GhostHitted - not encoding
+ GhostHitted
 - water/link
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
- AbyssAttack - not encoding
+ AbyssAttack
 - water/magnet_action
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
  AbyssDead - not encoding
@@ -434,13 +436,13 @@ WolfHitted - not encoding
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
 
 심연의 집사
- GhostHitted - not encoding
+ GhostHitted
 - water/link
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
- AbyssAttack - not encoding
+ AbyssAttack
 - water/magnet_action
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
- AbyssDead - not encoding
+ AbyssDead
 - water/magnet_action
 - https://opengameart.org/content/atmospheric-interaction-sound-pack
 
@@ -528,6 +530,8 @@ impsplat
 - https://freesound.org/people/LilMati/sounds/527636/
  824559__emmaemmaemma__arderas-en-el-infierno-you-will-burn-in-hell-demon-voice
 - https://freesound.org/people/emma.emma.emma/sounds/824559/
+ 334525__soneproject__rise5
+- https://freesound.org/people/soneproject/sounds/334525/
 
 단독 파일 - BGM
  atmosbasement

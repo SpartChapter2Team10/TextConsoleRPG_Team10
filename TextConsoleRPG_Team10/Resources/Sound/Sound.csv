@@ -1,7 +1,7 @@
 ﻿ID,FileName,Length,Volume
 Player_Attack,PlayerAttack.wav,0.371,0.8
-Player_Hit,2.wav,0.235,0.5
-Player_Hitt_Critical,PlayerHittedCritical.wav,0.115,0.5
+Player_Hit,PlayerHitted.wav,0.235,1
+Player_Hit_Critical,PlayerHittedCritical.wav,0.115,1
 Player_Dead,PlayerDead.wav,0.904,0.5
 Get_Reward,GetReward.wav,0.5773,1
 LevelUp,LevelUp.wav,2.011,1
@@ -107,3 +107,4 @@ ChaosEye_Hit,GhostHitted.wav,0.503,1
 AbyssButler_Attack,AbyssAttack.wav,1.136,0.8
 AbyssButler_Dead,AbyssDead.wav,3.034,0.8
 AbyssButler_Hit,GhostHitted.wav,0.503,1
+Title_Enter,TitleEnter,8,1
