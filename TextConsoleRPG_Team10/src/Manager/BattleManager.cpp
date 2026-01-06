@@ -182,6 +182,7 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
                     if (!result.Message.empty())
                     {
                         PushLog(result.Message, EBattleLogType::Important);
+                        RequestFlush(EBattleFlushType::PlayerSkill);
                     }
                     return;
                 }

@@ -102,7 +102,7 @@ void BattleScene::Enter() {
 
         Panel* charArtPanel =
             _Drawer->CreatePanel(panelName, xPos, yPos, charArtWidth, charArtHeight);
-        charArtPanel->SetBorder(true, ETextColor::WHITE);
+        charArtPanel->SetBorder(false, ETextColor::WHITE); // 테스트 후 가리기
 
         // 캐릭터별 아스키 아트 로드
         if (i < party.size() && party[i])
@@ -187,7 +187,7 @@ void BattleScene::Enter() {
 
     // ===== 애니메이션 영역 (중앙) =====
     Panel* animPanel = _Drawer->CreatePanel("Animation", 48, 5, 62, 24);
-    animPanel->SetBorder(true, ETextColor::WHITE);
+    animPanel->SetBorder(false, ETextColor::WHITE); //x 테스트 후 가리기
 
     auto animArt = std::make_unique<AsciiArtRenderer>();
     animArt->SetAlignment(ArtAlignment::CENTER);
@@ -226,6 +226,10 @@ void BattleScene::Enter() {
             {
             case EBattleFlushType::PlayerAttack:
                 SetPanelAnimation("PlayerAttack", "PlayerAttack.json", 1.0f);
+                //SetPanelAnimation("Animation", "test.json", 1.0f);
+                break;
+            case EBattleFlushType::PlayerSkill:
+                SetPanelAnimation("PlayerSkill", "PlayerSkill.json", 1.0f);
                 //SetPanelAnimation("Animation", "test.json", 1.0f);
                 break;
 
