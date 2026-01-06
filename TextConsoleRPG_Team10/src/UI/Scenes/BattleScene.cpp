@@ -1,4 +1,4 @@
-#include "../../../include/UI/Scenes/BattleScene.h"
+﻿#include "../../../include/UI/Scenes/BattleScene.h"
 #include "../../../include/UI/UIDrawer.h"
 #include "../../../include/UI/Panel.h"
 #include "../../../include/UI/TextRenderer.h"
@@ -20,7 +20,7 @@
 #include "../../../include/Item/IItem.h"
 #include <Windows.h>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include "../../../include/nlohmann/json.hpp"
 
 static const std::string ANIM_ROOT_PATH =
 "Resources/Animations/";
@@ -84,17 +84,29 @@ void BattleScene::Enter() {
     UpdateCommandPanel();
 
     // ===== 캐릭터 아스키 아트 패널 (왼쪽, 4명 2x2 배치) =====
-    int charArtStartX = 0;
+    int charArtStartX = 15;
     int charArtStartY = 5;
     int charArtWidth = 24;
     int charArtHeight = 12;
 
     auto party = gameMgr->GetParty();
 
+    // ===== 배치 순서 매핑: 4 2 / 3 1 =====
+    // party[0] → 우하단 (row=1, col=1)
+    // party[1] → 좌하단 (row=1, col=0)
+    // party[2] → 우상단 (row=0, col=1)
+    // party[3] → 좌상단 (row=0, col=0)
+    int layoutMap[4][2] = {
+        {1, 1},  // party[0] → 우하단 (1,1)
+        {1, 0},  // party[1] → 좌하단 (1,0)
+        {0, 1},  // party[2] → 우상단 (0,1)
+        {0, 0}   // party[3] → 좌상단 (0,0)
+    };
+
     for (int i = 0; i < 4; ++i)
     {
-        int row = i / 2;
-        int col = i % 2;
+        int row = layoutMap[i][0];
+        int col = layoutMap[i][1];
         int xPos = charArtStartX + col * charArtWidth;
         int yPos = charArtStartY + row * charArtHeight;
 
@@ -102,7 +114,7 @@ void BattleScene::Enter() {
 
         Panel* charArtPanel =
             _Drawer->CreatePanel(panelName, xPos, yPos, charArtWidth, charArtHeight);
-        charArtPanel->SetBorder(true, ETextColor::WHITE);
+        charArtPanel->SetBorder(false, ETextColor::WHITE); // 테스트 후 가리기
 
         // 캐릭터별 아스키 아트 로드
         if (i < party.size() && party[i])
@@ -134,7 +146,7 @@ void BattleScene::Enter() {
             if (charArt->LoadFromFile(charactersPath, artFileName))
             {
                 charArt->SetAlignment(ArtAlignment::CENTER);
-                charArt->SetColor(ETextColor::WHITE);
+                charArt->SetColor(ETextColor::LIGHT_CYAN); //캐릭터 색상
                 charArtPanel->SetContentRenderer(std::move(charArt));
             }
             else
@@ -156,9 +168,9 @@ void BattleScene::Enter() {
         {
             // 빈 슬롯
             auto emptyText = std::make_unique<TextRenderer>();
+            /*emptyText->AddLine("");
             emptyText->AddLine("");
-            emptyText->AddLine("");
-            emptyText->AddLine("     [빈 슬롯]");
+            emptyText->AddLine("     [빈 슬롯]");*/
             emptyText->SetTextColor(
                 MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK));
             charArtPanel->SetContentRenderer(std::move(emptyText));
@@ -187,17 +199,17 @@ void BattleScene::Enter() {
 
     // ===== 애니메이션 영역 (중앙) =====
     Panel* animPanel = _Drawer->CreatePanel("Animation", 48, 5, 62, 24);
-    animPanel->SetBorder(true, ETextColor::WHITE);
+    animPanel->SetBorder(false, ETextColor::WHITE); //x 테스트 후 가리기
 
     auto animArt = std::make_unique<AsciiArtRenderer>();
     animArt->SetAlignment(ArtAlignment::CENTER);
-    animArt->SetColor(ETextColor::WHITE);
+    animArt->SetColor(ETextColor::WHITE); //애니메이션 색상
     animPanel->SetContentRenderer(std::move(animArt));
     animPanel->Redraw();
 
     // ===== 몬스터 이미지 패널 (오른쪽) =====
-    Panel* enemyPanel = _Drawer->CreatePanel("Enemy", 110, 8, 40, 17);
-    enemyPanel->SetBorder(true, ETextColor::WHITE);
+    Panel* enemyPanel = _Drawer->CreatePanel("Enemy", 95, 8, 40, 17);
+    enemyPanel->SetBorder(false, ETextColor::WHITE);
     UpdateMonsterInfoPanel();
 
     // ===== 시스템 로그 패널 (하단 좌측-중앙), 내부 우측에 커맨드 통합 =====
@@ -225,23 +237,27 @@ void BattleScene::Enter() {
             switch (type)
             {
             case EBattleFlushType::PlayerAttack:
-                //SetPanelAnimation("PlayerAttack", "PlayerAttack.txt");
-                SetPanelAnimation("Animation", "test.json", 1.0f);
+                SetPanelAnimation("PlayerAttack", "PlayerAttack.json", 1.0f);
+                //SetPanelAnimation("Animation", "test.json", 1.0f);
+                break;
+            case EBattleFlushType::PlayerSkill:
+                SetPanelAnimation("PlayerSkill", "PlayerSkill.json", 1.0f);
+                //SetPanelAnimation("Animation", "test.json", 1.0f);
                 break;
 
             case EBattleFlushType::PlayerItem:
-                //SetPanelAnimation("PlayerItem", "PlayerItem.txt");
-                SetPanelAnimation("Animation", "test.json", 1.0f);
+                SetPanelAnimation("PlayerItem", "PlayerItem.json", 1.0f);
+                //SetPanelAnimation("Animation", "test.json", 1.0f);
                 break;
 
             case EBattleFlushType::MonsterAttack:
-                //SetPanelAnimation("MonsterAttack", "MonsterAttack.txt");
-                SetPanelAnimation("Animation", "test.json", 1.0f);
+                SetPanelAnimation("MonsterAttack", "MonsterAttack.json", 1.0f);
+                //SetPanelAnimation("Animation", "test.json", 1.0f);
                 break;
 
             case EBattleFlushType::BossAttack:
-                //SetPanelAnimation("BossAttack", "BossAttack.txt");
-                SetPanelAnimation("Animation", "test.json", 1.0f);
+                SetPanelAnimation("BossAttack", "BossAttack.json", 1.0f);
+                //SetPanelAnimation("Animation", "test.json", 1.0f);
                 break;
 
             case EBattleFlushType::BossDebuff:
@@ -671,15 +687,15 @@ void BattleScene::UpdateMonsterInfoPanel()
     // ===== 몬스터 이름 → 파일명 매핑 (Monsters.csv 기준) =====
     if (monsterName.find("슬라임") != std::string::npos || monsterName.find("망령") != std::string::npos) {
         fileName = "Slime.txt";
+    } 
+	else if (monsterName.find("박쥐") != std::string::npos) {
+        fileName = "Bat.txt";
     }
     else if (monsterName.find("쥐") != std::string::npos) {
         fileName = "Mouse.txt";
     }
     else if (monsterName.find("고블린") != std::string::npos) {
         fileName = "Goblin.txt";
-    }
-    else if (monsterName.find("박쥐") != std::string::npos) {
-        fileName = "Bat.txt";
     }
     else if (monsterName.find("해골") != std::string::npos || monsterName.find("스켈레톤") != std::string::npos) {
         fileName = "Skeleton.txt";
@@ -734,7 +750,7 @@ void BattleScene::UpdateMonsterInfoPanel()
     if (monsterArt->LoadFromFile(monstersPath, fileName))
     {
         monsterArt->SetAlignment(ArtAlignment::CENTER);
-        monsterArt->SetColor(ETextColor::WHITE);
+        monsterArt->SetColor(ETextColor::LIGHT_YELLOW); // 몬스터 색상
         enemyPanel->SetContentRenderer(std::move(monsterArt));
     }
     else
