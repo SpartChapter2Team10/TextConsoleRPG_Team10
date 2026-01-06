@@ -57,7 +57,7 @@ void BattleScene::Enter() {
     _SelectedPartyIndex = 0;
     _IsCancelMode = false;
     _BattleEnd = false;
-
+    _InputState = EBattleInputState::Playing;
     BattleManager* battleMgr = BattleManager::GetInstance();
     GameManager* gameMgr = GameManager::GetInstance();
 
@@ -170,7 +170,7 @@ void BattleScene::Enter() {
     _Drawer->Render();
     // ===== BattleManager → BattleScene 로그 Flush 연결 =====
     BattleManager::GetInstance()->SetFlushCallback(
-        [this]()
+        [this](EBattleFlushType type)
         {
             this->CollectBattleLogs();
         }

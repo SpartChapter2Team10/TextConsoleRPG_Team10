@@ -90,7 +90,6 @@ private:
     IBattleAnimationCallback* _AnimationCallback = nullptr;
 
 private:
-    std::vector<BattleLog> _BattleLogs;
 
     // ===== 내부 헬퍼 함수 =====
     void RefreshTurnOrder();  // 파티 정렬 (사망자 제외)

@@ -610,10 +610,10 @@ bool BattleManager::ProcessBattleTurn()
     {
     // 6. 몬스터 턴: 타겟 선정 후 공격
         Player* target = SelectMonsterTarget();
-
+        GameManager* gm = GameManager::GetInstance();
         ProcessAttack(_CurrentMonster.get(), target);
         // 7. 메인 플레이어 사망 확인 (게임 오버 조건)
-        if (mainPlayer->IsDead())
+        if (gm->GetMainPlayer()->IsDead())
         {
             _Result.Victory = false;
             _Result.IsCompleted = true;
