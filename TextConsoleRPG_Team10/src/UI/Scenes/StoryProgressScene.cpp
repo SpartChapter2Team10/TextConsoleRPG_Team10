@@ -116,7 +116,8 @@ void StoryProgressScene::Enter()
     // 타이핑 효과 활성화
     StoryText->EnableTypingEffect(true);
     StoryText->SetTypingSpeed(ETypingSpeed::Normal);
-
+    StoryText->AddLineWithColor("Hello, Test.",
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
     TextPanel->SetContentRenderer(std::move(StoryText));
     UpdateUIWithCurrentStory();
     TextPanel->Redraw();
@@ -135,6 +136,7 @@ void StoryProgressScene::Exit()
 
     // 데이터 리셋
     _StoryTexts.clear();
+    _CurrentStoryIndex = 0;
 }
 
 void StoryProgressScene::Update()
@@ -184,25 +186,26 @@ void StoryProgressScene::UpdateUIWithCurrentStory()
     if (_CurrentStoryIndex >= _StoryTexts.size()) return;
 
     // 패널에서 렌더러 꺼내오기
-    Panel* panel = _Drawer->GetPanel("StoryText");
-    auto* renderer = static_cast<TextRenderer*>(panel->GetContentRenderer());
+    Panel* Panel = _Drawer->GetPanel("StoryText");
+    auto* Renderer = static_cast<TextRenderer*>(Panel->GetContentRenderer());
 
     // CSV 구조: 0:ID, 1:Floor, 2:Type, 3:Speaker, 4:Content
-    const auto& row = _StoryTexts[_CurrentStoryIndex];
-    std::string Speaker = row[3];
-    std::string Content = row[4];
-
+    const auto& Row = _StoryTexts[_CurrentStoryIndex];
+    std::string Speaker = Row[3];
+    std::string Content = Row[4];
+    
     // 화자 이름 포맷팅 (예: [System] : ...)
-    std::string prefix = (Speaker == "System") ? "" : "[" + Speaker + "] : ";
+    std::string Prefix = (Speaker == "System") ? "" : "[" + Speaker + "] : ";
 
     std::vector<std::string> Lines;
     SplitText(Lines, Content, "\\n");
 
     for (const auto& Line : Lines) {
-        renderer->AddLineWithTyping(prefix + Line, (row[2] == "Desc" ? 14 : 15));
+        Renderer->AddLineWithTyping(Prefix + Line, (Row[2] == "Desc" ? 14 : 15));
     }
 }
 
+// 아예 데이터를 가져오는 단계에서 걸러서 가져오기
 void StoryProgressScene::GetStoriesData(int FloorIndex)
 {
     if (DataManager::GetInstance())
@@ -210,12 +213,23 @@ void StoryProgressScene::GetStoriesData(int FloorIndex)
         const auto& Datas = DataManager::GetInstance()->LoadCSVFile(
             DataManager::GetInstance()->GetResourcePath("Stories"),
             "Stories.csv");
-
+        // 현재 파티 내부의 직업 및 그 이름 체크
+        // 0 : Warrior 이름들, 1 : Mage 이름들, 2 : Archer 이름들, 3 : Priest 이름들
+        std::vector<std::vector<std::string>> NamePerJob(4,std::vector<std::string>());
+        // Todo - GameManager::GetInstance()->GetParty()와 dynamic_cast를 사용해 분류하기
+        
         // 0번째는 Column 이름
         for (int i = 1; i < Datas.size(); ++i)
         {
             if (stoi(Datas[i][1]) == FloorIndex)
             {
+                if (Datas[i][2] == "Solo" && GameManager::GetInstance()->GetPartySize() != 1) continue;
+                else if (Datas[i][2] == "Party" && GameManager::GetInstance()->GetPartySize() == 1) continue;
+                else if (Datas[i][3] == "Warrior" && NamePerJob[0].size() == 0) continue;
+                else if (Datas[i][3] == "Mage" && NamePerJob[1].size() == 0) continue;
+                else if (Datas[i][3] == "Archer" && NamePerJob[2].size() == 0) continue;
+                else if (Datas[i][3] == "Priest" && NamePerJob[3].size() == 0) continue;
+
                 _StoryTexts.push_back(Datas[i]);
             }
         }
