@@ -1,15 +1,28 @@
-#pragma once
+﻿#pragma once
 #include "../Singleton.h"
 #include "../Unit/IMonster.h"
 #include <memory>
 #include <string>
 #include <vector>
 #include <optional>
-
+#include <functional>
 
 class Player;
 class ICharacter;
 class IBattleAnimationCallback;  // 전방 선언
+
+// ===== 전투 플러시 타입 =====
+enum class EBattleFlushType
+{
+    PlayerAttack,
+    PlayerSkill,
+    PlayerItem,
+    MonsterAttack,
+    TurnEnd,
+    BattleEnd,
+    BossAttack,
+    BossDebuff
+};
 
 // ===== 전역 함수 선언 =====
 // 직업 우선순위 반환 (Archer=0, Priest=1, Warrior=2, Mage=3)
@@ -77,7 +90,6 @@ private:
     IBattleAnimationCallback* _AnimationCallback = nullptr;
 
 private:
-    std::vector<BattleLog> _BattleLogs;
 
     // ===== 내부 헬퍼 함수 =====
     void RefreshTurnOrder();  // 파티 정렬 (사망자 제외)
@@ -206,8 +218,30 @@ public:
     // 아이템: 메인 플레이어 인벤토리에 추가
     // BattleResult 업데이트
     void CalculateReward(Player* P, IMonster* M);
-
     // ===== 전투 로그 시스템 =====
+private:
+    std::vector<BattleLog> _BattleLogs;
+
+public:
     void PushLog(const std::string& msg, EBattleLogType type = EBattleLogType::Normal);
     std::vector<BattleLog> ConsumeLogs(); // BattleScene에서 가져감
+
+    // ===== 씬 콜백 =====
+public:
+    using FlushCallback = std::function<void(EBattleFlushType)>;
+
+    void SetFlushCallback(FlushCallback cb)
+    {
+        _flushCallback = cb;
+    }
+
+    void RequestFlush(EBattleFlushType type)
+    {
+        if (_flushCallback)
+            _flushCallback(type);
+    }
+
+private:
+    FlushCallback _flushCallback;
+    bool _IsPlayerTurn = true;
 };
