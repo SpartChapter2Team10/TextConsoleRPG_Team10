@@ -137,3 +137,7 @@ FootStep_6,FootStep_06.wav,0.242,1
 FootStep_7,FootStep_07.wav,0.256,1
 FootStep_8,FootStep_08.wav,0.256,1
 FootStep_9,FootStep_09.wav,0.215,1
+BossVoice_1,BossVoice_IamDeath.wav,0.557,0.5
+BossVoice_2,BossVoice_IamTheDarkness.wav,1.779,0.5
+BossVoice_3,BossVoice_YouCannotEscapeDeath.wav,2.44,0.5
+Boss_Dead,Boss_Dead.wav,,
