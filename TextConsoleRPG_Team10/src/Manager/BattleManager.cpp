@@ -15,6 +15,7 @@
 #include "../../include/Skill/ISkill.h"
 #include "../../include/Manager/GameManager.h"
 #include "../../include/Manager/DataManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 #include "../../include/Item/MonsterSpawnData.h"
 #include "../../include/Data/FloorScalingData.h"
 #include "../../include/UI/IBattleAnimationCallback.h"
@@ -593,17 +594,18 @@ bool BattleManager::ProcessBattleTurn()
         // 4. 플레이어 턴: ProcessTurn(Monster)
         ProcessTurn(_CurrentMonster.get());
 
+
         // 5. 몬스터 사망 확인
         if (_CurrentMonster->IsDead())
         {
             _Result.Victory = true;
             _Result.IsCompleted = true;
-            
+            SoundPlayer::GetInstance()->PlayMonserSFX(_CurrentMonster.get()->GetName(), "Dead");
             return false;
         }
-
         _IsPlayerTurn = false;   // ⭐ 다음은 몬스터
         return true;             // ⭐ 여기서 끊는다
+
     }
         
     else
@@ -617,6 +619,8 @@ bool BattleManager::ProcessBattleTurn()
         {
             _Result.Victory = false;
             _Result.IsCompleted = true;
+          
+            SoundPlayer::GetInstance()->PlaySFX("Player_Dead");
             PushLog("용사의 여정이 끝났습니다... 전투에서 패배했습니다.", EBattleLogType::Important);
             return false;
         }
@@ -766,6 +770,7 @@ bool BattleManager::TryUseReservedItem(Player* player)
         item->CancelReservation();
         reservation.IsActive = false;
 
+        SoundPlayer::GetInstance()->PlaySFX("Item_Weapon");
         return true;  // 아이템 사용으로 턴 소모
     }
 

@@ -14,6 +14,7 @@ private:
     std::vector<std::string> _BossPhase2Texts;
     std::vector<int> _LineColor;
     std::string _BGMID;
+    bool _IsFirst;  // 더티 플래그 같긴 한데, 방법이 없어 보입니다.
 
 public:
     StoryProgressScene();
@@ -24,11 +25,13 @@ public:
     void Update() override;
     void Render() override;
     void HandleInput() override;
+    void ResetIsFirst();
+
 private:
     void UpdateUIWithCurrentStory();
     void GetStoriesData(int FloorIndex);
     void SplitText(std::vector<std::string>& OutList, const std::string& Content, const std::string& Delimiter);
-    std::vector<std::vector<std::string>> CheckPartyInfo();
+    void CheckPartyInfo(std::vector<std::vector<std::string>>& OutNamePerJob);
 
     void SetArtImage(std::string FileName);
     void CheckArtUpdate();

@@ -2,6 +2,7 @@
 #include "../../include/Unit/Player.h"
 #include "../../include/Unit/ICharacter.h"
 #include "../../include/Manager/GameManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 #include <random>
 
 // ===== Elite 스킬 구현 =====

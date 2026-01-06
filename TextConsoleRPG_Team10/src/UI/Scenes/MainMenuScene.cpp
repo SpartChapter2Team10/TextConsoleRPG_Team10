@@ -58,7 +58,6 @@ void MainMenuScene::Enter()
         errorText->SetTextColor(static_cast<WORD>(ETextColor::LIGHT_YELLOW));
         titlePanel->SetContentRenderer(std::move(errorText));
     }
-    SoundPlayer::GetInstance()->PlaySFX("Player_Hit_Critical");
 
     // "Press Any Key" 메시지 추가 (플리커링 효과)
     auto pressKeyText = std::make_unique<TextRenderer>();
@@ -115,6 +114,6 @@ void MainMenuScene::HandleInput()
         input->GetKeyCode();  // 키 소비
 
         // PlayerNameInput 씬으로 이동
-        SceneManager::GetInstance()->ChangeScene(ESceneType::PlayerNameInput);
+        SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
     }
 }

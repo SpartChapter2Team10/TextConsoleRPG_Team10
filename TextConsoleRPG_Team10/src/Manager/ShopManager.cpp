@@ -1,5 +1,6 @@
 #include "../../include/Manager/ShopManager.h"
 #include "../../include/Manager/DataManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 #include "../../include/Factory/ItemFactory.h"
 #include "../../include/Item/ItemData.h"
 #include "../../include/Item/HealPotion.h"
@@ -59,7 +60,7 @@ bool ShopManager::ReopenShop(const std::string& csvFileName)
 
     std::vector<ItemData> selectedItems;
     std::vector<bool> used(availableItems.size(), false);
-    int itemsToSelect = std::min(3, static_cast<int>(availableItems.size()));
+    int itemsToSelect = min(3, static_cast<int>(availableItems.size()));
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -188,6 +189,7 @@ TransactionResult ShopManager::BuyItem(Player* player, int idx)
         stock._StockCount--;
         player->ModifyGold(-price);
 
+        SoundPlayer::GetInstance()->PlaySFX("Item_Buy");
         return { true, "구매 성공!", -price, itemName };
     }
     else
@@ -236,6 +238,7 @@ TransactionResult ShopManager::SellItem(Player* player, int slotIdx)
     {
         player->ModifyGold(sellPrice);
 
+        SoundPlayer::GetInstance()->PlaySFX("Item_Sell");
         return { true, "판매 성공!", sellPrice, itemName };
     }
 

@@ -11,6 +11,7 @@
 #include "../../include/Item/TitanAwakening.h"
 #include "../../include/Manager/GameManager.h"
 #include "../../include/Manager/DataManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 #include "../../include/Item/ItemData.h"
 #include <random>
 #include <tuple>
@@ -67,6 +68,9 @@ int NormalMonster::TakeDamage(ICharacter* Target, int Amount)
     {
         _Stats._CurrentHP = 0;
     }
+
+    SoundPlayer::GetInstance()->PlayMonserSFX(GetName(), "_Hit");
+
     return Amount;
 }
 
@@ -75,6 +79,8 @@ std::tuple<std::string, int> NormalMonster::Attack(ICharacter* Target) const
     if (!Target)
         return { "",0 };
 
+    SoundPlayer::GetInstance()->PlayMonserSFX(GetName(), "_Attack");
+    // CSV에서 로드한 공격명 사용
     // ===== 치명타 판정 (LUK 반영) =====
     // 치명타율 = 기본 치명타율 + (총 LUK * 0.1%)
     int totalLuk = _Stats._Luk + _Stats._TempLuk;
@@ -171,6 +177,7 @@ std::tuple<int, int, std::unique_ptr<IItem>> NormalMonster::DropReward()
         }
     }
 
+    SoundPlayer::GetInstance()->PlaySFXWithPause("Get_Reward");
     return { _ExpReward, _GoldReward, std::move(DropItem) };
 }
 

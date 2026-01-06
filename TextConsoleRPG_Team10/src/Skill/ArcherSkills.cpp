@@ -1,6 +1,7 @@
 #include "../../include/Skill/ArcherSkills.h"
 #include "../../include/Unit/Player.h"
 #include "../../include/Manager/GameManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 #include "../../include/Manager/BattleManager.h"
 
 // ===== 정밀 조준 (Aim) =====
@@ -21,6 +22,9 @@ SkillResult AimSkill::CalculateEffect(Player* user, ICharacter* target)
 
     // 숙련도 증가
     user->GainAtkProficiency(3);
+
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Archer_Aim");
 
     return SkillResult{
         _Name,
@@ -68,6 +72,9 @@ SkillResult MultiShotSkill::CalculateEffect(Player* user, ICharacter* target)
     // 숙련도 증가
     user->GainAtkProficiency(7);
     user->GainDexProficiency(5);
+
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Archer_MultiShot");
 
     return SkillResult{
         _Name,

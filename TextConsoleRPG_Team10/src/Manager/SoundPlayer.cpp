@@ -117,11 +117,86 @@ void SoundPlayer::PlayBGM(const std::string& BGMID)
     {
         PlayLoop(FileName, "BGM", Volume);
     }
-    else
+}
+
+void SoundPlayer::PlayMonserSFX(const std::string& MonsterName, const std::string& SoundType)
+{
+    std::string SoundID = "";
+    if (MonsterName=="오염된 슬라임")
     {
-        // Todo 오류 로그 출력
-        system("cls");
+        SoundID.append("Slime");
     }
+    else if (MonsterName == "광폭한 쥐")
+    {
+        SoundID.append("Rat");
+    }
+    else if (MonsterName == "고블린 정찰병")
+    {
+        SoundID.append("Gobline");
+    }
+    else if (MonsterName == "박쥐 떼")
+    {
+        SoundID.append("Bat");
+    }
+    else if (MonsterName == "해골 병사")
+    {
+        SoundID.append("Skeleton");
+    }
+    else if (MonsterName == "부패한 좀비")
+    {
+        SoundID.append("Zombie");
+    }
+    else if (MonsterName == "석재 가고일")
+    {
+        SoundID.append("Gargoyle");
+    }
+    else if (MonsterName == "유적 수호자")
+    {
+        SoundID.append("RuinGurdian");
+    }
+    else if (MonsterName == "하피")
+    {
+        SoundID.append("Harpy");
+    }
+    else if (MonsterName == "바실리스크")
+    {
+        SoundID.append("Basilisk");
+    }
+    else if (MonsterName == "설원 늑대")
+    {
+        SoundID.append("Wolf");
+    }
+    else if (MonsterName == "예티")
+    {
+        SoundID.append("Yeti");
+    }
+    else if (MonsterName == "보이드 워커")
+    {
+        SoundID.append("Void");
+    }
+    else if (MonsterName == "하급 데몬")
+    {
+        SoundID.append("Demon");
+    }
+    else if (MonsterName == "비홀더")
+    {
+        SoundID.append("Beholder");
+    }
+    else if (MonsterName == "엘드리치 호러")
+    {
+        SoundID.append("Rich");
+    }
+    else if (MonsterName == "공허의 망령")
+    {
+        SoundID.append("Shade");
+    }
+    else if (MonsterName == "살아있는 조각상")
+    {
+        SoundID.append("LivinStatue");
+    }
+
+    SoundID.append(SoundType);
+    PlaySFX(SoundID);
 }
 
 void SoundPlayer::SetVolume(const std::string& Alias, float Volume) {

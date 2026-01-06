@@ -1,6 +1,7 @@
 #include "../../include/Skill/PriestSkills.h"
 #include "../../include/Unit/Player.h"
 #include "../../include/Manager/GameManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 
 // ===== 치유의 빛 (Heal) =====
 
@@ -49,6 +50,9 @@ SkillResult HealSkill::CalculateEffect(Player* user, ICharacter* target)
     }
 
     // 숙련도 증가는 제거 (ProcessBattleEndProficiency에서 처리)
+
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Priest_Healing");
 
     return SkillResult{
         _Name,
@@ -118,6 +122,9 @@ SkillResult BlessSkill::CalculateEffect(Player* user, ICharacter* target)
     }
 
     // 숙련도 증가는 제거 (ProcessBattleEndProficiency에서 처리)
+
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Priest_Blessing");
 
     return SkillResult{
         _Name,

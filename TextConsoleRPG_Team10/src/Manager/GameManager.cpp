@@ -154,6 +154,9 @@ void GameManager::StartGame()
         // 씬 렌더링
         sm->Render();
 
+        // 사운드 해제
+        SoundPlayer::GetInstance()->Update();
+
         // 종료 조건 확인
         UIScene* currentScene = sm->GetCurrentScene();
         if (currentScene && !currentScene->IsActive())
