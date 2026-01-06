@@ -41,7 +41,7 @@ void StoryProgressScene::Enter()
 
     // 첫 시작 시 시나리오 출력을 위한 예외 처리
     if (_IsFirst) _Floor = 0;
-    else if (GameManager::GetInstance()->GetMainPlayer().get()->IsDead())
+    else if (GameManager::GetInstance()->GetMainPlayer().get()!=nullptr && GameManager::GetInstance()->GetMainPlayer().get()->IsDead())
     {
         _Floor = 11;
     }
