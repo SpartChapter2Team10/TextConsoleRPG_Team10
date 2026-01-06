@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "../../include/Manager/PrintManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 
 // 기본 생성자 (기존 방식 - 하드코딩)
 Player::Player(const std::string& Name, bool enableInventory)
@@ -124,6 +125,8 @@ int Player::TakeDamage(ICharacter* Attacker, const int Amount)
     // 숙련도 추적 (HP 성장용)
     TrackDamageTaken(Amount);
 
+    SoundPlayer::GetInstance()->PlaySFXWithPause("Player_Hit");
+
     return Amount;
 }
 
@@ -139,12 +142,14 @@ std::tuple<std::string, int> Player::Attack(ICharacter* Target) const
     int ActualDamage = Target->TakeDamage(
         const_cast<ICharacter*>(static_cast<const ICharacter*>(this)),
         TotalDamage);
+    SoundPlayer::GetInstance()->PlaySFXWithPause("Player_Attack");
 
     return std::make_tuple("일반 공격", ActualDamage);
 }
 
 std::string Player::GetAttackNarration() const
 {
+    SoundPlayer::GetInstance()->PlaySFX("Player_Attack");
     return _Name + "이(가) 용감하게 공격을 날립니다!";
 }
 
@@ -194,6 +199,7 @@ void Player::ProcessLevelUp()
     {
         _MaxExp = 100;
     }
+    SoundPlayer::GetInstance()->PlaySFX("LevelUp");
 }
 
 void Player::GainExp(const int Amount)
@@ -205,6 +211,7 @@ void Player::GainExp(const int Amount)
 void Player::GainGold(const int Amount)
 {
     ModifyGold(Amount);
+    SoundPlayer::GetInstance()->PlaySFX("Get_Gold");
 }
 
 bool Player::TryGetInventory(Inventory*& outInventory)

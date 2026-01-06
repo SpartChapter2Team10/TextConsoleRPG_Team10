@@ -48,6 +48,9 @@ public:
     void PlaySFXWithPause(const std::string& EffectID);
     void PlayBGM(const std::string& BGMID);
 
+    // 몬스터 사망 효과음 재생
+    void PlayMonserSFX(const std::string& MonsterName, const std::string& SoundType);
+
 private:
     std::string GetFullSoundPath(const std::string& FileName);
     bool GetSoundData(const std::string& InID, std::string& OutFileName, float& OutPlayTime, float& OutVolume);

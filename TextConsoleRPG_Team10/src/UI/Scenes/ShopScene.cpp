@@ -9,6 +9,7 @@
 #include "../../../include/Manager/ShopManager.h"
 #include "../../../include/Manager/DataManager.h"
 #include "../../../include/Manager/StageManager.h"
+#include "../../../include/Manager/SoundPlayer.h"
 #include "../../../include/Common/TextColor.h"
 #include "../../../include/Unit/Player.h"
 #include "../../../include/Item/Inventory.h"
@@ -40,6 +41,8 @@ void ShopScene::Enter()
     // 상점 재개장 (CSV에서 상품 로드)
     ShopManager::GetInstance()->ReopenShop("Items.csv");
 
+    // 상점 BGM 재생
+    SoundPlayer::GetInstance()->PlayBGM("BGM_Shop");
     // =============================================================================
     // 패널 레이아웃 (150x45 화면 기준)
     // =============================================================================

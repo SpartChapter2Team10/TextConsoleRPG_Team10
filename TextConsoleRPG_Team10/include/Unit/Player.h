@@ -191,4 +191,6 @@ public:
 
     // 직업별 특화 숙련도 성장 (각 클래스에서 오버라이드)
     virtual void ApplyProficiencyGrowth() {}
+
+    void PlaySkillSound();
 };

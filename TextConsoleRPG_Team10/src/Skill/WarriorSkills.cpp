@@ -1,6 +1,7 @@
 #include "../../include/Skill/WarriorSkills.h"
 #include "../../include/Unit/Player.h"
 #include "../../include/Manager/GameManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 
 // ===== 포효 (Roar) =====
 
@@ -19,6 +20,9 @@ SkillResult RoarSkill::CalculateEffect(Player* user, ICharacter* target)
     user->ApplyTempDefBuff(defBoost, 3);
 
     // TODO: 어그로 시스템 구현 필요 (BattleManager에서 처리)
+
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Warrior_Roar");
 
     return SkillResult{
         _Name,
@@ -74,6 +78,9 @@ SkillResult SmashSkill::CalculateEffect(Player* user, ICharacter* target)
     // 숙련도 증가
     user->GainAtkProficiency(5);
     user->GainDefProficiency(3);  // 방어력 기반 공격이므로 방어 숙련도도 증가
+    
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Warrior_Smash");
 
     return SkillResult{
         _Name,

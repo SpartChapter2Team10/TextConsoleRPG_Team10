@@ -515,7 +515,9 @@ void CharacterSelectScene::HandleInput()
             }
 
             // 다음 씬으로 이동 (StageSelect 또는 Battle)
-            SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+            // SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+            // -> Floor 1에 대한 시나리오 출력
+            SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
         }
     }
     else if (keyCode == VK_ESCAPE)  // ESC - 이전 화면

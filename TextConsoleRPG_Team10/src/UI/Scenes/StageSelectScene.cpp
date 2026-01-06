@@ -9,6 +9,7 @@
 #include "../../../include/Manager/BattleManager.h"
 #include "../../../include/Manager/GameManager.h"
 #include "../../../include/Manager/DataManager.h"
+#include "../../../include/Manager/SoundPlayer.h"
 #include "../../../include/Common/TextColor.h"
 #include "../../../include/Unit/Player.h"
 #include "../../../include/Item/Inventory.h"
@@ -35,6 +36,8 @@ void StageSelectScene::Enter()
     _IsActive = true;
     _SelectedNodeIndex = 0;
 
+    SoundPlayer::GetInstance()->PlayBGM("BGM_"
+        + std::to_string(StageManager::GetInstance()->GetCurrentFloor()));
     // 입력 버퍼 완전히 클리어 (이전 Scene의 입력 잔여물 제거)
     HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
     FlushConsoleInputBuffer(hInput);

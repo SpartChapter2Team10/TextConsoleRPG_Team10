@@ -11,12 +11,17 @@
 #include "../../../include/Manager/SoundPlayer.h"
 #include "../../../include/Common/TextColor.h"
 #include "../../../include/Unit/Player.h"
+#include "../../../include/Unit/Warrior.h"
+#include "../../../include/Unit/Mage.h"
+#include "../../../include/Unit/Archer.h"
+#include "../../../include/Unit/Priest.h"
 #include <memory>
 
 StoryProgressScene::StoryProgressScene()
     : UIScene("StoryProgress")
     , _CurrentStoryIndex(0)
     , _TextComplete(false)
+    , _IsFirst(true)
 {
 }
 
@@ -33,6 +38,13 @@ void StoryProgressScene::Enter()
 
     // 출력할 스토리 텍스트 가져오기
     _Floor = StageManager::GetInstance()->GetCurrentFloor();
+
+    // 첫 시작 시 시나리오 출력을 위한 예외 처리
+    if (_IsFirst) _Floor = 0;
+    else if (GameManager::GetInstance()->GetMainPlayer().get()->IsDead())
+    {
+        _Floor = 11;
+    }
     GetStoriesData(_Floor);
 
     // BGM 변경
@@ -177,14 +189,35 @@ void StoryProgressScene::HandleInput() {
             }
             else {
                 // 더 이상 보여줄 데이터가 없으면 다음 씬으로
-                SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+                if (!_IsFirst)
+                {
+                    SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+                }
+                else
+                {
+                    _IsFirst = false;
+                    SceneManager::GetInstance()->ChangeScene(ESceneType::PlayerNameInput);
+                }
             }
         }
         _Drawer->Render();
     }
     else if (keyCode == VK_ESCAPE) {  // ESC - 스토리 스킵
-        SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+        if (_IsFirst)
+        {
+            _IsFirst = false;
+            SceneManager::GetInstance()->ChangeScene(ESceneType::PlayerNameInput);
+        }
+        else
+        {
+            SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+        }
     }
+}
+
+void StoryProgressScene::ResetIsFirst()
+{
+    _IsFirst = true;
 }
 
 void StoryProgressScene::UpdateUIWithCurrentStory()
@@ -211,15 +244,16 @@ void StoryProgressScene::GetStoriesData(int FloorIndex)
         // 0 : Warrior 이름들, 1 : Mage 이름들, 2 : Archer 이름들, 3 : Priest 이름들
         std::vector<std::vector<std::string>> NamePerJob(4, std::vector<std::string>());
         // Todo - GameManager::GetInstance()->GetParty()와 dynamic_cast를 사용해 분류하기
-        
+        CheckPartyInfo(NamePerJob);
+
         // 0번째는 Column 이름
         for (int i = 1; i < Datas.size(); ++i)
         {
             // CSV 구조: 0:ID, 1:Floor, 2:Type, 3:Speaker, 4:Content
             if (stoi(Datas[i][1]) == FloorIndex)
             {
-                if (Datas[i][2] == "Solo" && GameManager::GetInstance()->GetPartySize() != 1) continue;
-                else if (Datas[i][2] == "Party" && GameManager::GetInstance()->GetPartySize() == 1) continue;
+                if (Datas[i][2] == "Solo" && GameManager::GetInstance()->GetPartySize() > 1) continue;
+                else if (Datas[i][2] == "Party" && GameManager::GetInstance()->GetPartySize() <= 1) continue;
                 else if (Datas[i][3] == "Warrior" && NamePerJob[0].size() == 0) continue;
                 else if (Datas[i][3] == "Mage" && NamePerJob[1].size() == 0) continue;
                 else if (Datas[i][3] == "Archer" && NamePerJob[2].size() == 0) continue;
@@ -230,8 +264,33 @@ void StoryProgressScene::GetStoriesData(int FloorIndex)
                 const std::string& Content = Datas[i][4];
 
                 // 화자 이름 포맷팅 (예: [System] : ...)
-                std::string Prefix = (Speaker == "System") ? "" : "[" + Speaker + "] : ";
+                std::string Prefix = "";
+                if (Speaker == "Player" && GameManager::GetInstance()->GetPartySize() > 0)
+                {
+                    Prefix = "[" + GameManager::GetInstance()->GetParty()[0].get()->GetName() + "]: ";
+                }
+                else if (Speaker == "Warrior" && NamePerJob[0].size() > 0)
+                {
+                    int Index = rand() % NamePerJob[0].size();
+                    Prefix = "[" + NamePerJob[0][Index] + "] : ";
+                }
+                else if (Speaker == "Mage" && NamePerJob[1].size() > 0)
+                {
+                    int Index = rand() % NamePerJob[1].size();
+                    Prefix = "[" + NamePerJob[1][Index] + "] : ";
+                }
+                else if (Speaker == "Archer" && NamePerJob[2].size() > 0)
+                {
+                    int Index = rand() % NamePerJob[2].size();
+                    Prefix = "[" + NamePerJob[2][Index] + "] : ";
+                }
+                else if (Speaker == "Priest" && NamePerJob[3].size() > 0)
+                {
+                    int Index = rand() % NamePerJob[3].size();
+                    Prefix = "[" + NamePerJob[3][Index] + "] : ";
+                }
 
+                // 문자열 분리
                 std::vector<std::string> Lines;
                 SplitText(Lines, Content, "\\n");
                 for (std::string& Line : Lines)
@@ -291,7 +350,7 @@ void StoryProgressScene::SplitText(std::vector<std::string>& OutList, const std:
     if (!temp.empty()) OutList.push_back(temp);
 }
 
-std::vector<std::vector<std::string>>  StoryProgressScene::CheckPartyInfo()
+void  StoryProgressScene::CheckPartyInfo(std::vector<std::vector<std::string>>& OutNamePerJob)
 {
     // 파티 정보 분석
     const auto& PartyList = GameManager::GetInstance()->GetParty();
@@ -300,15 +359,13 @@ std::vector<std::vector<std::string>>  StoryProgressScene::CheckPartyInfo()
     // 직업별 이름 저장용 (Warrior: 0, Mage: 1, Archer: 2, Priest: 3)
     std::vector<std::vector<std::string>> NamePerJob(4);
 
-    //for (size_t i = 1; i < PartyList.size(); i++) // 0번 Player 제외
-    //{
-    //    if (dynamic_pointer_cast<Warrior>(PartyList[i])) NamePerJob[0].push_back(PartyList[i]->GetName());
-    //    else if (dynamic_pointer_cast<Mage>(PartyList[i])) NamePerJob[1].push_back(PartyList[i]->GetName());
-    //    else if (dynamic_pointer_cast<Archer>(PartyList[i])) NamePerJob[2].push_back(PartyList[i]->GetName());
-    //    else if (dynamic_pointer_cast<Priest>(PartyList[i])) NamePerJob[3].push_back(PartyList[i]->GetName());
-    //}
-
-    return NamePerJob;
+    for (size_t i = 1; i < PartyList.size(); i++) // 0번 Player 제외
+    {
+        if (dynamic_cast<Warrior*>(PartyList[i].get())) NamePerJob[0].push_back(PartyList[i]->GetName());
+        else if (dynamic_cast<Mage*>(PartyList[i].get())) NamePerJob[1].push_back(PartyList[i]->GetName());
+        else if (dynamic_cast<Archer*>(PartyList[i].get())) NamePerJob[2].push_back(PartyList[i]->GetName());
+        else if (dynamic_cast<Priest*>(PartyList[i].get())) NamePerJob[3].push_back(PartyList[i]->GetName());
+    }
 }
 
 void StoryProgressScene::SetArtImage(std::string FileName)

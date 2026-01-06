@@ -1,4 +1,4 @@
-﻿#include "../../include/Manager/BattleManager.h"
+#include "../../include/Manager/BattleManager.h"
 #include "../../include/Manager/PrintManager.h"
 #include "../../include/Unit/NormalMonster.h"
 #include "../../include/Unit/EliteMonster.h"  // 추가
@@ -15,6 +15,7 @@
 #include "../../include/Skill/ISkill.h"  // SkillResult 포함
 #include "../../include/Manager/GameManager.h"
 #include "../../include/Manager/DataManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 #include "../../include/Item/MonsterSpawnData.h"
 #include "../../include/Data/FloorScalingData.h"  // 추가
 #include <iostream>
@@ -616,6 +617,9 @@ bool BattleManager::ProcessBattleTurn()
             "몬스터를 물리쳤습니다! 전투에서 승리했습니다!",
             ELogImportance::DISPLAY
         );*/
+        
+        SoundPlayer::GetInstance()->PlayMonserSFX(_CurrentMonster.get()->GetName(), "Dead");
+
         PushLog("몬스터를 물리쳤습니다! 전투에서 승리했습니다!", EBattleLogType::Important);
         return false;
     }
@@ -642,6 +646,9 @@ bool BattleManager::ProcessBattleTurn()
             "용사의 여정이 끝났습니다... 전투에서 패배했습니다.",
             ELogImportance::DISPLAY
         );*/
+        
+        SoundPlayer::GetInstance()->PlaySFX("Player_Dead");
+
         PushLog("용사의 여정이 끝났습니다... 전투에서 패배했습니다.", EBattleLogType::Important);
         return false;
     }
@@ -807,6 +814,7 @@ bool BattleManager::TryUseReservedItem(Player* player)
         item->CancelReservation();
         reservation.IsActive = false;
 
+        SoundPlayer::GetInstance()->PlaySFX("Item_Weapon");
         return true;  // 아이템 사용으로 턴 소모
     }
 

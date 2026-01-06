@@ -1,5 +1,6 @@
 #include "../../include/Manager/SceneManager.h"
 #include "../../include/UI/UIScene.h"
+#include "../../include/UI/Scenes/StoryProgressScene.h"
 #include "../../include/Manager/PrintManager.h"
 
 SceneManager::SceneManager()
@@ -24,6 +25,7 @@ void SceneManager::RegisterScene(ESceneType type, std::unique_ptr<UIScene> scene
 
 void SceneManager::ChangeScene(ESceneType type)
 {
+
     // 이전 Scene 종료
     if (_CurrentScene && _CurrentScene->IsActive())
     {
@@ -39,6 +41,12 @@ void SceneManager::ChangeScene(ESceneType type)
             ELogImportance::WARNING
         );
         return;
+    }
+
+    // 예외 처리 추가
+    if (_CurrentSceneType == ESceneType::MainMenu && type == ESceneType::StoryProgress)
+    {
+        dynamic_cast<StoryProgressScene*>(_Scenes[type].get())->ResetIsFirst();
     }
 
     // 새 Scene 시작

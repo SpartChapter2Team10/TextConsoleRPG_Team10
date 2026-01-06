@@ -1,5 +1,6 @@
 #include "../../include/Skill/MageSkills.h"
 #include "../../include/Unit/Player.h"
+#include "../../include/Manager/SoundPlayer.h"
 
 // ===== 화염구 (Fireball) =====
 
@@ -24,6 +25,10 @@ SkillResult FireballSkill::CalculateEffect(Player* user, ICharacter* target)
     // 숙련도 증가
     user->GainMagicProficiency(8);
     user->GainMPProficiency(5);
+
+
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Mage_Fireball");
 
     return SkillResult{
    _Name,
@@ -68,6 +73,9 @@ SkillResult OverloadSkill::CalculateEffect(Player* user, ICharacter* target)
     // 숙련도 증가
     user->GainMagicProficiency(10);
     user->GainMPProficiency(8);
+
+    // 스킬 사운드 재생
+    SoundPlayer::GetInstance()->PlaySFX("Mage_Overload");
 
     return SkillResult{
         _Name,
