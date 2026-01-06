@@ -1,4 +1,4 @@
-﻿#include "../../../include/UI/Scenes/BattleScene.h"
+#include "../../../include/UI/Scenes/BattleScene.h"
 #include "../../../include/UI/UIDrawer.h"
 #include "../../../include/UI/Panel.h"
 #include "../../../include/UI/TextRenderer.h"
@@ -836,8 +836,8 @@ void BattleScene::HandleInput()
     if (_IsWaitingForAnimation)
         return;
 
-    if (_InputState != EBattleInputState::Playing)
-        return;
+    /*if (_InputState != EBattleInputState::Playing)
+        return;*/
     InputManager* input = InputManager::GetInstance();
     if (!input->IsKeyPressed()) return;
 
@@ -1198,7 +1198,7 @@ void BattleScene::ProcessBattleTurn()
         }
 
         _BattleEnd = true;
-        _InputState = EBattleInputState::ResultShown;
+        _InputState = EBattleInputState::EndWaiting;
     }
 
     // 6. 로그/UI 반영
