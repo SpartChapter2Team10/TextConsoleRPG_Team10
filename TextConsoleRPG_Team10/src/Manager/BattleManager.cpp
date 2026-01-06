@@ -92,7 +92,7 @@ void BattleManager::ProcessTurn(ICharacter* Def)
         "=== 플레이어 턴 시작 ===",
         ELogImportance::DISPLAY
     );*/
-    PushLog("=== 플레이어 턴 시작 ===", EBattleLogType::Important);
+    //PushLog("=== 플레이어 턴 시작 ===", EBattleLogType::Important);
 
     // 파티 돌아가면서 행동 진행
     for (ICharacter* member : sortedParty)
@@ -142,7 +142,7 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
                     player->GetName() + "의 " + result.SkillName + "!",
                     ELogImportance::DISPLAY
                 );*/
-                PushLog(player->GetName() + "의 " + result.SkillName + "!", EBattleLogType::Important);
+                PushLog("'"+player->GetName() + "'의 " + result.SkillName + "!", EBattleLogType::Important);
 
                 // 다단 히트 처리
                 if (result.HitCount > 1)
@@ -616,7 +616,7 @@ bool BattleManager::ProcessBattleTurn()
             "몬스터를 물리쳤습니다! 전투에서 승리했습니다!",
             ELogImportance::DISPLAY
         );*/
-        PushLog("몬스터를 물리쳤습니다! 전투에서 승리했습니다!", EBattleLogType::Important);
+        //PushLog("몬스터를 물리쳤습니다! 전투에서 승리했습니다!", EBattleLogType::Important);
         return false;
     }
 
@@ -629,7 +629,8 @@ bool BattleManager::ProcessBattleTurn()
         "=== 몬스터 턴 ===",
         ELogImportance::DISPLAY
     );*/
-    PushLog("=== 몬스터 턴 ===", EBattleLogType::Important);
+    //PushLog("=== 몬스터 턴 ===", EBattleLogType::Important);
+    PushLog("", EBattleLogType::Important);
 
     ProcessAttack(_CurrentMonster.get(), target);
 
