@@ -1213,6 +1213,7 @@ void BattleScene::EndBattle(bool victory)
     {
         // 패배 시 메인 메뉴로 이동
         SceneManager::GetInstance()->ChangeScene(ESceneType::MainMenu);
+        // SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
     }
 }
 

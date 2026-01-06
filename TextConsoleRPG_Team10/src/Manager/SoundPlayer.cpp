@@ -198,7 +198,7 @@ void SoundPlayer::PlayMonserSFX(const std::string& MonsterName, const std::strin
     }
     else if (MonsterName == "살아있는 조각상")
     {
-        SoundID.append("LivinStatue");
+        SoundID.append("LivingStatue");
     }
     else if (MonsterName == "거대 시궁쥐")
     {
