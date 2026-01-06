@@ -1,4 +1,4 @@
-#include "../../../include/UI/Scenes/CompanionRecruitScene.h"
+﻿#include "../../../include/UI/Scenes/CompanionRecruitScene.h"
 
 #include <Windows.h>
 
@@ -84,8 +84,8 @@ void CompanionRecruitScene::Enter() {
   titlePanel->SetContentRenderer(std::move(titleText));
   titlePanel->Redraw();
 
-  // ===== 장소 이미지 패널 (좌측 중앙) =====
-  Panel* locationPanel = _Drawer->CreatePanel("Location", 2, 5, 58, 24);
+  // ===== 장소 이미지 패널 (우측 중앙) ===== //전신샷으로 수정
+  Panel* locationPanel = _Drawer->CreatePanel("Location", 60, 5, 62, 24);
   locationPanel->SetBorder(true, ETextColor::WHITE);
 
   auto locationArt = std::make_unique<AsciiArtRenderer>();
@@ -95,9 +95,9 @@ void CompanionRecruitScene::Enter() {
 
   locationPanel->SetContentRenderer(std::move(locationArt));
   locationPanel->Redraw();
-
-  // ===== 동료 캐릭터 이미지 + 정보 패널 (우측 중앙) =====
-  Panel* characterPanel = _Drawer->CreatePanel("Character", 60, 5, 62, 24);
+  UpdateCompanionPanel(locationPanel);
+  // ===== 동료 캐릭터 이미지 + 정보 패널 (좌측 중앙) =====
+  Panel* characterPanel = _Drawer->CreatePanel("Character", 2, 5, 58, 24);
   characterPanel->SetBorder(true, ETextColor::WHITE);
 
   UpdateCompanionInfoPanel(characterPanel);
@@ -149,30 +149,59 @@ UpdateTowerArrow(towerPanel, floorInfo->Floor);
     if (i < party.size() && party[i]) {
   Player* player = party[i].get();
       std::string name = player->GetName();
-      std::string className = "전사";  // TODO: 직업 추가
-  int hp = player->GetCurrentHP();
-      int maxHp = player->GetMaxHP();
-      int mp = player->GetCurrentMP();
-      int maxMp = player->GetMaxMP();
-
-    partyText->AddLineWithColor(" " + name + " (" + className + ")",
-  MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
+      //std::string className = "전사";  // TODO: 직업 추가
+      // ===== 직업 판별 =====
+      std::string className = "Unknown";
+      if (dynamic_cast<Warrior*>(party[i].get())) {
+          className = "전사";
+      }
+      else if (dynamic_cast<Mage*>(party[i].get())) {
+          className = "마법사";
+      }
+      else if (dynamic_cast<Archer*>(party[i].get())) {
+          className = "궁수";
+      }
+      else if (dynamic_cast<Priest*>(party[i].get())) {
+          className = "사제";
+      }
+      int level = party[i]->GetLevel();
+      int hp = party[i]->GetCurrentHP();
+      int maxHp = party[i]->GetMaxHP();
+      int mp = party[i]->GetCurrentMP();
+      int maxMp = party[i]->GetMaxMP();
+      int atk = party[i]->GetTotalAtk();
+      int def = party[i]->GetTotalDef();
+      int dex = party[i]->GetTotalDex();
+      int luk = party[i]->GetTotalLuk();
+      float critRate = party[i]->GetTotalCriticalRate();
       
+      // ===== 이름 + 직업 =====
+    partyText->AddLineWithColor(" Lv." +std::to_string(level) + "-" + name + "/" + className + ")",
+  MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
+    // ===== HP (빨강/초록) =====
       std::string hpLine = " HP:" + std::to_string(hp) + "/" + std::to_string(maxHp);
       WORD hpColor = (hp < maxHp * 0.3f) ?
           MakeColorAttribute(ETextColor::LIGHT_RED, EBackgroundColor::BLACK) :
           MakeColorAttribute(ETextColor::LIGHT_GREEN, EBackgroundColor::BLACK);
       partyText->AddLineWithColor(hpLine, hpColor);
-
+      // ===== MP (파랑) =====
       std::string mpLine = " MP:" + std::to_string(mp) + "/" + std::to_string(maxMp);
       partyText->AddLineWithColor(mpLine,
        MakeColorAttribute(ETextColor::LIGHT_BLUE, EBackgroundColor::BLACK));
+      // ===== ATK/DEF/DEX/LUK/CRIT (회색) =====
+        partyText->AddLineWithColor(
+            " A:" + std::to_string(atk) +
+            " D:" + std::to_string(def) +
+            " Dx:" + std::to_string(dex) +
+            " Lk:" + std::to_string(luk) +
+            " Cr:" + std::to_string(static_cast<int>(critRate * 100)) + "%",
+            MakeColorAttribute(ETextColor::LIGHT_GRAY, EBackgroundColor::BLACK));
     } else {
       partyText->AddLine(" [빈 슬롯]");
       partyText->AddLine("");
     }
 
-partyPanel->AddRenderer(0, 0, 34, 4, std::move(partyText));
+partyPanel->AddRenderer(0, 0, 34, 6, std::move(partyText));
     partyPanel->Redraw();
   }
 
@@ -252,16 +281,16 @@ void CompanionRecruitScene::UpdateCompanionInfoPanel(Panel* infoPanel) {
   std::string fileName;
   
   if (companion._JobType == "warrior") {
-    fileName = "P_WarriorF.txt";  // CSV: Characters/P_WarriorF.txt
+    fileName = "P_Warrior.txt";  // CSV: Characters/P_WarriorF.txt
   }
   else if (companion._JobType == "mage") {
-    fileName = "P_MageF.txt";     // CSV: Characters/P_MageF.txt
+    fileName = "P_Mage.txt";     // CSV: Characters/P_MageF.txt
   }
   else if (companion._JobType == "archer") {
-    fileName = "P_ArcherF.txt";   // CSV: Characters/P_ArcherF.txt
+    fileName = "P_Archer.txt";   // CSV: Characters/P_ArcherF.txt
   }
   else if (companion._JobType == "priest") {
-    fileName = "P_PriestF.txt";   // CSV: Characters/P_PriestF.txt
+    fileName = "P_Priest.txt";   // CSV: Characters/P_PriestF.txt
   }
   else {
     // 폴백: CSV의 AsciiFile 사용
@@ -767,4 +796,58 @@ void CompanionRecruitScene::UpdateDialogueUI() {
   panel->AddRenderer(65, 0, 33, 8, std::move(commandText));
 
 panel->Redraw();
+}
+
+void CompanionRecruitScene::UpdateCompanionPanel(Panel* infoPanel) {
+    if (!infoPanel || !_CurrentCompanion.has_value()) return;
+
+    infoPanel->ClearRenderers();
+
+    const CompanionData& companion = _CurrentCompanion.value();
+
+    // 상단: 아스키 아트 (0 ~ 14줄)
+    auto characterArt = std::make_unique<AsciiArtRenderer>();
+    std::string charactersPath = DataManager::GetInstance()->GetResourcePath("Characters");
+
+    // ===== 직업별 앞모습 이미지 파일명 결정 (Class.csv의 ascii_file_select 컬럼) =====
+    std::string fileName;
+
+    if (companion._JobType == "warrior") {
+        fileName = "P_WarriorF.txt";  // CSV: Characters/P_WarriorF.txt
+    }
+    else if (companion._JobType == "mage") {
+        fileName = "P_MageF.txt";     // CSV: Characters/P_MageF.txt
+    }
+    else if (companion._JobType == "archer") {
+        fileName = "P_ArcherF.txt";   // CSV: Characters/P_ArcherF.txt
+    }
+    else if (companion._JobType == "priest") {
+        fileName = "P_PriestF.txt";   // CSV: Characters/P_PriestF.txt
+    }
+    else {
+        // 폴백: CSV의 AsciiFile 사용
+        fileName = companion._AsciiFile;
+        if (fileName.find("Characters/") == 0) {
+            fileName = fileName.substr(11);
+        }
+    }
+
+    bool artLoaded = characterArt->LoadFromFile(charactersPath, fileName);
+
+    if (artLoaded) {
+        characterArt->SetAlignment(ArtAlignment::CENTER);
+        infoPanel->AddRenderer(0, 0, 60, 30, std::move(characterArt));
+    }
+    else {
+        // 로드 실패 시 에러 메시지 표시
+        auto errorText = std::make_unique<TextRenderer>();
+        errorText->AddLine("");
+        errorText->AddLineWithColor(
+            "  [ 캐릭터 이미지 로드 실패 ]",
+            MakeColorAttribute(ETextColor::LIGHT_RED, EBackgroundColor::BLACK));
+        errorText->AddLine("");
+        errorText->AddLine("  경로: " + charactersPath);
+        errorText->AddLine("  파일: " + fileName);
+        infoPanel->AddRenderer(0, 0, 60, 30, std::move(errorText));
+    }
 }

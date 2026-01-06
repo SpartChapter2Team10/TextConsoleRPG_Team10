@@ -610,7 +610,7 @@ void BattleScene::UpdatePartyPanels()
 
             // ===== 이름 + 직업 + 어그로 =====
             WORD nameColor = MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK);
-            std::string nameLine = "Lv." + std::to_string(level) + "-" + name + "/" + className + " (AG:" + std::to_string(aggro) + ")";
+            std::string nameLine = " Lv." + std::to_string(level) + "-" + name + "/" + className + " (AG:" + std::to_string(aggro) + ")";
             partyText->AddLineWithColor(nameLine, nameColor);
 
             // ===== HP (빨강/초록) =====
@@ -634,7 +634,7 @@ void BattleScene::UpdatePartyPanels()
 
             std::string statLine = atkDefLine + dexLukLine;
             partyText->AddLineWithColor(statLine,
-                MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
+                MakeColorAttribute(ETextColor::LIGHT_GRAY, EBackgroundColor::BLACK));
 
         }
         else

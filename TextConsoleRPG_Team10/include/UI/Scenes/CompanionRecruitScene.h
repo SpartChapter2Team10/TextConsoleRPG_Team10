@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../UIScene.h"
 #include "../../Data/CompanionData.h"
 #include <Windows.h>
@@ -33,6 +33,9 @@ private:
     
     // 동료 정보 패널 업데이트
     void UpdateCompanionInfoPanel(Panel* infoPanel);
+
+    // 동료 패널 업데이트
+    void UpdateCompanionPanel(Panel* infoPanel);
     
     // ===== 대화 시스템 메서드 =====
     void LoadDialogueData();           // RecruitParty.csv에서 대화 로드
