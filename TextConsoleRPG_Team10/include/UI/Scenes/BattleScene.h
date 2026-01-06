@@ -67,7 +67,7 @@ public:
     
     // ===== IBattleAnimationCallback 구현 (간소화) =====
     void SetPanelAnimation(const std::string& panelName,
-     const std::string& animJsonFile) override;
+     const std::string& animJsonFile, float duration) override;
     
     void SetPanelArt(const std::string& panelName,
         const std::string& artTxtFile) override;
