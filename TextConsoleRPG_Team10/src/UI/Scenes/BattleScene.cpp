@@ -1,4 +1,4 @@
-#include "../../../include/UI/Scenes/BattleScene.h"
+﻿#include "../../../include/UI/Scenes/BattleScene.h"
 #include "../../../include/UI/UIDrawer.h"
 #include "../../../include/UI/Panel.h"
 #include "../../../include/UI/TextRenderer.h"
@@ -57,9 +57,7 @@ void BattleScene::Enter() {
     _SelectedPartyIndex = 0;
     _IsCancelMode = false;
     _BattleEnd = false;
-    _IsWaitingForAnimation = false;
-    _AnimationWaitTimer = 0.0f;
-
+    _InputState = EBattleInputState::Playing;
     BattleManager* battleMgr = BattleManager::GetInstance();
     GameManager* gameMgr = GameManager::GetInstance();
 
@@ -214,13 +212,19 @@ void BattleScene::Enter() {
     UpdateInventoryPanel(inventoryPanel);
 
     _Drawer->Render();
+    // ===== BattleManager → BattleScene 로그 Flush 연결 =====
+    BattleManager::GetInstance()->SetFlushCallback(
+        [this](EBattleFlushType type)
+        {
+            this->CollectBattleLogs();
+        }
+    );
 }
 
 void BattleScene::Exit()
 {
-    // ===== 애니메이션 콜백 해제 =====
-    BattleManager* battleMgr = BattleManager::GetInstance();
-    battleMgr->ClearAnimationCallback();
+    // 🔥 중요: Flush 콜백 해제
+    BattleManager::GetInstance()->SetFlushCallback(nullptr);
 
     _Drawer->RemoveAllPanels();
     _SystemLogs.clear();
@@ -290,7 +294,7 @@ void BattleScene::UpdateSystemLog(Panel* systemPanel, const std::vector<std::str
         else if (messages[i].find("[안내]") != std::string::npos)
             color = MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK);
         else
-            color = MakeColorAttribute(ETextColor::DARK_GRAY, EBackgroundColor::BLACK);
+            color = MakeColorAttribute(ETextColor::LIGHT_MAGENTA, EBackgroundColor::BLACK);
 
         logText->AddLineWithColor(messages[i], color);
     }
@@ -921,15 +925,48 @@ void BattleScene::HandleInput()
     // Space: 턴 진행
     if (keyCode == VK_SPACE)
     {
-        if (_BattleEnd)
+        switch (_InputState)
         {
-            // 전투 종료 후 Space 누르면 다음 씬으로
-            EndBattle(battleMgr->GetBattleResult().Victory);
-            return;
-        }
+        case EBattleInputState::Playing:
+            ProcessBattleTurn();
+            break;
 
-        ProcessBattleTurn();
-        CollectBattleLogs();
+        case EBattleInputState::ResultShown:
+        {
+            const BattleResult& result =
+                BattleManager::GetInstance()->GetBattleResult();
+
+            _SystemLogs.push_back("");
+
+            if (result.Victory)
+            {
+                _SystemLogs.push_back("[승리] 전투에서 승리했습니다!");
+                _SystemLogs.push_back("[보상] 경험치: " +
+                    std::to_string(result.ExpGained) +
+                    ", 골드: " +
+                    std::to_string(result.GoldGained) + "G");
+
+                if (!result.ItemName.empty())
+                    _SystemLogs.push_back("[보상] 아이템 획득: " + result.ItemName);
+            }
+            else
+            {
+                _SystemLogs.push_back("[패배] 전투에서 패배했습니다...");
+            }
+
+            _SystemLogs.push_back("");
+            _SystemLogs.push_back("[안내] Space 키를 눌러 전투를 종료합니다.");
+
+            _InputState = EBattleInputState::EndWaiting;
+
+            UpdateSystemLog(_Drawer->GetPanel("SystemLog"), _SystemLogs);
+            _Drawer->Render();
+            break;
+        }
+        case EBattleInputState::EndWaiting:
+            EndBattle(BattleManager::GetInstance()->GetBattleResult().Victory);
+            break;
+        }
         return;
     }
 
@@ -1039,31 +1076,31 @@ void BattleScene::ProcessBattleTurn()
 {
     BattleManager* battleMgr = BattleManager::GetInstance();
 
+    // 1. 전투 비활성 상태 방어
     if (!battleMgr->IsBattleActive())
     {
         _SystemLogs.push_back("[오류] 전투가 활성화되지 않았습니다.");
-        Panel* logPanel = _Drawer->GetPanel("SystemLog");
-        if (logPanel) UpdateSystemLog(logPanel, _SystemLogs);
+        if (auto logPanel = _Drawer->GetPanel("SystemLog"))
+            UpdateSystemLog(logPanel, _SystemLogs);
         return;
     }
 
-    _SystemLogs.push_back("");
-    _SystemLogs.push_back("[전투] === 라운드 " + std::to_string(battleMgr->GetCurrentRound() + 1) + " 시작 ===");
+    // 2. 라운드 로그
+    _SystemLogs.push_back(
+        "[전투] === 라운드 " +
+        std::to_string(battleMgr->GetCurrentRound() + 1) +
+        " 시작 ==="
+    );
 
-    // TODO: 애니메이션 재생
-    // PlayAnimation("BattleStart", 1.0f);
-
-    // BattleManager 턴 처리
+    // 3. 턴 처리
     bool continuesBattle = battleMgr->ProcessBattleTurn();
 
-    CollectBattleLogs();
-
-    // UI 업데이트
+    // 4. UI 갱신
     UpdatePartyPanels();
     UpdateMonsterInfoPanel();
     UpdateBattleInfoPanel();
 
-    // 전투 종료 체크
+    // 5. 전투 종료 감지 → 상태만 변경
     if (!continuesBattle)
     {
         const BattleResult& result = battleMgr->GetBattleResult();
@@ -1086,13 +1123,15 @@ void BattleScene::ProcessBattleTurn()
         }
 
         _BattleEnd = true;
+        _InputState = EBattleInputState::ResultShown;
     }
 
-    Panel* logPanel = _Drawer->GetPanel("SystemLog");
-    if (logPanel) UpdateSystemLog(logPanel, _SystemLogs);
+    // 6. 로그/UI 반영
+    if (auto logPanel = _Drawer->GetPanel("SystemLog"))
+        UpdateSystemLog(logPanel, _SystemLogs);
 
-    Panel* inventoryPanel = _Drawer->GetPanel("Inventory");
-    if (inventoryPanel) UpdateInventoryPanel(inventoryPanel);
+    if (auto inventoryPanel = _Drawer->GetPanel("Inventory"))
+        UpdateInventoryPanel(inventoryPanel);
 
     _Drawer->Render();
 }

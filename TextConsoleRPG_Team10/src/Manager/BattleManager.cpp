@@ -1,4 +1,4 @@
-#include "../../include/Manager/BattleManager.h"
+﻿#include "../../include/Manager/BattleManager.h"
 #include "../../include/Manager/PrintManager.h"
 #include "../../include/Unit/NormalMonster.h"
 #include "../../include/Unit/EliteMonster.h"
@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <Windows.h>
 #include <optional>
+#include "../../include/UI/Scenes/BattleScene.h"
 
 // ===== 직업 우선순위 반환 함수 (전역 함수) =====
 // Archer(0) > Priest(1) > Warrior(2) > Mage(3)
@@ -212,8 +213,8 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
                 {
                     PushLog(result.Message, EBattleLogType::Important);
                 }
-
-                return;
+                RequestFlush(EBattleFlushType::PlayerAttack);
+                return;  // 스킬 사용 성공 → 일반 공격 스킵
             }
         }
     }
@@ -229,12 +230,14 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
         if (attackType == "어둠의 폭풍")
         {
             ProcessAOEAttack(attackType, baseDamage, boss);
+            RequestFlush(EBattleFlushType::BossAttack);
             return;
         }
 
         if (attackType == "공포의 속삭임")
         {
             ProcessDebuff(attackType, boss);
+            RequestFlush(EBattleFlushType::BossAttack);
             return;
         }
     }
@@ -284,6 +287,8 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
     }
 
     PushLog(Def->GetName() + "에게 " + std::to_string(Damage) + " 데미지!", EBattleLogType::Important);
+
+    RequestFlush(EBattleFlushType::MonsterAttack);
 }
 
 // ===== 광역 공격 처리 (Boss 전용) =====
@@ -307,6 +312,7 @@ void BattleManager::ProcessAOEAttack(const std::string& skillName, int damage, I
             PushLog("  → " + member->GetName() + "에게 " + std::to_string(actualDamage) + " 데미지!", EBattleLogType::Important);
         }
     }
+    RequestFlush(EBattleFlushType::BossAttack);
 }
 
 // ===== 디버프 처리 (Boss 전용) =====
@@ -328,6 +334,7 @@ void BattleManager::ProcessDebuff(const std::string& skillName, ICharacter* atta
             PushLog("  → " + member->GetName() + "의 공격력이 감소했다! (" + std::to_string(debuffAmount) + ", 2라운드)", EBattleLogType::Important);
         }
     }
+    RequestFlush(EBattleFlushType::BossDebuff);
 }
 
 void BattleManager::CalculateReward(Player* P, IMonster* M)
@@ -571,6 +578,7 @@ void BattleManager::EndBattle()
 
 bool BattleManager::ProcessBattleTurn()
 {
+    // 한 턴 처리 함수, 플레이어 > 몬스터 순서로 진행, 배틀 종료 시 false 반환
     // 1. 전투 중이 아니거나 몬스터가 없으면 false 반환
     if (!_IsBattleActive || !_CurrentMonster)
         return false;
@@ -578,65 +586,60 @@ bool BattleManager::ProcessBattleTurn()
     // 2. _CurrentRound++ (라운드 증가)
     SetCurrentRound(_CurrentRound + 1);
 
-    // 3. GameManager에서 메인 플레이어 가져오기
-    GameManager* gm = GameManager::GetInstance();
-    Player* mainPlayer = gm->GetMainPlayer().get();
+    // 3. TODO: BattleScene에서 라운드 시작 로그 표시
 
-    // 4. 플레이어 턴: ProcessTurn(Monster)
-    ProcessTurn(_CurrentMonster.get());
-
-    // 5. 몬스터 사망 확인
-    if (_CurrentMonster->IsDead())
+    if (_IsPlayerTurn)
     {
-        _Result.Victory = true;
-        _Result.IsCompleted = true;
-        /*PrintManager::GetInstance()->PrintLogLine(
-            "몬스터를 물리쳤습니다! 전투에서 승리했습니다!",
-            ELogImportance::DISPLAY
-        );*/
-        
-        SoundPlayer::GetInstance()->PlayMonserSFX(_CurrentMonster.get()->GetName(), "Dead");
+        SetCurrentRound(_CurrentRound + 1);
+        // 4. 플레이어 턴: ProcessTurn(Monster)
+        ProcessTurn(_CurrentMonster.get());
 
-        PushLog("몬스터를 물리쳤습니다! 전투에서 승리했습니다!", EBattleLogType::Important);
-        return false;
-    }
 
-    // 6. 몬스터 턴: 타겟 선정 후 공격
-    Player* target = SelectMonsterTarget();
-
-    PushLog("=== 몬스터 턴 ===", EBattleLogType::Important);
-
-    ProcessAttack(_CurrentMonster.get(), target);
-
-    // 7. 메인 플레이어 사망 확인 (게임 오버 조건)
-    if (mainPlayer->IsDead())
-    {
-        _Result.Victory = false;
-        _Result.IsCompleted = true;
-        /*PrintManager::GetInstance()->PrintLogLine(
-            "용사의 여정이 끝났습니다... 전투에서 패배했습니다.",
-            ELogImportance::DISPLAY
-        );*/
-        
-        SoundPlayer::GetInstance()->PlaySFX("Player_Dead");
-
-        PushLog("용사의 여정이 끝났습니다... 전투에서 패배했습니다.", EBattleLogType::Important);
-        return false;
-    }
-
-    // 8. 라운드 종료 처리: 파티 전체 버프 감소 + 스킬 쿨타임 감소
-    const auto& party = gm->GetParty();
-    for (const auto& member : party)
-    {
-        if (member && !member->IsDead())
+        // 5. 몬스터 사망 확인
+        if (_CurrentMonster->IsDead())
         {
-            member->ProcessRoundEnd();  // 버프 라운드 감소
+            _Result.Victory = true;
+            _Result.IsCompleted = true;
+            SoundPlayer::GetInstance()->PlayMonserSFX(_CurrentMonster.get()->GetName(), "Dead");
+            return false;
         }
-    }
+        _IsPlayerTurn = false;   // ⭐ 다음은 몬스터
+        return true;             // ⭐ 여기서 끊는다
 
-    // 9. 전투 계속: true 반환
-    return true;
+    }
+        
+    else
+    {
+    // 6. 몬스터 턴: 타겟 선정 후 공격
+        Player* target = SelectMonsterTarget();
+        GameManager* gm = GameManager::GetInstance();
+        ProcessAttack(_CurrentMonster.get(), target);
+        // 7. 메인 플레이어 사망 확인 (게임 오버 조건)
+        if (gm->GetMainPlayer()->IsDead())
+        {
+            _Result.Victory = false;
+            _Result.IsCompleted = true;
+          
+            SoundPlayer::GetInstance()->PlaySFX("Player_Dead");
+            PushLog("용사의 여정이 끝났습니다... 전투에서 패배했습니다.", EBattleLogType::Important);
+            return false;
+        }
+
+        // 8. 라운드 종료 처리: 파티 전체 버프 감소 + 스킬 쿨타임 감소
+        const auto& party = gm->GetParty();
+        for (const auto& member : party)
+        {
+            if (member && !member->IsDead())
+            {
+                member->ProcessRoundEnd();  // 버프 라운드 감소
+            }
+        }
+
+        _IsPlayerTurn = true;    // ⭐ 다시 플레이어
+        return true;
+    }
 }
+
 
 // ========================================
 // ===== 아이템 예약 시스템 =====
@@ -846,3 +849,5 @@ std::vector<BattleLog> BattleManager::ConsumeLogs()
     _BattleLogs.clear();
     return result;
 }
+//플러시 사용시 호출
+//RequestFlush(type);

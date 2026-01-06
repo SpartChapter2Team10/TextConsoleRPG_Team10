@@ -5,6 +5,14 @@
 #include <string>
 #include <Windows.h>
 
+// ===== 전투 입력 상태 =====
+enum class EBattleInputState
+{
+    Playing,        // 전투 진행 중 (턴 처리)
+    ResultShown,    // 전투 종료, 결과 로그 표시 중
+    EndWaiting      // 결과 확인 완료, 씬 이동 대기
+};
+
 // 전투 Scene
 class BattleScene : public UIScene, public IBattleAnimationCallback
 {
@@ -28,6 +36,8 @@ private:
     // ===== 애니메이션 (간소화) =====
     bool _IsWaitingForAnimation;
     float _AnimationWaitTimer;
+
+    EBattleInputState _InputState = EBattleInputState::Playing;
 
 public:
     BattleScene();
