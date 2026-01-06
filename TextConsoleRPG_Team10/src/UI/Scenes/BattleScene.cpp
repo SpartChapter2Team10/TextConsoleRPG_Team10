@@ -153,10 +153,20 @@ void BattleScene::Enter() {
     UpdateInventoryPanel(inventoryPanel);
 
     _Drawer->Render();
+    // ===== BattleManager → BattleScene 로그 Flush 연결 =====
+    BattleManager::GetInstance()->SetFlushCallback(
+        [this]()
+        {
+            this->CollectBattleLogs();
+        }
+    );
 }
 
 void BattleScene::Exit()
 {
+    // 🔥 중요: Flush 콜백 해제
+    BattleManager::GetInstance()->SetFlushCallback(nullptr);
+
     _Drawer->RemoveAllPanels();
     _SystemLogs.clear();
     _IsActive = false;
@@ -533,7 +543,7 @@ void BattleScene::HandleInput()
     if (keyCode == VK_SPACE)
     {
         ProcessBattleTurn(); // 프로세스 배틀 턴
-        CollectBattleLogs();
+        //CollectBattleLogs();
         if (_BattleEnd)
         {
             // 전투 종료 후 Space 누르면 다음 씬으로
@@ -699,7 +709,7 @@ void BattleScene::ProcessBattleTurn()
     // BattleManager 턴 처리
     bool continuesBattle = battleMgr->ProcessBattleTurn();
 
-    CollectBattleLogs();
+    //CollectBattleLogs();
 
     // UI 업데이트
     UpdatePartyPanels();
@@ -709,29 +719,6 @@ void BattleScene::ProcessBattleTurn()
     // 전투 종료 체크
     if (!continuesBattle)
     {
-        /*const BattleResult& result = battleMgr->GetBattleResult();
-
-        if (result.Victory)
-        {
-            _SystemLogs.push_back("");
-            _SystemLogs.push_back("[승리] 전투에서 승리했습니다!");
-            _SystemLogs.push_back("[보상] 경험치: " + std::to_string(result.ExpGained) +
-                ", 골드: " + std::to_string(result.GoldGained) + "G");
-            if (!result.ItemName.empty())
-            {
-                _SystemLogs.push_back("[보상] 아이템 획득: " + result.ItemName);
-            }
-            _SystemLogs.push_back("");
-            _SystemLogs.push_back("[안내] Space 키를 눌러 계속하세요.");
-        }
-        else
-        {
-            _SystemLogs.push_back("");
-            _SystemLogs.push_back("[패배] 전투에서 패배했습니다...");
-            _SystemLogs.push_back("");
-            _SystemLogs.push_back("[안내] Space 키를 눌러 계속하세요.");
-        }*/
-
         _BattleEnd = true;
     }
 
