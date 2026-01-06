@@ -14,6 +14,7 @@
 
 MainMenuScene::MainMenuScene()
     : UIScene("MainMenu")
+    , _ExitRequested(false)  // ⭐ 초기화
 {
 }
 
@@ -27,6 +28,7 @@ void MainMenuScene::Enter()
     _Drawer->RemoveAllPanels();
     _Drawer->Activate();
     _IsActive = true;
+    _ExitRequested = false;  // ⭐ 씬 진입 시 플래그 리셋
 
     // 타이틀 패널 (150x45)
     Panel* titlePanel = _Drawer->CreatePanel("Title", 0, 0, 150, 45);
@@ -89,7 +91,7 @@ void MainMenuScene::Update()
     {
         // UIDrawer 업데이트 (플리커링 등 애니메이션 처리)
         _Drawer->Update();
-        
+
         // 입력 처리
         HandleInput();
     }
@@ -100,7 +102,7 @@ void MainMenuScene::Render()
     // UIDrawer::Update()에서 자동으로 Render() 호출하므로
     // 여기서는 필요 시에만 강제 렌더링
     if (!_IsActive) {
-      _Drawer->Render();
+        _Drawer->Render();
     }
 }
 
@@ -111,9 +113,18 @@ void MainMenuScene::HandleInput()
     // 아무 키나 눌리면 다음 씬으로 이동
     if (input->IsKeyPressed())
     {
-        input->GetKeyCode();  // 키 소비
+        int keyCode = input->GetKeyCode();  // 키 소비
 
-        // PlayerNameInput 씬으로 이동
-        SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
+        // ⭐ ESC 키: 게임 종료
+        if (keyCode == VK_ESCAPE)
+        {
+            _ExitRequested = true;
+            _IsActive = false;
+        }
+        else
+        {
+            // ⭐ 그 외 키: StoryProgress로 이동 (게임 시작)
+            SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
+        }
     }
 }

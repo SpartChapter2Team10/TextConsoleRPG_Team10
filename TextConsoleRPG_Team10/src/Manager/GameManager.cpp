@@ -70,7 +70,7 @@ void GameManager::Initialize()
 
     _IsInitialized = true;
 
-    // 랜덤 시드 초기화 (치명타 판정용)
+    // 랜덤 시드 초기화 (치명타 판별용)
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     PrintManager::GetInstance()->PrintLogLine(
@@ -171,12 +171,12 @@ void GameManager::StartGame()
         // 사운드 해제
         SoundPlayer::GetInstance()->Update();
 
-        // 종료 조건 확인
+        // ⭐ 종료 조건 확인: MainMenu에서 종료 요청 시에만 게임 종료
         UIScene* currentScene = sm->GetCurrentScene();
-        if (currentScene && !currentScene->IsActive())
+        if (currentScene && sm->GetCurrentSceneType() == ESceneType::MainMenu)
         {
-            // MainMenu에서 종료 선택 시
-            if (sm->GetCurrentSceneType() == ESceneType::MainMenu)
+            MainMenuScene* mainMenu = dynamic_cast<MainMenuScene*>(currentScene);
+            if (mainMenu && mainMenu->IsExitRequested())
             {
                 EndGame();
             }
@@ -216,8 +216,8 @@ void GameManager::RestartGame()
     _IsRunning = true;
 
     PrintManager::GetInstance()->PrintLogLine(
-   "새로운 여정을 시작합니다!",
-  ELogImportance::DISPLAY
+        "새로운 여정을 시작합니다!",
+        ELogImportance::DISPLAY
     );
 
     SceneManager::GetInstance()->ChangeScene(ESceneType::MainMenu);
@@ -238,27 +238,27 @@ void GameManager::ResetGameState()
     BattleManager* battleMgr = BattleManager::GetInstance();
     if (battleMgr)
     {
-      if (battleMgr->IsBattleActive())
+        if (battleMgr->IsBattleActive())
         {
-        battleMgr->EndBattle();
+            battleMgr->EndBattle();
         }
         // 내부 상태 완전 초기화
-      battleMgr->ResetAll();
+        battleMgr->ResetAll();
     }
 
-    // 3. StageManager 정리
+    // 3. StageManager 정리 (⭐ 1층으로 초기화)
     StageManager* stageMgr = StageManager::GetInstance();
     if (stageMgr && stageMgr->IsInitialized())
     {
-        stageMgr->StartNewGame();
+        stageMgr->StartNewGame();  // 1층, 시작 노드로 초기화
     }
 
     // 4. ShopManager 정리 (선택적)
     ShopManager* shopMgr = ShopManager::GetInstance();
- if (shopMgr)
+    if (shopMgr)
     {
         // 상점 재고 초기화 (다음 방문 시 새로 로드됨)
-     // ReopenShop()은 씬 진입 시 호출되므로 여기서는 생략 가능
+        // ReopenShop()은 씬 진입 시 호출되므로 여기서는 생략 가능
     }
 
     // 5. UI 정리
@@ -266,8 +266,11 @@ void GameManager::ResetGameState()
     if (drawer)
     {
         drawer->ClearScreen();
-   drawer->RemoveAllPanels();
+        drawer->RemoveAllPanels();
     }
+
+    // 6. 임시 이름 초기화
+    _TempPlayerName.clear();
 
     PrintManager::GetInstance()->PrintLogLine(
         "게임 상태 초기화 완료!",
@@ -393,51 +396,51 @@ void GameManager::StartBattleTest()
     PrintManager::GetInstance()->PrintLogLine("전투 테스트를 종료합니다.",
         ELogImportance::DISPLAY);
 
-  // UIDrawer 정리
-  drawer->Shutdown();
+    // UIDrawer 정리
+    drawer->Shutdown();
 }
 
 // ===== 동료 영입 테스트 (임시)=====
 void GameManager::StartCompanionRecruitTest() {
-  _IsGameOver = false;
-  _IsRunning = true;
+    _IsGameOver = false;
+    _IsRunning = true;
 
-  PrintManager::GetInstance()->PrintLogLine("동료 영입 테스트 모드 시작...",
-                                            ELogImportance::DISPLAY);
-  PrintManager::GetInstance()->EndLine();
+    PrintManager::GetInstance()->PrintLogLine("동료 영입 테스트 모드 시작...",
+        ELogImportance::DISPLAY);
+    PrintManager::GetInstance()->EndLine();
 
-  // 임시 메인 플레이어 생성
-  auto mainPlayer = std::make_shared<Warrior>("테스트 플레이어", true);
+    // 임시 메인 플레이어 생성
+    auto mainPlayer = std::make_shared<Warrior>("테스트 플레이어", true);
 
-  _Party.clear();
-  _Party.push_back(mainPlayer);
+    _Party.clear();
+    _Party.push_back(mainPlayer);
 
-  SceneManager* sm = SceneManager::GetInstance();
-  UIDrawer* drawer = UIDrawer::GetInstance();
+    SceneManager* sm = SceneManager::GetInstance();
+    UIDrawer* drawer = UIDrawer::GetInstance();
 
-  // CompanionRecruitScene으로 바로 전환
-  sm->ChangeScene(ESceneType::CompanionRecruit);
+    // CompanionRecruitScene으로 바로 전환
+    sm->ChangeScene(ESceneType::CompanionRecruit);
 
-  // ===== 메인 게임 루프 =====
-  while (_IsRunning && !_IsGameOver) {
-    // 씬 업데이트
-    sm->Update();
+    // ===== 메인 게임 루프 =====
+    while (_IsRunning && !_IsGameOver) {
+        // 씬 업데이트
+        sm->Update();
 
-    // 씬 렌더링
-    sm->Render();
+        // 씬 렌더링
+        sm->Render();
 
-    // ESC 키로 종료 가능 (테스트용)
-    if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-      Sleep(150);
-      EndGame();
+        // ESC 키로 종료 가능 (테스트용)
+        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+            Sleep(150);
+            EndGame();
+        }
     }
-  }
 
-  // 게임 종료 메시지
-  PrintManager::GetInstance()->EndLine();
-  PrintManager::GetInstance()->PrintLogLine("동료 영입 테스트를 종료합니다.",
-                                            ELogImportance::DISPLAY);
+    // 게임 종료 메시지
+    PrintManager::GetInstance()->EndLine();
+    PrintManager::GetInstance()->PrintLogLine("동료 영입 테스트를 종료합니다.",
+        ELogImportance::DISPLAY);
 
-  // UIDrawer 정리
-  drawer->Shutdown();
+    // UIDrawer 정리
+    drawer->Shutdown();
 }

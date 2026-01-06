@@ -105,7 +105,19 @@ public:
   // 현재 층 번호
     inline int GetCurrentFloor() const { return _Progress.CurrentFloor; }
 
-    // 현재 노드 ID
+    // ⭐ 현재 층 강제 설정 (엔딩 처리용)
+// floor: 설정할 층 번호 (11: 배드엔딩, 12: 굿엔딩)
+    // 주의: 1~10층 범위를 벗어난 값만 설정 가능 (엔딩 전용)
+    inline void SetCurrentFloor(int floor) 
+    { 
+        // 엔딩용 층 번호만 허용 (11, 12)
+   if (floor == 11 || floor == 12)
+        {
+         _Progress.CurrentFloor = floor;
+        }
+    }
+
+  // 현재 노드 ID
     inline const std::string& GetCurrentNodeId() const { return _Progress.CurrentNodeId; }
 
     // 진행 통계 전체

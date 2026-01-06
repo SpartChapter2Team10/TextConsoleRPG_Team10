@@ -601,10 +601,36 @@ void StageSelectScene::HandleInput()
 
     if (keyCode == VK_ESCAPE)
     {
-        _IsActive = false;
-        Exit();
-        GameManager::GetInstance()->RestartGame();
-        return;
+    StageManager* stageMgr = StageManager::GetInstance();
+ 
+   // ⭐ 게임 시작 직후 (1층, 전투 없음) → 메인 메뉴로
+        if (stageMgr->GetCurrentFloor() == 1 && 
+  stageMgr->GetProgress().TotalBattlesCompleted == 0)
+  {
+  std::vector<std::string> logs = { 
+     "[정보] 메인 메뉴로 돌아갑니다." 
+   };
+  Panel* systemPanel = _Drawer->GetPanel("System");
+          if (systemPanel) UpdateSystemLog(systemPanel, logs);
+ 
+         _IsActive = false;
+   Exit();
+   GameManager::GetInstance()->ResetGame();
+      SceneManager::GetInstance()->ChangeScene(ESceneType::MainMenu);
+      }
+   else
+ {
+            // ⭐ 게임 진행 중 → ESC 키 완전히 무시 (아무 동작 안 함)
+   std::vector<std::string> logs = { 
+    "[경고] 게임 진행 중에는 ESC를 사용할 수 없습니다.",
+          "[안내] Space키로 상점을 이용하세요."
+      };
+ Panel* systemPanel = _Drawer->GetPanel("System");
+   if (systemPanel) UpdateSystemLog(systemPanel, logs);
+      
+     // ⭐ 아무 동작도 하지 않음 (return만 하고 씬 종료 안 함)
+  }
+return;
     }
 
     // ===== Space: 상점으로 이동 =====
@@ -827,23 +853,41 @@ void StageSelectScene::EnterNode(const std::string& nodeId)
         break;
 
     case ENodeType::Exit:
-        if (stageMgr->MoveToNextFloor())
-        {
-            sceneMgr->ChangeScene(ESceneType::StoryProgress);
+    {
+StageManager* stageMgr = StageManager::GetInstance();
+     SceneManager* sceneMgr = SceneManager::GetInstance();
+ 
+        if (stageMgr->GetCurrentFloor() >= 10)
+  {
+// ⭐ 10층 클리어 → 굿엔딩 (Floor 12 설정)
+ stageMgr->SetCurrentFloor(12);  // ⭐ Public 메서드 사용
+         
+ std::vector<std::string> logs = { 
+       "[성공] 10층 클리어! 엔딩으로 이동합니다." 
+  };
+ Panel* systemPanel = _Drawer->GetPanel("System");
+     if (systemPanel) UpdateSystemLog(systemPanel, logs);
+    
+    sceneMgr->ChangeScene(ESceneType::StoryProgress);
         }
-        else
+        else if (stageMgr->MoveToNextFloor())
         {
-            // ⭐ 10층 클리어 - 게임 승리 (Result 씬으로 전환)
-            sceneMgr->ChangeScene(ESceneType::Result);
-
-            // Result 씬의 타입을 Victory로 설정
-            ResultScene* resultScene = dynamic_cast<ResultScene*>(sceneMgr->GetCurrentScene());
-            if (resultScene)
-            {
-                resultScene->SetResultType(EResultType::Victory);
-            }
-        }
-        break;
+       // 일반 층 전환 (1~9층)
+     sceneMgr->ChangeScene(ESceneType::StoryProgress);
+  }
+     else
+        {
+   // MoveToNextFloor 실패 시 (비정상 케이스)
+    std::vector<std::string> logs = { 
+      "[오류] 다음 층으로 이동할 수 없습니다." 
+    };
+            Panel* systemPanel = _Drawer->GetPanel("System");
+if (systemPanel) UpdateSystemLog(systemPanel, logs);
+  
+        sceneMgr->ChangeScene(ESceneType::MainMenu);
+      }
+  break;
+ }
 
     case ENodeType::Empty:
         // Empty 노드는 즉시 통과 → StageSelect 재진입으로 UI 갱신
