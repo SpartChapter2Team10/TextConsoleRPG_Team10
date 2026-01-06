@@ -1112,7 +1112,7 @@ void BattleScene::HandleInput()
             return;
         }
 
-        // ===== 예약되지 않은 아이템 → 대상 선택 모드 진입 =====
+        // ===== Reservation이 아닌 경우: 대상 선택 모드 진입 =====
         _IsSelectingItem = true;
         _IsCancelMode = false;
         _SelectedItemSlot = slotIndex;
@@ -1233,6 +1233,7 @@ void BattleScene::EndBattle(bool victory)
 {
     BattleManager* battleMgr = BattleManager::GetInstance();
     StageManager* stageMgr = StageManager::GetInstance();
+    int currentFloor = stageMgr->GetCurrentFloor();
 
     // ===== 1. 승리 시 StageManager에 완료 표시 =====
     if (victory)
@@ -1244,14 +1245,29 @@ void BattleScene::EndBattle(bool victory)
 
         // 현재 노드 완료 처리
         stageMgr->CompleteNode(nodeType);
+
+        // ⭐ 10층 보스 승리 시 Floor 12 설정 (굿엔딩)
+        if (currentFloor == 10 && battleType == EBattleType::Boss)
+        {
+            stageMgr->SetCurrentFloor(12);
+        }
     }
     else
     {
-        // ===== 패배 시 전체 게임 상태 리셋 =====
-        GameManager* gm = GameManager::GetInstance();
-        if (gm)
+        // ⭐ 패배 처리
+        if (currentFloor == 10)
         {
-            gm->ResetGameState();  // ⭐ 중앙화된 리셋 메서드 호출
+            // ⭐ 10층 보스 패배 시 Floor 11 설정 (배드엔딩)
+            stageMgr->SetCurrentFloor(11);
+        }
+        else
+        {
+            // ⭐ 일반 층 패배 시 게임 상태 리셋
+            GameManager* gm = GameManager::GetInstance();
+            if (gm)
+            {
+                gm->ResetGameState();
+            }
         }
     }
 
@@ -1278,6 +1294,22 @@ void BattleScene::EndBattle(bool victory)
         _SystemLogs.push_back("");
         _SystemLogs.push_back("[성공] 스테이지 클리어!");
     }
+    else
+    {
+        // ⭐ 패배 로그
+        if (currentFloor == 10)
+        {
+            _SystemLogs.push_back("");
+            _SystemLogs.push_back("[패배] 최종 보스에게 패배했습니다...");
+            _SystemLogs.push_back("[안내] 배드엔딩으로 이동합니다.");
+        }
+        else
+        {
+            _SystemLogs.push_back("");
+            _SystemLogs.push_back("[패배] 전투에서 패배했습니다...");
+            _SystemLogs.push_back("[안내] 메인 메뉴로 돌아갑니다.");
+        }
+    }
 
     // ===== 4. 보상 정보 최종 표시 =====
     Panel* logPanel = _Drawer->GetPanel("SystemLog");
@@ -1297,13 +1329,29 @@ void BattleScene::EndBattle(bool victory)
     // ===== 6. 씬 전환 =====
     if (victory)
     {
-        // 승리 시 StageSelect로 복귀
-        SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+        // ⭐ 10층 보스 승리 시 StoryProgress (굿엔딩)
+        if (currentFloor == 10)
+        {
+            SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
+        }
+        else
+        {
+            // 일반 승리 시 StageSelect로 복귀
+            SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+        }
     }
     else
     {
-        // 패배 시 메인 메뉴로 이동
-        SceneManager::GetInstance()->ChangeScene(ESceneType::MainMenu);
+        // ⭐ 10층 보스 패배 시 StoryProgress (배드엔딩)
+        if (currentFloor == 10)
+        {
+            SceneManager::GetInstance()->ChangeScene(ESceneType::StoryProgress);
+        }
+        else
+        {
+            // 일반 패배 시 메인 메뉴로 이동
+            SceneManager::GetInstance()->ChangeScene(ESceneType::MainMenu);
+        }
     }
 }
 

@@ -115,11 +115,17 @@ void SoundPlayer::PlayBGM(const std::string& BGMID)
 
     if (GetSoundData(BGMID, FileName, PlayTime, Volume))
     {
+        if (BGMID != "BGM_Shop")_CurrentBGMID = BGMID;
         PlayLoop(FileName, "BGM", Volume);
     }
 }
 
-void SoundPlayer::PlayMonserSFX(const std::string& MonsterName, const std::string& SoundType)
+void SoundPlayer::ResetBGM()
+{
+    PlayBGM(_CurrentBGMID);
+}
+
+void SoundPlayer::PlayMonsterSFX(const std::string& MonsterName, const std::string& SoundType)
 {
     std::string SoundID = "";
     if (MonsterName=="오염된 슬라임")
@@ -132,7 +138,7 @@ void SoundPlayer::PlayMonserSFX(const std::string& MonsterName, const std::strin
     }
     else if (MonsterName == "고블린 정찰병")
     {
-        SoundID.append("Gobline");
+        SoundID.append("Goblin");
     }
     else if (MonsterName == "박쥐 떼")
     {
@@ -192,7 +198,47 @@ void SoundPlayer::PlayMonserSFX(const std::string& MonsterName, const std::strin
     }
     else if (MonsterName == "살아있는 조각상")
     {
-        SoundID.append("LivinStatue");
+        SoundID.append("LivingStatue");
+    }
+    else if (MonsterName == "거대 시궁쥐")
+    {
+        SoundID.append("BigRat");
+    }
+    else if (MonsterName == "고블린 대장")
+    {
+        SoundID.append("GoblinRabblemaster");
+    }
+    else if (MonsterName == "스켈레톤 나이트")
+    {
+        SoundID.append("SkeletonKnight");
+    }
+    else if (MonsterName == "옵시디언 골렘")
+    {
+        SoundID.append("ObsidianGolem");
+    }
+    else if (MonsterName == "하피 퀸")
+    {
+        SoundID.append("HarpyQueen");
+    }
+    else if (MonsterName == "화이트 팽")
+    {
+        SoundID.append("WhiteFang");
+    }
+    else if (MonsterName == "블러드 하운드")
+    {
+        SoundID.append("BloodyHound");
+    }
+    else if (MonsterName == "카오스 아이")
+    {
+        SoundID.append("ChaosEye");
+    }
+    else if (MonsterName == "심연의 집사")
+    {
+        SoundID.append("AbyssButler");
+    }
+    else if (MonsterName == "에테르노")
+    {
+        SoundID.append("Boss");
     }
 
     SoundID.append(SoundType);

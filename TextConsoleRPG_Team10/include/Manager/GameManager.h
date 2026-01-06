@@ -38,7 +38,15 @@ public:
     // 게임 상태 전체 리셋 (패배 시 호출)
     // 모든 Manager, 리소스, 파티, 상태 초기화
     void ResetGameState();
-
+    
+  // ⭐ 게임 완전 리셋 (메인 메뉴 복귀용)
+    // ResetGameState() + _IsGameOver 초기화
+    inline void ResetGame()
+    {
+        ResetGameState();
+        _IsGameOver = false;
+ _IsRunning = false;
+    }
 
     // ===== 파티 관리 =====
     // 메인 플레이어 설정 (인벤토리 활성화)

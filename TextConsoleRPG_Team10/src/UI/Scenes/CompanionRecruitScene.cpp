@@ -24,9 +24,9 @@
 CompanionRecruitScene::CompanionRecruitScene()
     : UIScene("CompanionRecruit"),
       _CompanionLevel(1),
-      _InputName(""),
       _RecruitAccepted(false),
-      _SelectedOption(0) {}
+      _SelectedOption(0),
+      _CurrentDialogueIndex(0) {}
 
 CompanionRecruitScene::~CompanionRecruitScene() {}
 
@@ -38,6 +38,9 @@ void CompanionRecruitScene::Enter() {
   _RecruitAccepted = false;
   _SelectedOption = 0;
   _InputName.clear();
+  _CurrentDialogueIndex = 0;
+  _DialogueTexts.clear();
+  _DialogueColors.clear();
 
   // 입력 버퍼 클리어
   HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
@@ -57,9 +60,12 @@ void CompanionRecruitScene::Enter() {
   {
       // 동료 데이터 로드 실패 시 StageSelect로 복귀
       _IsActive = false;
-      SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
+    SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
       return;
   }
+
+  // ===== 대화 데이터 로드 =====
+  LoadDialogueData();
 
   // =============================================================================
   // 패널 레이아웃 (150x45 화면 기준)
@@ -72,7 +78,7 @@ void CompanionRecruitScene::Enter() {
   auto titleText = std::make_unique<TextRenderer>();
   titleText->AddLine("");
   titleText->AddLineWithColor(
-      "                    [ 동료 영입 ] - " + std::to_string(_CompanionLevel) + "층",
+      "              [ 동료 영입 ] - " + std::to_string(_CompanionLevel) + "층",
       MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
 
   titlePanel->SetContentRenderer(std::move(titleText));
@@ -112,14 +118,14 @@ void CompanionRecruitScene::Enter() {
     errorText->AddLine("");
     errorText->AddLine("");
     errorText->AddLineWithColor("[ Tower.txt not found ]",
-                                static_cast<WORD>(ETextColor::WHITE));
+             static_cast<WORD>(ETextColor::WHITE));
     errorText->AddLine("");
     errorText->SetTextColor(static_cast<WORD>(ETextColor::WHITE));
     towerPanel->SetContentRenderer(std::move(errorText));
   }
 
   // 타워 화살표 업데이트
-  UpdateTowerArrow(towerPanel, floorInfo->Floor);
+UpdateTowerArrow(towerPanel, floorInfo->Floor);
 
   // ===== 아군 파티 패널 (중단, 4명 가로 배치) =====
   auto party = GameManager::GetInstance()->GetParty();
@@ -134,23 +140,23 @@ void CompanionRecruitScene::Enter() {
     std::string panelName = "Party" + std::to_string(i);
 
     Panel* partyPanel = _Drawer->CreatePanel(panelName, xPos, partyStartY,
-                                             partyWidth, partyHeight);
+         partyWidth, partyHeight);
     partyPanel->SetBorder(true, ETextColor::WHITE);
 
     auto partyText = std::make_unique<TextRenderer>();
     partyText->AddLine("");
 
     if (i < party.size() && party[i]) {
-      Player* player = party[i].get();
+  Player* player = party[i].get();
       std::string name = player->GetName();
       std::string className = "전사";  // TODO: 직업 추가
-      int hp = player->GetCurrentHP();
+  int hp = player->GetCurrentHP();
       int maxHp = player->GetMaxHP();
       int mp = player->GetCurrentMP();
       int maxMp = player->GetMaxMP();
 
-      partyText->AddLineWithColor(" " + name + " (" + className + ")",
-          MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
+    partyText->AddLineWithColor(" " + name + " (" + className + ")",
+  MakeColorAttribute(ETextColor::LIGHT_CYAN, EBackgroundColor::BLACK));
       
       std::string hpLine = " HP:" + std::to_string(hp) + "/" + std::to_string(maxHp);
       WORD hpColor = (hp < maxHp * 0.3f) ?
@@ -160,29 +166,27 @@ void CompanionRecruitScene::Enter() {
 
       std::string mpLine = " MP:" + std::to_string(mp) + "/" + std::to_string(maxMp);
       partyText->AddLineWithColor(mpLine,
-          MakeColorAttribute(ETextColor::LIGHT_BLUE, EBackgroundColor::BLACK));
+       MakeColorAttribute(ETextColor::LIGHT_BLUE, EBackgroundColor::BLACK));
     } else {
       partyText->AddLine(" [빈 슬롯]");
       partyText->AddLine("");
     }
 
-    partyPanel->AddRenderer(0, 0, 34, 4, std::move(partyText));
+partyPanel->AddRenderer(0, 0, 34, 4, std::move(partyText));
     partyPanel->Redraw();
   }
 
-  // ===== 시스템 로그 패널 (하단 좌측-중앙) =====
+  // ===== 대화 텍스트 패널 (하단 좌측-중앙) =====
   Panel* logPanel = _Drawer->CreatePanel("SystemLog", 2, 35, 100, 10);
   logPanel->SetBorder(true, ETextColor::WHITE);
 
-  // 좌측 영역: 시스템 로그 (0 ~ 64)
+  // 좌측 영역: 대화 텍스트 (0 ~ 64)
   auto logText = std::make_unique<TextRenderer>();
-  logText->AddLine("");
-  logText->AddLineWithColor(
-      "  [ 시스템 로그 ]",
-      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
-  logText->AddLine("");
-  logText->AddLine("  " + _CurrentCompanion->_Name + "을(를) 발견했습니다!");
-  logText->AddLine("  영입하시겠습니까?");
+  logText->EnableAutoWrap(true);
+  logText->SetWrapWidth(60);
+  logText->EnableTypingEffect(true);
+  logText->SetTypingSpeed(ETypingSpeed::Normal);
+
   logPanel->AddRenderer(0, 0, 65, 8, std::move(logText));
 
   // 우측 영역: 커맨드 (65 ~ 98)
@@ -192,10 +196,12 @@ void CompanionRecruitScene::Enter() {
       "  [ 커맨드 ]",
       MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   logCommandText->AddLine("");
-  logCommandText->AddLine("  [← /→ /↑ /↓ ] 선택");
-  logCommandText->AddLine("  [Enter] 확인");
+  logCommandText->AddLine("  [Space/Enter] 대화 진행");
   logCommandText->AddLine("  [ESC] 거부");
   logPanel->AddRenderer(65, 0, 33, 8, std::move(logCommandText));
+
+  // 첫 대화 표시
+  UpdateDialogueUI();
 
   logPanel->Redraw();
 
@@ -207,18 +213,18 @@ void CompanionRecruitScene::Enter() {
   auto inventoryCommandText = std::make_unique<TextRenderer>();
   inventoryCommandText->AddLine("");
   inventoryCommandText->AddLineWithColor(
-      "  인벤토리 & 골드",
+    "  인벤토리 & 골드",
       MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   inventoryCommandText->AddLine("");
 
   if (!party.empty() && party[0]) {
     Inventory* inventory = nullptr;
-    if (party[0]->TryGetInventory(inventory) && inventory) {
+if (party[0]->TryGetInventory(inventory) && inventory) {
       int usedSlots = 0;
       const int maxSlots = 5;
       for (int i = 0; i < maxSlots; ++i) {
         if (inventory->GetItemAtSlot(i) != nullptr)
-          usedSlots++;
+usedSlots++;
       }
       inventoryCommandText->AddLine("  인벤토리: " + std::to_string(usedSlots) + "/" + std::to_string(maxSlots));
     }
@@ -344,6 +350,9 @@ void CompanionRecruitScene::Exit() {
   _Drawer->RemoveAllPanels();
   _IsActive = false;
   _CurrentCompanion.reset();
+  _DialogueTexts.clear();
+  _DialogueColors.clear();
+  _CurrentDialogueIndex = 0;
 }
 
 void CompanionRecruitScene::Update() {
@@ -361,7 +370,7 @@ void CompanionRecruitScene::HandleInput() {
   InputManager* input = InputManager::GetInstance();
   if (!input->IsKeyPressed()) return;
 
-  int keyCode = input->GetKeyCode();
+int keyCode = input->GetKeyCode();
   if (keyCode == 0 || keyCode < 0) return;
 
   // ESC: 거부 (StageSelect로 복귀)
@@ -372,65 +381,100 @@ void CompanionRecruitScene::HandleInput() {
     // 입력 버퍼 클리어
     HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
     FlushConsoleInputBuffer(hInput);
-    
+ 
     Exit();
     SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
     return;
   }
 
-  // 좌우/상하 방향키: 선택 전환
-  if (keyCode == VK_LEFT || keyCode == VK_UP || keyCode == 75 || keyCode == 72) {
-    // 왼쪽 화살표 또는 위쪽 화살표 - 영입
-    _SelectedOption = 0;
-    UpdateSelectionUI();
-    return;
-  } else if (keyCode == VK_RIGHT || keyCode == VK_DOWN || keyCode == 77 || keyCode == 80) {
-    // 오른쪽 화살표 또는 아래쪽 화살표 - 거부
-    _SelectedOption = 1;
-    UpdateSelectionUI();
-    return;  // 추가
+  // ===== 대화 진행 모드 =====
+  if (_CurrentDialogueIndex < _DialogueTexts.size()) {
+    // Space/Enter: 대화 진행
+    if (keyCode == VK_SPACE || keyCode == VK_RETURN) {
+      Panel* panel = _Drawer->GetPanel("SystemLog");
+      if (!panel) return;
+
+    // 렌더러 영역에서 첫 번째 렌더러 가져오기 (좌측 대화창)
+      auto* renderer = static_cast<TextRenderer*>(panel->GetContentRenderer());
+      if (!renderer) return;
+
+      // 1. 타이핑 중이면 스킵
+ if (!renderer->IsTypingFinished()) {
+      renderer->SkipTyping();
+        _Drawer->Render();
+        return;
+      }
+
+      // 2. 타이핑이 끝났으면 다음 대화로
+      _CurrentDialogueIndex++;
+      
+      if (_CurrentDialogueIndex < _DialogueTexts.size()) {
+        // 다음 대화 표시
+        UpdateDialogueUI();
+        _Drawer->Render();
+      } else {
+  // ===== 모든 대화 종료 → 선택 UI 표시 =====
+UpdateSelectionUI();
+   _Drawer->Render();
+  
+        // ⭐ 입력 버퍼 클리어 (선택 UI 진입 시 Enter 키 소비)
+      HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+FlushConsoleInputBuffer(hInput);
+      }
+ }
+    return; // ⭐ 대화 모드에서는 여기서 종료
   }
 
-  // Enter: 선택 확인
+  // ===== 선택 모드 (대화 종료 후) =====
+  
+  // 방향키: 선택 전환
+  if (keyCode == VK_LEFT || keyCode == VK_UP || keyCode == 75 || keyCode == 72) {
+    _SelectedOption = 0; // 영입
+    UpdateSelectionUI();
+    _Drawer->Render();
+    return;
+  } 
+  else if (keyCode == VK_RIGHT || keyCode == VK_DOWN || keyCode == 77 || keyCode == 80) {
+    _SelectedOption = 1; // 거부
+    UpdateSelectionUI();
+    _Drawer->Render();
+    return;
+  }
+
+  // Enter: 최종 선택 확정
   if (keyCode == VK_RETURN) {
     if (_SelectedOption == 0 && _CurrentCompanion.has_value()) {
-      // 영입 수락
+      // ===== 영입 수락 =====
       _RecruitAccepted = true;
-      
-      // 동료를 파티에 추가
+ 
       GameManager* gm = GameManager::GetInstance();
       auto& party = const_cast<std::vector<std::shared_ptr<Player>>&>(gm->GetParty());
-      
+
       // 파티 인원 확인 (최대 4명)
       if (party.size() >= 4) {
         Panel* logPanel = _Drawer->GetPanel("SystemLog");
         if (logPanel) {
-          logPanel->ClearRenderers();
+        logPanel->ClearRenderers();
           auto errorText = std::make_unique<TextRenderer>();
-          errorText->AddLine("");
+   errorText->AddLine("");
           errorText->AddLineWithColor(
-              "  [ 시스템 로그 ]",
-              MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
-          errorText->AddLine("");
-          errorText->AddLineWithColor(
-              "  파티가 가득 찼습니다!",
-              MakeColorAttribute(ETextColor::LIGHT_RED, EBackgroundColor::BLACK));
+       "  파티가 가득 찼습니다!",
+        MakeColorAttribute(ETextColor::LIGHT_RED, EBackgroundColor::BLACK));
           errorText->AddLine("  (잠시 후 자동으로 돌아갑니다)");
           logPanel->AddRenderer(0, 0, 65, 8, std::move(errorText));
           logPanel->Redraw();
           _Drawer->Render();
-          
+  
           Sleep(2000);
           
-          // 입력 버퍼 클리어
           HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-          FlushConsoleInputBuffer(hInput);
-          
-          _IsActive = false;
+       FlushConsoleInputBuffer(hInput);
+ 
+   _IsActive = false;
           Exit();
           SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
           return;
-        }
+   }
       }
       
       const CompanionData& companion = _CurrentCompanion.value();
@@ -442,8 +486,8 @@ void CompanionRecruitScene::HandleInput() {
       // 레벨 보정 적용
       int levelBonus = (_CompanionLevel - 1);
       classData._HP = companion._HP + (levelBonus * 20);
-      classData._MP = companion._MP;
-      classData._Atk = companion._Atk + (levelBonus * 5);
+ classData._MP = companion._MP;
+    classData._Atk = companion._Atk + (levelBonus * 5);
       classData._Def = companion._Def;
       classData._Dex = companion._Dex;
       classData._Luk = companion._Luk;
@@ -452,47 +496,45 @@ void CompanionRecruitScene::HandleInput() {
       
       // 직업별 플레이어 생성 (인벤토리 비활성화)
       std::shared_ptr<Player> newCompanion;
-      
+  
       if (companion._JobType == "warrior") {
         newCompanion = std::make_shared<Warrior>(classData, companion._Name, false);
       } else if (companion._JobType == "mage") {
         newCompanion = std::make_shared<Mage>(classData, companion._Name, false);
-      } else if (companion._JobType == "archer") {
+    } else if (companion._JobType == "archer") {
         newCompanion = std::make_shared<Archer>(classData, companion._Name, false);
-      } else if (companion._JobType == "priest") {
-        newCompanion = std::make_shared<Priest>(classData, companion._Name, false);
+   } else if (companion._JobType == "priest") {
+ newCompanion = std::make_shared<Priest>(classData, companion._Name, false);
       }
       
       if (newCompanion) {
         // 레벨 설정 (층수와 동일)
-        for (int i = 1; i < _CompanionLevel; ++i) {
-          newCompanion->ProcessLevelUp();
+for (int i = 1; i < _CompanionLevel; ++i) {
+  newCompanion->ProcessLevelUp();
         }
         
         party.push_back(newCompanion);
         
+        // ===== 영입 메시지 표시 =====
         Panel* logPanel = _Drawer->GetPanel("SystemLog");
         if (logPanel) {
           logPanel->ClearRenderers();
           auto successText = std::make_unique<TextRenderer>();
           successText->AddLine("");
-          successText->AddLineWithColor(
-              "  [ 시스템 로그 ]",
-              MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
-          successText->AddLine("");
-          successText->AddLineWithColor(
-              "  " + companion._Name + "이(가) 파티에 합류했습니다!",
-              MakeColorAttribute(ETextColor::LIGHT_GREEN, EBackgroundColor::BLACK));
+      successText->AddLineWithColor(
+    _RecruitMessage.empty() ? 
+      ("  " + companion._Name + "이(가) 파티에 합류했습니다!") : 
+     ("  " + _RecruitMessage),
+       MakeColorAttribute(ETextColor::LIGHT_GREEN, EBackgroundColor::BLACK));
           successText->AddLine("  (잠시 후 자동으로 돌아갑니다)");
-          logPanel->AddRenderer(0, 0, 65, 8, std::move(successText));
-          logPanel->Redraw();
+ logPanel->AddRenderer(0, 0, 65, 8, std::move(successText));
+     logPanel->Redraw();
           _Drawer->Render();
           
           Sleep(2000);
-        }
+     }
       }
       
-      // 입력 버퍼 클리어
       HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
       FlushConsoleInputBuffer(hInput);
       
@@ -500,14 +542,32 @@ void CompanionRecruitScene::HandleInput() {
       Exit();
       SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
     } else {
-      // 거부
-      _RecruitAccepted = false;
+      // ===== 거부 =====
+  _RecruitAccepted = false;
       
-      // 입력 버퍼 클리어
-      HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-      FlushConsoleInputBuffer(hInput);
+    // ===== 거부 메시지 표시 =====
+      Panel* logPanel = _Drawer->GetPanel("SystemLog");
+ if (logPanel) {
+        logPanel->ClearRenderers();
+        auto refusalText = std::make_unique<TextRenderer>();
+        refusalText->AddLine("");
+        refusalText->AddLineWithColor(
+    _RefusalMessage.empty() ? 
+"  동료 영입을 거부했습니다." : 
+    ("  " + _RefusalMessage),
+     MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
+        refusalText->AddLine("  (잠시 후 자동으로 돌아갑니다)");
+     logPanel->AddRenderer(0, 0, 65, 8, std::move(refusalText));
+        logPanel->Redraw();
+        _Drawer->Render();
+  
+        Sleep(2000);
+  }
       
-      _IsActive = false;
+HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    FlushConsoleInputBuffer(hInput);
+      
+   _IsActive = false;
       Exit();
       SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
     }
@@ -523,7 +583,7 @@ void CompanionRecruitScene::UpdateSelectionUI() {
   auto logText = std::make_unique<TextRenderer>();
   logText->AddLine("");
   logText->AddLineWithColor(
-      "  [ 시스템 로그 ]",
+      "  영입하시겠습니까?",
       MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   logText->AddLine("");
   
@@ -539,7 +599,172 @@ void CompanionRecruitScene::UpdateSelectionUI() {
         MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK));
   }
 
-  logPanel->AddRenderer(1, 0, 74, 10, std::move(logText));
+  logPanel->AddRenderer(0, 0, 65, 8, std::move(logText));
+
+  // 우측 커맨드 영역
+  auto commandText = std::make_unique<TextRenderer>();
+  commandText->AddLine("");
+  commandText->AddLineWithColor(
+ "  [ 커맨드 ]",
+      MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
+  commandText->AddLine("");
+  commandText->AddLine("  [← /→ /↑ /↓ ] 선택");
+  commandText->AddLine("  [Enter] 확인");
+  commandText->AddLine("  [ESC] 거부");
+  logPanel->AddRenderer(65, 0, 33, 8, std::move(commandText));
+
   logPanel->Redraw();
-  _Drawer->Render();
+}
+
+void CompanionRecruitScene::LoadDialogueData() {
+  if (!_CurrentCompanion.has_value()) return;
+
+  DataManager* dm = DataManager::GetInstance();
+  const auto& csvData = dm->LoadCSVFile(
+      dm->GetResourcePath("Stories"),
+      "RecruitParty.csv");
+
+  if (csvData.empty()) return;
+
+  const std::string& jobType = _CurrentCompanion->_JobType;
+  std::string targetType = "All"; // 기본값
+  
+  // jobType → Target 매핑 (warrior → Warrior, mage → Mage 등)
+  if (jobType == "warrior") targetType = "Warrior";
+  else if (jobType == "mage") targetType = "Mage";
+  else if (jobType == "archer") targetType = "Archer";
+  else if (jobType == "priest") targetType = "Priest";
+
+  // CSV 구조: 0:ID, 1:Target, 2:Type, 3:Speaker, 4:Content
+  for (size_t i = 1; i < csvData.size(); ++i) {
+    const std::string& target = csvData[i][1];
+    const std::string& type = csvData[i][2];
+    const std::string& speaker = csvData[i][3];
+    const std::string& content = csvData[i][4];
+
+    // Target 필터링 (All 또는 해당 직업만)
+    if (target != "All" && target != targetType) continue;
+
+    // ===== Talk 타입: 대화 추가 =====
+    if (type == "Talk") {
+      std::string prefix = "";
+      if (speaker == "System") {
+        prefix = "";
+      } else if (speaker == targetType) {
+   prefix = "[" + _CurrentCompanion->_Name + "]: ";
+  } else {
+        prefix = "[" + speaker + "]: ";
+      }
+
+      // 줄바꿈 처리 (\\n)
+      std::string temp = "";
+      for (size_t j = 0; j < content.length(); ++j) {
+        if (content[j] == '\\' && j + 1 < content.length() && content[j + 1] == 'n') {
+          _DialogueTexts.push_back(prefix + temp);
+          _DialogueColors.push_back(speaker == "System" ? 
+      MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK) :
+     MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
+    temp.clear();
+          j++; // 'n' 스킵
+     continue;
+ }
+        
+        // 한글 보호
+        if (static_cast<unsigned char>(content[j]) >= 0x80) {
+          temp += content[j];
+        if (j + 1 < content.length()) {
+     temp += content[++j];
+        }
+        } else {
+          temp += content[j];
+        }
+      }
+   
+      if (!temp.empty()) {
+        _DialogueTexts.push_back(prefix + temp);
+        _DialogueColors.push_back(speaker == "System" ? 
+        MakeColorAttribute(ETextColor::LIGHT_YELLOW, EBackgroundColor::BLACK) :
+        MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
+      }
+    }
+ // ===== Recruit 타입: 영입 메시지 저장 (\\n 처리) =====
+    else if (type == "Recruit") {
+      std::string processedMessage = "[" + _CurrentCompanion->_Name + "]: ";
+      for (size_t j = 0; j < content.length(); ++j) {
+      if (content[j] == '\\' && j + 1 < content.length() && content[j + 1] == 'n') {
+     processedMessage += '\n';
+        j++; // 'n' 스킵
+      continue;
+        }
+        
+      // 한글 보호
+        if (static_cast<unsigned char>(content[j]) >= 0x80) {
+          processedMessage += content[j];
+          if (j + 1 < content.length()) {
+            processedMessage += content[++j];
+     }
+ } else {
+        processedMessage += content[j];
+      }
+      }
+      _RecruitMessage = processedMessage;
+    }
+    // ===== Refusal 타입: 거부 메시지 저장 (\\n 처리) =====
+    else if (type == "Refusal") {
+      std::string processedMessage = "[" + _CurrentCompanion->_Name + "]: ";
+      for (size_t j = 0; j < content.length(); ++j) {
+        if (content[j] == '\\' && j + 1 < content.length() && content[j + 1] == 'n') {
+          processedMessage += '\n';
+     j++; // 'n' 스킵
+     continue;
+        }
+        
+        // 한글 보호
+ if (static_cast<unsigned char>(content[j]) >= 0x80) {
+          processedMessage += content[j];
+        if (j + 1 < content.length()) {
+       processedMessage += content[++j];
+          }
+        } else {
+      processedMessage += content[j];
+        }
+      }
+      _RefusalMessage = processedMessage;
+    }
+  }
+}
+
+void CompanionRecruitScene::UpdateDialogueUI() {
+  if (_CurrentDialogueIndex >= _DialogueTexts.size()) return;
+
+  Panel* panel = _Drawer->GetPanel("SystemLog");
+  if (!panel) return;
+
+  panel->ClearRenderers();
+
+  auto dialogueText = std::make_unique<TextRenderer>();
+  dialogueText->EnableAutoWrap(true);
+  dialogueText->SetWrapWidth(60);
+  dialogueText->EnableTypingEffect(true);
+  dialogueText->SetTypingSpeed(ETypingSpeed::Normal);
+
+  dialogueText->AddLine("");
+  dialogueText->AddLineWithTyping(
+      _DialogueTexts[_CurrentDialogueIndex],
+      _DialogueColors[_CurrentDialogueIndex]);
+
+  panel->AddRenderer(0, 0, 65, 8, std::move(dialogueText));
+
+  // 우측 커맨드 영역
+  auto commandText = std::make_unique<TextRenderer>();
+  commandText->AddLine("");
+  commandText->AddLineWithColor(
+      "  [ 커맨드 ]",
+    MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
+  commandText->AddLine("");
+  commandText->AddLine("  [Space/Enter] 대화 진행");
+  commandText->AddLine("  [ESC] 거부");
+  panel->AddRenderer(65, 0, 33, 8, std::move(commandText));
+
+panel->Redraw();
 }

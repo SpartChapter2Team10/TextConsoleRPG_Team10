@@ -449,6 +449,10 @@ WolfHitted - not encoding
 보스 몬스터 에테르노 - 피격, 공격(일반, 특수), 사망
 
 
+노드 이동 소리
+footstep01~09
+- RPGsounds_Kenney
+- https://opengameart.org/content/50-rpg-sound-effects
 ==============================================================
 Todo
 보스 - 에테르노
@@ -560,6 +564,28 @@ impsplat
  BGM_NoneSet05
 - 335523__hmmm101__pixel-song-3.wav
 - https://freesound.org/people/hmmm101/sounds/335523/
+ BGM_3
+- Red Shift - The Grey Room _ Density & Time.mp3
+ BGM_4
+- Nebula - The Grey Room _ Density & Time.mp3
+ BGM_5
+- Obon Fog - The Mini Vandals.mp3
+ BGM_7
+- False Vacuum Decay - The Grey Room _ Density & Time.mp3
+ BGM_8
+- Blacksmith - Godmode.mp3
+ BGM_10
+- Dangerous Toys - SefChol.mp3
+ BGM_11_GameOver
+- 518568__szegvari__violin-solo-little-sad-story-mastering
+-https://freesound.org/people/szegvari/sounds/518568/
+ BGM_12_GameClear
+- 558839__dominictreis__royal-entrance-music.mp3
+- https://freesound.org/people/dominictreis/sounds/558839/
+
+게임 클리어 음악 후보
+- 770063__vrymaa__nihil-inanis.wav
+- https://freesound.org/people/Vrymaa/sounds/770063/
 
 단독 파일 - 보스 음성
  643715__snowfightstudios__devil-demon_i-am-death
@@ -567,4 +593,16 @@ impsplat
  643718__snowfightstudios__devil-demon_i-am-the-darkness
 - https://freesound.org/people/SnowFightStudios/sounds/643718/
  643725__snowfightstudios__devil-demon_you-cant-escape-death
-- https://freesound.org/people/SnowFightStudios/sounds/643725/ 
+- https://freesound.org/people/SnowFightStudios/sounds/643725/
+ Boss_Dead
+- 337641__richerlandtv__creepy-ghost-voice-2
+- https://freesound.org/people/RICHERlandTV/sounds/337641/
+ Boss_Attack1
+- 688085__danietzyt__shock-wave-wind.wav
+- https://freesound.org/people/DanietzYT/sounds/688085/
+ Boss_Attack2
+- 331859__electroshocknetwork__xkicks-god-of-the-resis.aiff
+- https://freesound.org/people/ElectroShockNetwork/sounds/331859/
+ Boss_Dbuff
+- 570852__rafaelzimrp__magicshield_down.wav
+- https://freesound.org/people/rafaelzimrp/sounds/570852/
