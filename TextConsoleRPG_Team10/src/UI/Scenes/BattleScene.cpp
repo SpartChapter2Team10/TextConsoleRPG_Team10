@@ -639,7 +639,7 @@ void BattleScene::UpdateMonsterInfoPanel()
         fileName = "Walker.txt";
     }
     else if (monsterName.find("데몬") != std::string::npos) {
-        fileName = "Demmon.txt";
+        fileName = "Demon.txt";
     }
     else if (monsterName.find("비홀더") != std::string::npos) {
         fileName = "Beholder.txt";
