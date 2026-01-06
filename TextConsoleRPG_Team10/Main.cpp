@@ -55,5 +55,8 @@ int main()
     // 게임 시작 (메인 루프)
     gm->StartGame();
 
+	// 동료 영입 씬 테스트용
+    // gm->StartCompanionRecruitTest();
+
     return 0;
 }
