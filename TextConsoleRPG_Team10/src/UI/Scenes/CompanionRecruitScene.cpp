@@ -181,7 +181,7 @@ void CompanionRecruitScene::Enter() {
       "  [ 시스템 로그 ]",
       MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   logText->AddLine("");
-  logText->AddLine("  " + _CurrentCompanion->_Name + "과(와) 발견했습니다!");
+  logText->AddLine("  " + _CurrentCompanion->_Name + "을(를) 발견했습니다!");
   logText->AddLine("  영입하시겠습니까?");
   logPanel->AddRenderer(0, 0, 65, 8, std::move(logText));
 
@@ -192,7 +192,7 @@ void CompanionRecruitScene::Enter() {
       "  [ 커맨드 ]",
       MakeColorAttribute(ETextColor::WHITE, EBackgroundColor::BLACK));
   logCommandText->AddLine("");
-  logCommandText->AddLine("  [← /→ ] 선택");
+  logCommandText->AddLine("  [← /→ /↑ /↓ ] 선택");
   logCommandText->AddLine("  [Enter] 확인");
   logCommandText->AddLine("  [ESC] 거부");
   logPanel->AddRenderer(65, 0, 33, 8, std::move(logCommandText));
@@ -354,18 +354,27 @@ void CompanionRecruitScene::HandleInput() {
   if (keyCode == VK_ESCAPE) {
     _RecruitAccepted = false;
     _IsActive = false;
+    
+    // 입력 버퍼 클리어
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    FlushConsoleInputBuffer(hInput);
+    
     Exit();
     SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
     return;
   }
 
-  // 좌우 방향키: 선택 전환
-  if (keyCode == VK_LEFT || keyCode == 75) {  // 왼쪽 화살표
-    _SelectedOption = 0;  // 영입
+  // 좌우/상하 방향키: 선택 전환
+  if (keyCode == VK_LEFT || keyCode == VK_UP || keyCode == 75 || keyCode == 72) {
+    // 왼쪽 화살표 또는 위쪽 화살표 - 영입
+    _SelectedOption = 0;
     UpdateSelectionUI();
-  } else if (keyCode == VK_RIGHT || keyCode == 77) {  // 오른쪽 화살표
-    _SelectedOption = 1;  // 거부
+    return;
+  } else if (keyCode == VK_RIGHT || keyCode == VK_DOWN || keyCode == 77 || keyCode == 80) {
+    // 오른쪽 화살표 또는 아래쪽 화살표 - 거부
+    _SelectedOption = 1;
     UpdateSelectionUI();
+    return;  // 추가
   }
 
   // Enter: 선택 확인
@@ -392,12 +401,17 @@ void CompanionRecruitScene::HandleInput() {
           errorText->AddLineWithColor(
               "  파티가 가득 찼습니다!",
               MakeColorAttribute(ETextColor::LIGHT_RED, EBackgroundColor::BLACK));
-          errorText->AddLine("  (Enter를 눌러 계속)");
-          logPanel->AddRenderer(1, 0, 74, 10, std::move(errorText));
+          errorText->AddLine("  (잠시 후 자동으로 돌아갑니다)");
+          logPanel->AddRenderer(0, 0, 65, 8, std::move(errorText));
           logPanel->Redraw();
           _Drawer->Render();
           
-          Sleep(1500);
+          Sleep(2000);
+          
+          // 입력 버퍼 클리어
+          HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+          FlushConsoleInputBuffer(hInput);
+          
           _IsActive = false;
           Exit();
           SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
@@ -455,14 +469,18 @@ void CompanionRecruitScene::HandleInput() {
           successText->AddLineWithColor(
               "  " + companion._Name + "이(가) 파티에 합류했습니다!",
               MakeColorAttribute(ETextColor::LIGHT_GREEN, EBackgroundColor::BLACK));
-          successText->AddLine("  (Enter를 눌러 계속)");
-          logPanel->AddRenderer(1, 0, 74, 10, std::move(successText));
+          successText->AddLine("  (잠시 후 자동으로 돌아갑니다)");
+          logPanel->AddRenderer(0, 0, 65, 8, std::move(successText));
           logPanel->Redraw();
           _Drawer->Render();
           
-          Sleep(1500);
+          Sleep(2000);
         }
       }
+      
+      // 입력 버퍼 클리어
+      HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+      FlushConsoleInputBuffer(hInput);
       
       _IsActive = false;
       Exit();
@@ -470,6 +488,11 @@ void CompanionRecruitScene::HandleInput() {
     } else {
       // 거부
       _RecruitAccepted = false;
+      
+      // 입력 버퍼 클리어
+      HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+      FlushConsoleInputBuffer(hInput);
+      
       _IsActive = false;
       Exit();
       SceneManager::GetInstance()->ChangeScene(ESceneType::StageSelect);
