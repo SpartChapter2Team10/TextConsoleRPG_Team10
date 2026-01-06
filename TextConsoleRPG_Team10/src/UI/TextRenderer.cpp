@@ -102,18 +102,35 @@ void TextRenderer::AddLogLine(const std::string& line, ELogImportance importance
 
 void TextRenderer::AddLineWithTyping(const std::string& line, WORD color)
 {
-    TextLine textLine(line, color);
-    textLine.HasTypingEffect = true;
-    _Lines.push_back(textLine);
+    if (_AutoWrap && !line.empty())
+    {
+        // 타이핑 줄도 자동 줄바꿈을 적용하여 쪼개서 넣어야 합니다.
+        auto wrappedLines = WrapText(line, _WrapWidth);
+        for (const auto& wrapped : wrappedLines)
+        {
+            TextLine textLine(wrapped, color);
+            textLine.HasTypingEffect = true;
+            _Lines.push_back(textLine);
+        }
+    }
+    else
+    {
+        TextLine textLine(line, color);
+        textLine.HasTypingEffect = true;
+        _Lines.push_back(textLine);
+    }
 
     if (_TypingEnabled && _CurrentTypingLine < 0)
     {
-        // 타이핑 효과 시작
-        _CurrentTypingLine = static_cast<int>(_Lines.size()) - 1;
-        _CurrentTypingChar = 0;
-        _LastTypingTime = std::chrono::steady_clock::now();
+        for (int i = 0; i < (int)_Lines.size(); ++i) {
+            if (_Lines[i].HasTypingEffect) {
+                _CurrentTypingLine = i;
+                _CurrentTypingChar = 0;
+                _LastTypingTime = std::chrono::steady_clock::now();
+                break;
+            }
+        }
     }
-
     _IsDirty = true;
 }
 
@@ -179,14 +196,22 @@ bool TextRenderer::UpdateTypingEffect()
         if (_CurrentTypingChar < line.Text.length())
         {
             // UTF-8 문자 처리
+            // 1. 남은 길이 체크 (안전성 강화)
+            size_t remaining = line.Text.length() - _CurrentTypingChar;
+            if (remaining <= 0) return false;
+
             unsigned char ch = static_cast<unsigned char>(line.Text[_CurrentTypingChar]);
             int charLen = 1;
 
-            if (ch >= 0x80)
-            {
-                if ((ch & 0xE0) == 0xE0) charLen = 3;  // 한글
-                else if ((ch & 0xC0) == 0xC0) charLen = 2;
-            }
+            // 2. UTF-8 표준 비트 패턴에 따른 길이 판별
+            if ((ch & 0x80) == 0)          charLen = 1; // 0xxxxxxx (ASCII)
+            else if ((ch & 0xE0) == 0xC0)  charLen = 2; // 110xxxxx
+            else if ((ch & 0xF0) == 0xE0)  charLen = 3; // 1110xxxx (한글 대부분)
+            else if ((ch & 0xF8) == 0xF0)  charLen = 4; // 11110xxx (이모지 등)
+            else                           charLen = 1; // 잘못된 데이터 대응
+
+            // 3. 실제 문자열 길이를 초과하지 않도록 방어
+            if (charLen > (int)remaining) charLen = (int)remaining;
 
             _CurrentTypingChar += charLen;
             _LastTypingTime = now;
@@ -196,11 +221,17 @@ bool TextRenderer::UpdateTypingEffect()
         else
         {
             // 현재 줄 타이핑 완료
+            // 현재 줄의 타이핑 효과 꺼주기
+            if (_CurrentTypingLine != -1)
+            {
+                _Lines[_CurrentTypingLine].HasTypingEffect = false;
+            }
+            int lastFinishedLine = _CurrentTypingLine;
             _CurrentTypingLine = -1;
             _CurrentTypingChar = 0;
 
             // 다음 타이핑 효과 줄 찾기
-            for (size_t i = _CurrentTypingLine + 1; i < _Lines.size(); ++i)
+            for (size_t i = lastFinishedLine + 1; i < _Lines.size(); ++i)
             {
                 if (_Lines[i].HasTypingEffect)
                 {
@@ -214,6 +245,37 @@ bool TextRenderer::UpdateTypingEffect()
     }
 
     return false;
+}
+
+void TextRenderer::SkipTyping()
+{
+    // 현재 타이핑 중인 줄이 있다면 그 줄만 즉시 완료 처리
+    if (_CurrentTypingLine >= 0 && _CurrentTypingLine < (int)_Lines.size())
+    {
+        _Lines[_CurrentTypingLine].HasTypingEffect = false;
+
+        // 다음 타이핑할 줄이 있는지 즉시 검색 (UpdateTypingEffect의 로직 활용)
+        int lastFinishedLine = _CurrentTypingLine;
+        _CurrentTypingLine = -1;
+        for (size_t i = lastFinishedLine + 1; i < _Lines.size(); ++i)
+        {
+            if (_Lines[i].HasTypingEffect)
+            {
+                _CurrentTypingLine = static_cast<int>(i);
+                _CurrentTypingChar = 0;
+                break;
+            }
+        }
+    }
+    _IsDirty = true;
+}
+
+bool TextRenderer::IsTypingFinished() const
+{
+    /*if (_Lines.empty()) return true;
+    return _CurrentTypingLine >= static_cast<int>(_Lines.size());*/
+    // -1은 현재 타이핑 중인 줄이 없다는 뜻이므로 true 반환
+    return _CurrentTypingLine == -1;
 }
 
 void TextRenderer::Update(float deltaTime)
@@ -269,8 +331,13 @@ std::vector<std::string> TextRenderer::WrapText(const std::string& text, int max
         // UTF-8 문자 크기 계산
         if (ch >= 0x80)
         {
-            if ((ch & 0xE0) == 0xE0) charLen = 3;  // 한글
-            else if ((ch & 0xC0) == 0xC0) charLen = 2;
+            //if ((ch & 0xE0) == 0xE0) charLen = 3;  // 한글
+            //else if ((ch & 0xC0) == 0xC0) charLen = 2;
+            if ((ch & 0x80) == 0)          charLen = 1; // 0xxxxxxx (ASCII)
+            else if ((ch & 0xE0) == 0xC0)  charLen = 2; // 110xxxxx
+            else if ((ch & 0xF0) == 0xE0)  charLen = 3; // 1110xxxx (한글 대부분)
+            else if ((ch & 0xF8) == 0xF0)  charLen = 4; // 11110xxx (이모지 등)
+            else                           charLen = 1; // 잘못된 데이터 대응
             visualWidth = 2;  // 한글은 2칸
         }
 
@@ -335,10 +402,16 @@ void TextRenderer::Render(ScreenBuffer& buffer, const PanelBounds& bounds)
 
         // 타이핑 효과 처리
         std::string displayText = line.Text;
-        if (_TypingEnabled && line.HasTypingEffect && i == _CurrentTypingLine)
+        if (_TypingEnabled && line.HasTypingEffect)
         {
-            // 현재 타이핑 중인 줄은 일부만 표시
-            displayText = line.Text.substr(0, _CurrentTypingChar);
+            if (i == _CurrentTypingLine)
+            {// 현재 타이핑 중인 줄은 일부만 표시
+                displayText = line.Text.substr(0, _CurrentTypingChar);
+            }
+            else if (i > _CurrentTypingLine && _CurrentTypingLine != -1)
+            {// 아직 타이핑 차례가 오지 않은 뒷줄들: 아예 표시하지 않음
+                displayText = "";
+            }
         }
 
         // 플리커링 효과 적용

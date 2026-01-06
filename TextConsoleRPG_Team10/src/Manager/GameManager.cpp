@@ -3,6 +3,7 @@
 #include "../../include/Manager/SceneManager.h"
 #include "../../include/Manager/StageManager.h"
 #include "../../include/Manager/DataManager.h"
+#include "../../include/Manager/SoundPlayer.h"
 #include "../../include/UI/UIDrawer.h"
 #include "../../include/UI/Scenes/MainMenuScene.h"
 #include "../../include/UI/Scenes/PlayerNameInputScene.h"
@@ -139,6 +140,10 @@ void GameManager::StartGame()
 
     // 메인 메뉴부터 시작
     sm->ChangeScene(ESceneType::MainMenu);
+
+    // 로딩 느낌 내는 용도, 자유롭게 제거
+    // SoundPlayer::GetInstance()->PlaySFXWithPause("Title_Enter");
+    SoundPlayer::GetInstance()->PlayBGM("BGM_NoneSet01");
 
     // ===== 메인 게임 루프 =====
     while (_IsRunning && !_IsGameOver)
