@@ -10,6 +10,17 @@
 class Player;
 class ICharacter;
 
+// ===== 전투 플러시 타입 =====
+enum class EBattleFlushType
+{
+    PlayerAttack,
+    PlayerSkill,
+    PlayerItem,
+    MonsterAttack,
+    TurnEnd,
+    BattleEnd
+};
+
 // ===== 전역 함수 선언 =====
 // 직업 우선순위 반환 (Archer=0, Priest=1, Warrior=2, Mage=3)
 int GetJobPriority(ICharacter* character);
@@ -185,19 +196,19 @@ public:
     std::vector<BattleLog> ConsumeLogs(); // BattleScene에서 가져감
 
     // ===== 씬 콜백 =====
-    public:
-        using FlushCallback = std::function<void()>;
+public:
+    using FlushCallback = std::function<void(EBattleFlushType)>;
 
-        void SetFlushCallback(FlushCallback cb)
-        {
-            _flushCallback = cb;
-        }
+    void SetFlushCallback(FlushCallback cb)
+    {
+        _flushCallback = cb;
+    }
 
-        void RequestFlush()
-        {
-            if (_flushCallback)
-                _flushCallback();
-        }
+    void RequestFlush(EBattleFlushType type)
+    {
+        if (_flushCallback)
+            _flushCallback(type);
+    }
 
 private:
     FlushCallback _flushCallback;

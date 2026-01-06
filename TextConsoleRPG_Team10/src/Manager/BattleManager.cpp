@@ -197,7 +197,7 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
                         ELogImportance::DISPLAY
                     );
                 }
-                RequestFlush();
+                RequestFlush(EBattleFlushType::PlayerAttack);
                 return;  // 스킬 사용 성공 → 일반 공격 스킵
             }
             // 스킬 사용 실패 (MP 부족 등) → 일반 공격으로 폴백
@@ -217,7 +217,7 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
         if (attackType == "어둠의 폭풍")
         {
             ProcessAOEAttack(attackType, baseDamage, boss);
-            RequestFlush();
+            RequestFlush(EBattleFlushType::MonsterAttack);
             return;
         }
 
@@ -225,7 +225,7 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
         if (attackType == "공포의 속삭임")
         {
             ProcessDebuff(attackType, boss);
-            RequestFlush();
+            RequestFlush(EBattleFlushType::MonsterAttack);
             return;
         }
     }
@@ -270,7 +270,7 @@ void BattleManager::ProcessAttack(ICharacter* Atk, ICharacter* Def)
     );*/
     PushLog(Def->GetName() + "에게 " + std::to_string(Damage) + " 데미지!", EBattleLogType::Important);
 
-    RequestFlush();
+    RequestFlush(EBattleFlushType::MonsterAttack);
 }
 
 // ===== 광역 공격 처리 (Boss 전용) =====
@@ -893,5 +893,5 @@ std::vector<BattleLog> BattleManager::ConsumeLogs()
     _BattleLogs.clear();
     return result;
 }
-
-//RequestFlush();
+//플러시 사용시 호출
+//RequestFlush(type);
