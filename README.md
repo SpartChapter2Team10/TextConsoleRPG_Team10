@@ -212,7 +212,6 @@ Directory Structure
 - Windows 10 이상
 - Visual Studio 2019 이상
 - C++17
-git clone https://github.com/YourTeam/TextConsoleRPG_Team10.git
 
 ### 🎮 Controls
 | 키 입력 | 동작 |
