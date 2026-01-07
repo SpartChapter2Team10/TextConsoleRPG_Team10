@@ -8,7 +8,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 **[🎥 Gameplay Video](https://youtu.be/k-tPc7hbnwE)** ·
-**[📄 Game Design Document](https://www.notion.so/teamsparta/2de2dc3ef5148072bfe8e8df9bed6356)**
+**[📄 Game Design Document](https://www.notion.so/teamsparta/2de2dc3ef5148072bfe8e8df9bed6356)** ·
 **[💻 GitHub 저장소](https://github.com/SpartChapter2Team10/TextConsoleRPG_Team10)**  
 
 **Text-based Turn-based Strategy RPG · Roguelike**
