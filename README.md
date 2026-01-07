@@ -48,6 +48,9 @@
 ### 🎭 Class System
 
 4개의 기본 직업 중 하나를 선택해 플레이합니다.
+<div align="center">
+ <img width="907" height="271" alt="image" src="https://github.com/user-attachments/assets/cdc3f0d0-3832-4f1c-926b-0f4a4fb34c69" width="520"/>
+</div>
 
 - **Warrior**: 방어 및 어그로 중심의 탱커
 - **Mage**: 고화력 마법 딜러
