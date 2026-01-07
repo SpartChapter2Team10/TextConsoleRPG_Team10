@@ -1,4 +1,4 @@
-# 🗼 Erebos Tower
+# 🗼 Erebus Tower
 
 <div align="center">
 
@@ -29,7 +29,7 @@
 
 ## 📖 Overview
 
-**Erebos Tower**는  
+**Erebus Tower**는  
 텍스트 기반 **턴제 전략 RPG + 로그라이크** 구조의 Windows 콘솔 게임입니다.
 
 플레이어는 모든 능력을 잃은 지망생으로 시작해  
