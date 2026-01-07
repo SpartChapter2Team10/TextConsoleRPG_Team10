@@ -1,0 +1,30 @@
+ID,Target,Type,Speaker,Content
+1,All,Talk,System,어디선가 철이 긁히는 소리.. 철장이 흔들리는 소리가 들려온다.\n몬스터인가? 아니 소리가 다르다.\n무엇가에 홀린 듯 소리가 있는 곳으로 걸어가고 있다.\n
+2,Warrior,Talk,Warrior,아직 내가 죽을 때가 아닌가보군? 이봐 여기야!
+3,Warrior,Talk,System,이끌려 들어간 곳에는 기사단의 사람이 갇혀 있었다.\n조사대의 일원인가?
+4,Warrior,Talk,Warrior,지원인가? 바깥의 상황은 어떤가?
+5,Warrior,Talk,System,우리는 상황을 주고 받았다.
+6,Warrior,Talk,Warrior,과연 그런 상황인건가…\n자네도 알다시피 나는 지금 힘을 잃었네. 그런 나라도 괜찮다면 자네에게 힘이 되어주고 싶네.
+7,Warrior,Recruit,Warrior,이제부터 내 검은 자네와 함께할걸세.\n나의 이름은 
+8,Warrior,Refusal,Warrior,그대의 여정이 성공하길 빌겠네.
+9,Mage,Talk,Mage,몬스터의 위장? 아니면 진짜 사람? 뭐든 좋아. 나를 여기서 꺼내줘!
+10,Mage,Talk,System,이끌려 들어간 곳에는 한명의 마법사가 갇혀 있었다.\n조사대의 일원인가?
+11,Mage,Talk,Mage,가까이 다가오지마. 거기서서 이야기해.
+12,Mage,Talk,System,마법사의 긴장을 풀기 위해 떨어진 상태에서 이야기를 주고 받았다.\n마법사는 상황을 이해했다.
+13,Mage,Talk,Mage,"과연 그런 상황이란 건가..\n당신에게 판단을 맡길게, 나는 지금 힘을 크게 잃었어.\n내가 당신에 여정에 도움이 된다면 기꺼이 협력하겠지만 아니라면 나를 이곳에 두고가.\n짐덩어리가 되는 취미는 없어."
+14,Mage,Recruit,Mage,진짜 나를 대려간다고?\n뭐... 생각이 있겠지.\n앞으로 잘부탁하지. 내이름은
+15,Mage,Refusal,Mage,현명한 판단이야. 나중에 보자고.
+16,Archer,Talk,Archer,"오! 사람이다, 사람이야! 여기야 여기!"
+17,Archer,Talk,System,발길이 닿은 곳에는 한 명의 모험가가 있었다.
+18,Archer,Talk,Archer,정신차려보니까 여기에 갇혀있었단 말이지. 나 좀 꺼내줘!
+19,Archer,Talk,System,나는 흥분한 무명의 Archer를 진정시키고 설명을 진행했다.
+20,Archer,Talk,Archer,"그래 오히려 여기에 있는 게 안전할 수도 있다는 거지?\n이봐, 네가 봤을 때 나는 전력에 도움이 돼?\n그렇다면 널 위해 활시위를 당겨주지."
+21,Archer,Recruit,Archer,좋았어! 가만히 있는 건 내 성미에 안 맞아\n앞으로 잘부탁해. 내이름은
+22,Archer,Refusal,Archer,아쉽네.. 꼭 성공하길 빌게.
+23,Priest,Talk,Priest,그분의 은총이 함께 하시길.
+24,Priest,Talk,System,마음이 이끄는 대로 도달한 곳에는 한 명의 사제가 기도 중이었다.
+25,Priest,Talk,Priest,혹시 상황을 알려주실 수 있으시겠습니까?\n정신을 차려보니 이곳에 갇혀있었습니다.
+26,Priest,Talk,System,나는 천천히 상황을 설명한다.
+27,Priest,Talk,Priest,"그런..\n제가 도움이 안 될수도 있겠지만 저를 데려가 주셨으면 합니다.\n그분을 모시는 몸으로, 위험 때문에 뒤로 물러날 생각은 없습니다."
+28,Priest,Recruit,Priest,당신에 결단에 감사를.\n앞으로 잘부드탁립니다. 제 이름은
+29,Priest,Refusal,Priest,제 안전을 걱정해 주시는 건가요?\n상냥한 분. 당신의 앞날에 그분의 축복이 함께 하길.

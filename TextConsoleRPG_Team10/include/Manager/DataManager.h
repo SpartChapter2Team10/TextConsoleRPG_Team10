@@ -1,26 +1,113 @@
 #pragma once
 #include "../Singleton.h"
+#include "../Config.h"
+#include "../../include/Item/MonsterSpawnData.h"
 #include <string>
 #include <vector>
-
-using namespace std;
+#include <optional>
+#include "../Data/CompanionData.h"
 
 class Player;
+struct ItemData;
+struct MonsterSpawnData;
+struct StageFloorData;
+struct NodeData;
+struct ClassData;  // 추가
+struct FloorScalingData;  // 추가
 
 class DataManager : public Singleton<DataManager>
 {
 private:
-    string _ResourcePath;
-    string _SaveDataPath;
     bool _IsInitialized;
 
+private:
+    DataManager() = default;
+    friend class Singleton<DataManager>;
+
+    DataManager(const DataManager&) = delete;
+    DataManager& operator=(const DataManager&) = delete;
+
+    // ===== 헬퍼 함수  =====
+    inline std::string JoinPath(const std::string& path1, const std::string& path2) const
+    {
+        if (path1.empty()) return path2;
+        if (path2.empty()) return path1;
+
+        std::string out = path1;
+        if (out.back() != '/' && out.back() != '\\') out.push_back('/');
+        if (path2.front() == '/' || path2.front() == '\\') out += path2.substr(1);
+        else out += path2;
+
+        return out;
+    }
+
 public:
-    void Initialize();
-    string LoadTextFile(string fileName);
-    vector<vector<string>> LoadCSVFile(string fileName);
-    bool SaveTextFile(string fileName, string data);
-    bool SavePlayerData(Player* p);
-    bool LoadPlayerData(Player* p);
-    bool FileExists(string fileName);
-    bool DeleteFile(string fileName);
+    bool Initialize();
+
+    // ===== 리소스 폴더 경로 Getter =====
+    inline std::string GetAnimationsPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), ANIMATIONS_FOLDER); }
+    inline std::string GetCharactersPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), CHARACTERS_FOLDER); }
+    inline std::string GetMapsPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), MAPS_FOLDER); }
+    inline std::string GetMonstersPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), MONSTERS_FOLDER); }
+    inline std::string GetUIPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), UI_FOLDER); }
+    inline std::string GetItemsPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), ITEMS_FOLDER); }
+    inline std::string GetSoundsPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), Sound_FOLDER); }
+    inline std::string GetStagesPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), STAGES_FOLDER); }
+    inline std::string GetStoriesPath() const { return JoinPath(std::string(DEFAULT_RESOURCE_PATH), STORIES_FOLDER); }
+
+    // ===== 범용 파일 I/O (폴더 경로를 명시적으로 받음) =====
+    std::string LoadTextFile(const std::string& folderPath, const std::string& fileName);
+    std::vector<std::vector<std::string>> LoadCSVFile(const std::string& folderPath, const std::string& fileName);
+    bool SaveTextFile(const std::string& folderPath, const std::string& fileName, const std::string& data);
+    bool DeleteFile(const std::string& folderPath, const std::string& fileName);
+    bool FileExists(const std::string& folderPath, const std::string& fileName);
+    bool DirectoryExists(const std::string& dirPath);
+
+    // ===== 특화된 리소스 로딩 함수들을 아래에 구현 =====
+    std::vector<ItemData> LoadItemData(const std::string& fileName = "Items.csv");
+    std::vector<MonsterSpawnData> LoadMonsterSpawnData(const std::string& fileName);
+    std::optional<MonsterSpawnData>
+        GetMonster(const std::string& fileName, int floor);
+
+    // ===== FloorScaling 데이터 로딩 =====
+    // FloorScaling.csv 로드
+    // return: 층별 스케일링 데이터 (1~10층)
+    std::vector<FloorScalingData> LoadFloorScaling(const std::string& fileName = "FloorScaling.csv");
+    
+    // 특정 층의 스케일링 데이터 조회
+    // floor: 층 번호 (1~10)
+    // return: 해당 층의 스케일링 데이터 (없으면 nullopt)
+    std::optional<FloorScalingData> GetFloorScaling(int floor, const std::string& fileName = "FloorScaling.csv");
+
+    // ===== 직업 데이터 로딩 =====
+    // Class.csv 전체 로드
+  std::vector<ClassData> LoadAllClassData(const std::string& fileName = "Class.csv");
+    
+    // 특정 직업 데이터 로드 (class_id로 검색)
+    // classId: "warrior", "mage", "archer", "priest"
+    // return: 찾으면 ClassData, 못 찾으면 std::nullopt
+std::optional<ClassData> GetClassData(const std::string& classId, const std::string& fileName = "Class.csv");
+
+    // ===== Stage 데이터 로딩 =====
+    // 특정 층의 노드 데이터 로드 (예: Floor1.csv)
+    std::vector<NodeData> LoadStageNodes(int floor);
+    // 층 정보 로드 (FloorInfo.csv)
+    std::vector<StageFloorData> LoadStageFloorInfo();
+
+    // 폴더 내 모든 파일 목록 가져오기 (확장자 필터 가능)
+    std::vector<std::string> GetFilesInDirectory(const std::string& folderPath, const std::string& extension = "");
+
+    // === 편의 함수 =====
+    std::string GetResourcePath(const std::string& resourceType) const;
+
+    // ===== 동료 데이터 로딩 =====
+    // Companion.csv 파일에서 모든 동료 데이터 로드
+    std::vector<CompanionData> LoadCompanionData(const std::string& fileName = "Companion.csv");
+    
+    // 등장 확률에 따라 랜덤 동료 선택
+    // currentFloor: 현재 층수 (동료 레벨 결정)
+    // return: 선택된 동료 데이터 (없으면 std::nullopt)
+    std::optional<CompanionData> GetRandomCompanion();
+
+    inline const bool IsInitialized() { return _IsInitialized; };
 };

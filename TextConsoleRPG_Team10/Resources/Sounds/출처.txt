@@ -1,0 +1,608 @@
+44.1kHz(1411kbps), 16-bit PCM WAV
+
+==========================================================
+// 씬
+Title1
+ TitleEnter
+-  334525__soneproject__rise5
+- https://freesound.org/people/soneproject/sounds/334525/
+
+GameOver
+
+EnterShop
+- Rise07
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+
+ExitShop
+- Rise04
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+
+==========================================================
+// 캐릭터
+
+캐릭터 공통
+ PlayerAttack
+- swish_2
+- https://opengameart.org/content/battle-sound-effects
+ PlayerHitted
+- 350919__cabled_mess__hurt_c_05
+- https://freesound.org/people/cabled_mess/sounds/350919/
+ PlayerHittedCritical
+- 341243__jeremysykes__hurt02
+- https://freesound.org/people/jeremysykes/sounds/341243/
+ GetReward
+- Rise03
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+ LevelUp
+- Rise05
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+ PlayerDead
+- 457531__breviceps__dinosaur-falls-to-the-ground.wav
+- https://freesound.org/people/Breviceps/sounds/457531/
+
+전사
+ Roar
+- 742753__shangasdfguy123__ghost-hippopotamus-roar
+- https://freesound.org/people/ShangASDFGuy123/sounds/742753/
+ Smash
+- 717990__johnny25225__heavywobblyimpacthit_01
+- https://freesound.org/people/Johnny25225/sounds/717990/
+
+
+마법사
+ Fireball
+- 442872__qubodup__fire-magic
+- https://freesound.org/people/qubodup/sounds/442872/
+ Overload- encoding
+- spell
+- https://opengameart.org/content/rpg-sound-pack
+
+프리스트
+ Blessing
+- exit
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ Healing
+- healing
+- https://opengameart.org/content/spell-sounds
+
+궁수
+ Aim
+- menu/wall
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ MultiShot - encoding 
+- swish_4 + swish_3
+- https://opengameart.org/content/battle-sound-effects
+
+
+동료 영입
+ RecruitEvent 문 흔드는 소리(구조 요청)
+- Creak2
+- https://opengameart.org/content/50-rpg-sound-effects
+ Recruit 문 여는 소리(동료 영입) - not encoding 
+- DoorOpen_2
+- https://opengameart.org/content/50-rpg-sound-effects
+
+==========================================================
+아이템 + 상점 + 골드
+GetItem
+- Rise06
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+ BuyItem - not encoding
+- coin3
+- https://opengameart.org/content/rpg-sound-pack
+ SellItem - not encoding
+- coin2
+- https://opengameart.org/content/rpg-sound-pack
+ UseItem - not encoding / 임시(포션류 한정 효과음)
+- bottle
+- https://opengameart.org/content/rpg-sound-pack
+ PowerUp
+- Upper01
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+ 
+ BGM_Shop
+- a_small_fire_will_do
+- https://opengameart.org/content/a-small-fire-will-do-calming-loop
+
+ 골드 획득
+- Coin01
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+
+ 골드 사용
+
+======================================================
+스테이지 별 배경음
+
+하수구 
+ Ambient_01_Sewer
+- atmosbasement.wav
+- https://opengameart.org/content/dripping-water-loop
+
+폐광
+ Ambient_02_AbandonedMine
+- 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+무덤 
+
+
+유적
+
+둥지 - 바람 소리 + 새 소리
+
+설원 BGM_06_SnowField
+- 680741__christmaskrumble666__cold-ambient-bgm
+- https://freesound.org/people/ChristmasKrumble666/sounds/680741/
+
+붉은 달
+안개
+제단 BGM_09_Altar
+- 753583__christmaskrumble666__ghost-music-box-bgm-rev
+- https://freesound.org/people/ChristmasKrumble666/sounds/753583/
+공허 - 
+
+보스 공격 소리, 클리어 소리
+
+
+
+
+일반 몬스터 종류
+
+오염된 슬라임
+ SlimeHitted
+- random5
+- https://opengameart.org/content/rpg-sound-pack
+ SlimeAttack
+- bubble3
+- https://opengameart.org/content/rpg-sound-pack
+ SlimeDead
+- impactsplat01
+- https://opengameart.org/content/8-wet-squish-slurp-impacts
+
+광폭한 쥐
+  RatHitted
+- random4
+- https://opengameart.org/content/rpg-sound-pack
+ RatAttack
+- 288941__toefur__rat-squeak
+- https://freesound.org/people/toefur/sounds/288941/
+ RatDead
+- 728086__macohibs__20240319_142259_1-distressed-rat
+- https://freesound.org/people/macohibs/sounds/728086/
+
+고블린 정찰병
+ GoblinHitted
+- ogre5
+- https://opengameart.org/content/rpg-sound-pack
+ GoblinAttack
+- ogre2
+- https://opengameart.org/content/rpg-sound-pack
+ GoblinDead
+- ogre4
+- https://opengameart.org/content/rpg-sound-pack
+
+박쥐 떼
+ BatHitted
+- 245768__felixblume__hundreds-of-bats-screaming-and-coming-out-of-their-nest.wav
+- https://freesound.org/people/felix.blume/sounds/245768/
+ BatAttack
+- 755272__garuda1982__bat-echolocation-at-0
+- https://freesound.org/people/Garuda1982/sounds/755272/
+ FlyingMobDead
+- impactsplat02
+- https://opengameart.org/content/8-wet-squish-slurp-impacts
+
+해골 병사
+ SkeletonHitted
+- wood-small
+- https://opengameart.org/content/rpg-sound-pack
+ SkeletonAttack
+- swing3
+- https://opengameart.org/content/rpg-sound-pack
+ GhostDead
+- ghost.wav
+- https://opengameart.org/content/ghost
+
+부패한 좀비
+ ZombieHitted
+- zombie-13
+- https://opengameart.org/content/zombies-sound-pack
+ ZombieAttack
+- zombie-24
+- https://opengameart.org/content/zombies-sound-pack
+ ZombieDead
+-  zombie-16
+- https://opengameart.org/content/zombies-sound-pack
+
+석재 가고일
+ GolemHitted
+- metal-small1
+- https://opengameart.org/content/rpg-sound-pack
+ GolemAttack
+- 799230__logicogonist__tom-1960-1a-long
+- https://freesound.org/people/Logicogonist/sounds/799230/
+ GolemDead
+- 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+
+유적 수호자
+ GolemHitted
+- metal-small1
+- https://opengameart.org/content/rpg-sound-pack
+ GolemAttack
+- 799230__logicogonist__tom-1960-1a-long
+- https://freesound.org/people/Logicogonist/sounds/799230/
+ GolemDead
+- 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+
+하피
+ HarppyHitted
+- 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+ HarppyAttack
+- 714210__todorrobot__cockatiel-chirps-and-flaps
+- https://freesound.org/people/todorrobot/sounds/714210/
+ HarppyDead
+- 714210__todorrobot__cockatiel-chirps-and-flaps
+- https://freesound.org/people/todorrobot/sounds/714210/
+
+바실리스크
+ BasiliskHitted
+- 457531__breviceps__dinosaur-falls-to-the-ground.wav
+- https://freesound.org/people/Breviceps/sounds/457531/
+ BasiliskAttack
+- 578601__podcapocalipsis__dinosaur-roar
+- https://freesound.org/people/Podcapocalipsis/sounds/578601/
+ BasiliskDead
+- 457531__breviceps__dinosaur-falls-to-the-ground.wav
+- https://freesound.org/people/Breviceps/sounds/457531/
+
+설원 늑대
+WolfHitted
+- wolfman
+- https://opengameart.org/content/zombies-sound-pack
+ WolfAttack
+- mnstr5
+- https://opengameart.org/content/zombies-sound-pack
+ WolfDead
+- mnstr10
+- https://opengameart.org/content/zombies-sound-pack
+
+예티
+ YetiAttack
+- giant1
+- https://opengameart.org/content/rpg-sound-pack
+ YetiHitted
+- giant3
+- https://opengameart.org/content/rpg-sound-pack
+ YetiDead
+- giant2
+- https://opengameart.org/content/rpg-sound-pack
+
+보이드 워커
+ VoidHitted
+- 569098__mrphidle__plays-in-the-void
+- https://freesound.org/people/MrPhidle/sounds/569098/
+ VoidAttack
+- 569098__mrphidle__plays-in-the-void
+- https://freesound.org/people/MrPhidle/sounds/569098/
+ VoidDead
+- 569098__mrphidle__plays-in-the-void
+- https://freesound.org/people/MrPhidle/sounds/569098/
+
+하급 데몬
+ DemonDead
+- 580771__jvmykagmailcom__demongrowl
+- https://freesound.org/people/jvmyka@gmail.com/sounds/580771/
+ DemonHitted
+ 824559__emmaemmaemma__arderas-en-el-infierno-you-will-burn-in-hell-demon-voice
+- https://freesound.org/people/emma.emma.emma/sounds/824559/
+ DemonAttack
+- 527636__lilmati__demonic-anger
+- https://freesound.org/people/LilMati/sounds/527636/
+
+비홀더
+ GhostHitted
+- water/link
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+GhostAttack
+- summer/magnet_action
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ BeholderDead
+- high_pitch_scream
+- https://opengameart.org/content/high-pitch-scream-sounds2
+
+엘드리치 호러
+ GolemHitted
+- metal-small2
+- https://opengameart.org/content/rpg-sound-pack
+ GhostAttack
+- summer/magnet_action
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ GhostDead
+- ghost.wav
+- https://opengameart.org/content/ghost
+
+공허의 망령
+ GhostHitted
+- water/link
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ GhostAttack
+- summer/magnet_action
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ GhostDead
+- ghost.wav
+- https://opengameart.org/content/ghost
+
+살아있는 조각상
+ GolemHitted
+- metal-small2
+- https://opengameart.org/content/rpg-sound-pack
+ GolemAttack
+- 799230__logicogonist__tom-1960-1a-long
+- https://freesound.org/people/Logicogonist/sounds/799230/
+ GolemDead
+- 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+
+엘리트 몬스터
+
+거대 시궁쥐
+  RatHitted
+- random4
+- https://opengameart.org/content/rpg-sound-pack
+ RatAttack
+- 288941__toefur__rat-squeak
+- https://freesound.org/people/toefur/sounds/288941/
+ RatDead
+- 728086__macohibs__20240319_142259_1-distressed-rat
+- https://freesound.org/people/macohibs/sounds/728086/
+
+고블린 대장
+ GoblinHitted
+- ogre5
+- https://opengameart.org/content/rpg-sound-pack
+ GoblinAttack
+- ogre2
+- https://opengameart.org/content/rpg-sound-pack
+ GoblinDead
+- ogre4
+- https://opengameart.org/content/rpg-sound-pack
+
+스켈레톤 나이트
+ SkeletonKnightHitted - not encoding
+- chainmail2
+- https://opengameart.org/content/rpg-sound-pack
+ SkeletonKnightAttack - not encoding
+- sword-unsheathe3
+- https://opengameart.org/content/rpg-sound-pack
+ GhostDead
+- ghost.wav
+- https://opengameart.org/content/ghost
+
+옵시디언 골렘
+ GolemHitted
+- metal-small2
+- https://opengameart.org/content/rpg-sound-pack
+ GolemAttack
+- 799230__logicogonist__tom-1960-1a-long
+- https://freesound.org/people/Logicogonist/sounds/799230/
+ GolemDead
+- 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+
+하피 퀸
+ HarppyHitted
+- 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+ HarppyAttack
+- 714210__todorrobot__cockatiel-chirps-and-flaps
+- https://freesound.org/people/todorrobot/sounds/714210/
+ HarppyDead
+- 714210__todorrobot__cockatiel-chirps-and-flaps
+- https://freesound.org/people/todorrobot/sounds/714210/
+
+화이트 팽
+WolfHitted - not encoding
+- wolfman
+- https://opengameart.org/content/zombies-sound-pack
+ WolfAttack - not encoding
+- mnstr5
+- https://opengameart.org/content/zombies-sound-pack
+ WolfDead
+- mnstr10
+- https://opengameart.org/content/zombies-sound-pack
+
+블러드 하운드
+WolfHitted - not encoding
+- wolfman
+- https://opengameart.org/content/zombies-sound-pack
+ WolfAttack - not encoding
+- mnstr5
+- https://opengameart.org/content/zombies-sound-pack
+ WolfDead
+- mnstr10
+- https://opengameart.org/content/zombies-sound-pack
+
+카오스 아이
+ GhostHitted
+- water/link
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ AbyssAttack
+- water/magnet_action
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ AbyssDead - not encoding
+- water/magnet_action
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+
+심연의 집사
+ GhostHitted
+- water/link
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ AbyssAttack
+- water/magnet_action
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+ AbyssDead
+- water/magnet_action
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+
+보스 몬스터 에테르노 - 피격, 공격(일반, 특수), 사망
+
+
+노드 이동 소리
+footstep01~09
+- RPGsounds_Kenney
+- https://opengameart.org/content/50-rpg-sound-effects
+==============================================================
+Todo
+보스 - 에테르노
+
+BGM
+==============================================================
+cc0 체크
+
+SoundPack01
+- https://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+
+RPGsounds_Kenney
+- https://opengameart.org/content/50-rpg-sound-effects
+
+battle_sound_effects
+- https://opengameart.org/content/battle-sound-effects
+
+RPG Sound Pack
+- https://opengameart.org/content/rpg-sound-pack
+
+ zombies
+- https://opengameart.org/content/zombies-sound-pack
+
+impsplat
+- https://opengameart.org/content/8-wet-squish-slurp-impacts
+
+ goblins - 톤이 높아서 분위기가 안 맞을 것 같음.
+- https://opengameart.org/content/goblins-sound-pack
+
+ spells
+- https://opengameart.org/content/spell-sounds
+
+ krank_sounds
+- https://opengameart.org/content/atmospheric-interaction-sound-pack
+
+ Alexander Ehlers - Free Music Pack
+- https://opengameart.org/content/free-music-pack
+
+단독 파일
+ ghost
+- https://opengameart.org/content/ghost
+ horde_war_drums_by_william_hector
+- https://opengameart.org/content/horde-war-drums-loop
+ high_pitch_scream_gverb & high_pitch_scream
+- https://opengameart.org/content/high-pitch-scream-sounds2
+ 742753__shangasdfguy123__ghost-hippopotamus-roar
+- https://freesound.org/people/ShangASDFGuy123/sounds/742753/
+ 717990__johnny25225__heavywobblyimpacthit_01
+- https://freesound.org/people/Johnny25225/sounds/717990/
+ 442872__qubodup__fire-magic
+- https://freesound.org/people/qubodup/sounds/442872/
+ 578601__podcapocalipsis__dinosaur-roar
+- https://freesound.org/people/Podcapocalipsis/sounds/578601/
+ 457531__breviceps__dinosaur-falls-to-the-ground.wav
+- https://freesound.org/people/Breviceps/sounds/457531/
+ 350919__cabled_mess__hurt_c_05
+- https://freesound.org/people/cabled_mess/sounds/350919/
+ 341243__jeremysykes__hurt02
+- https://freesound.org/people/jeremysykes/sounds/341243/
+ 799230__logicogonist__tom-1960-1a-long
+- https://freesound.org/people/Logicogonist/sounds/799230/
+ 625296__pbmzbr__89448__bkamuse__dangerous-mine-shaft_edited
+- https://freesound.org/people/pbmzbr/sounds/625296/
+ 714210__todorrobot__cockatiel-chirps-and-flaps
+- https://freesound.org/people/todorrobot/sounds/714210/
+ 245768__felixblume__hundreds-of-bats-screaming-and-coming-out-of-their-nest.wav
+- https://freesound.org/people/felix.blume/sounds/245768/
+ 755272__garuda1982__bat-echolocation-at-0
+- https://freesound.org/people/Garuda1982/sounds/755272/
+ 728086__macohibs__20240319_142259_1-distressed-rat
+- https://freesound.org/people/macohibs/sounds/728086/
+ 288941__toefur__rat-squeak
+- https://freesound.org/people/toefur/sounds/288941/
+ 569098__mrphidle__plays-in-the-void
+- https://freesound.org/people/MrPhidle/sounds/569098/
+ 580771__jvmykagmailcom__demongrowl
+- https://freesound.org/people/jvmyka@gmail.com/sounds/580771/
+ 527636__lilmati__demonic-anger
+- https://freesound.org/people/LilMati/sounds/527636/
+ 824559__emmaemmaemma__arderas-en-el-infierno-you-will-burn-in-hell-demon-voice
+- https://freesound.org/people/emma.emma.emma/sounds/824559/
+ 334525__soneproject__rise5
+- https://freesound.org/people/soneproject/sounds/334525/
+
+단독 파일 - BGM
+ atmosbasement
+- https://opengameart.org/content/dripping-water-loop
+ 732050__naomuhibu__lost-soulz-the-labyrinth-theme
+- https://freesound.org/people/naomuhibu/sounds/732050/
+ 680741__christmaskrumble666__cold-ambient-bgm
+- https://freesound.org/people/ChristmasKrumble666/sounds/680741/
+ 753583__christmaskrumble666__ghost-music-box-bgm-rev
+- https://freesound.org/people/ChristmasKrumble666/sounds/753583/
+ 484368__spacejoe__bird-1
+- https://freesound.org/people/SpaceJoe/sounds/484368/
+ 
+ BGM_NoneSet01
+- 614546__szegvari__myst-dark-drone-synth-female-vocal-choir-atmo-ambience-cinematic.wav
+- https://freesound.org/people/szegvari/sounds/614546/
+ BGM_NoneSet02
+- 825858__vrymaa__monastery-atmosphere-monk-chant-chimes.wav
+- https://freesound.org/people/Vrymaa/sounds/825858/
+ BGM_NoneSet03
+- 572191__aminudinaszad__eternal-silence.wav
+- https://freesound.org/people/Aminudinaszad/sounds/572191/
+ BGM_NoneSet04
+- 518137__szegvari__green-diamond-synth-loop-concert-hall.wav
+- https://freesound.org/people/szegvari/sounds/518137/
+ BGM_NoneSet05
+- 335523__hmmm101__pixel-song-3.wav
+- https://freesound.org/people/hmmm101/sounds/335523/
+ BGM_3
+- Red Shift - The Grey Room _ Density & Time.mp3
+ BGM_4
+- Nebula - The Grey Room _ Density & Time.mp3
+ BGM_5
+- Obon Fog - The Mini Vandals.mp3
+ BGM_7
+- False Vacuum Decay - The Grey Room _ Density & Time.mp3
+ BGM_8
+- Blacksmith - Godmode.mp3
+ BGM_10
+- Dangerous Toys - SefChol.mp3
+ BGM_11_GameOver
+- 518568__szegvari__violin-solo-little-sad-story-mastering
+-https://freesound.org/people/szegvari/sounds/518568/
+ BGM_12_GameClear
+- 558839__dominictreis__royal-entrance-music.mp3
+- https://freesound.org/people/dominictreis/sounds/558839/
+
+게임 클리어 음악 후보
+- 770063__vrymaa__nihil-inanis.wav
+- https://freesound.org/people/Vrymaa/sounds/770063/
+
+단독 파일 - 보스 음성
+ 643715__snowfightstudios__devil-demon_i-am-death
+- https://freesound.org/people/SnowFightStudios/sounds/643715/
+ 643718__snowfightstudios__devil-demon_i-am-the-darkness
+- https://freesound.org/people/SnowFightStudios/sounds/643718/
+ 643725__snowfightstudios__devil-demon_you-cant-escape-death
+- https://freesound.org/people/SnowFightStudios/sounds/643725/
+ Boss_Dead
+- 337641__richerlandtv__creepy-ghost-voice-2
+- https://freesound.org/people/RICHERlandTV/sounds/337641/
+ Boss_Attack1
+- 688085__danietzyt__shock-wave-wind.wav
+- https://freesound.org/people/DanietzYT/sounds/688085/
+ Boss_Attack2
+- 331859__electroshocknetwork__xkicks-god-of-the-resis.aiff
+- https://freesound.org/people/ElectroShockNetwork/sounds/331859/
+ Boss_Dbuff
+- 570852__rafaelzimrp__magicshield_down.wav
+- https://freesound.org/people/rafaelzimrp/sounds/570852/
