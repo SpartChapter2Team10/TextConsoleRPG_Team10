@@ -9,10 +9,12 @@
 
 **[🎥 Gameplay Video](https://youtu.be/k-tPc7hbnwE)** ·
 **[📄 Game Design Document](https://www.notion.so/teamsparta/2de2dc3ef5148072bfe8e8df9bed6356)** ·
+**[📄 Dev PPT (PDF)](https://github.com/user-attachments/files/24472503/NBC_2CH_.10._.PPT.pdf)** ·
 **[💻 GitHub 저장소](https://github.com/SpartChapter2Team10/TextConsoleRPG_Team10)**  
 
 **Text-based Turn-based Strategy RPG · Roguelike**
 <div align="center">
+
 
   “강자는 모든 것을 잃고, 약자는 모든 것을 얻는다.”
   
