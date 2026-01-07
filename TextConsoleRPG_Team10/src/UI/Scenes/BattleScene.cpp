@@ -1,4 +1,4 @@
-#include "../../../include/UI/Scenes/BattleScene.h"
+﻿#include "../../../include/UI/Scenes/BattleScene.h"
 #include "../../../include/UI/UIDrawer.h"
 #include "../../../include/UI/Panel.h"
 #include "../../../include/UI/TextRenderer.h"
@@ -1281,7 +1281,7 @@ void BattleScene::EndBattle(bool victory)
         CollectBattleLogs();
 
         _SystemLogs.push_back("");
-        _SystemLogs.push_back("[성공] 스테이지 클리어!");
+        _SystemLogs.push_back("[승리] 스테이지 클리어!");
     }
     else
     {
