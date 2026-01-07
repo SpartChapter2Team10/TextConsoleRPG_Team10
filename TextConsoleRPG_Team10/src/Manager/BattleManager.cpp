@@ -1,4 +1,4 @@
-#include "../../include/Manager/BattleManager.h"
+﻿#include "../../include/Manager/BattleManager.h"
 #include "../../include/Manager/PrintManager.h"
 #include "../../include/Unit/NormalMonster.h"
 #include "../../include/Unit/EliteMonster.h"
@@ -394,7 +394,7 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
     {
         if (party.size() > 1)
         {
-            PushLog("파티원 모두 ", EBattleLogType::Important);
+            PushLog("[안내] 파티원 모두 ", EBattleLogType::Important);
         }
         else
         {
@@ -408,7 +408,7 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
             if (member)
             {
                 member->GainExp(Exp);
-                PushLog(member->GetName() + "의 EXP: " +
+                PushLog("[안내] "+member->GetName() + "의 EXP: " +
                     std::to_string(member->GetExp()) + "/" +
                     std::to_string(member->GetMaxExp()), EBattleLogType::Important);
             }
@@ -419,9 +419,9 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
     // ===== 골드: 메인 플레이어만 획득 =====
     if (Gold > 0 && mainPlayer)
     {
-        PushLog(mainPlayer->GetName() + "은(는) " + std::to_string(Gold) + "G를 획득했습니다.", EBattleLogType::Important);
+        PushLog("[안내] " + mainPlayer->GetName() + "은(는) " + std::to_string(Gold) + "G를 획득했습니다.", EBattleLogType::Important);
         mainPlayer->GainGold(Gold);
-        PushLog(mainPlayer->GetName() + "의 소지 골드량은 " + std::to_string(mainPlayer->GetGold()) + " G" + "입니다.", EBattleLogType::Important);
+        PushLog("[안내] " + mainPlayer->GetName() + "의 소지 골드량은 " + std::to_string(mainPlayer->GetGold()) + " G" + "입니다.", EBattleLogType::Important);
     }
 
     // ===== 아이템: 메인 플레이어 인벤토리에만 추가 =====
@@ -433,7 +433,7 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
         Inventory* inventory = nullptr;
         if (!mainPlayer->TryGetInventory(inventory))
         {
-            PushLog(mainPlayer->GetName() + "은(는) 인벤토리가 없어 아이템을 얻지 못했습니다.", EBattleLogType::Important);
+            PushLog("[안내] " + mainPlayer->GetName() + "은(는) 인벤토리가 없어 아이템을 얻지 못했습니다.", EBattleLogType::Important);
             PushLog("", EBattleLogType::Important);
             return;
         }
@@ -441,11 +441,11 @@ void BattleManager::CalculateReward(Player* P, IMonster* M)
         int Remain;
         if (inventory->AddItem(std::move(DroppedItem), 1, Remain))
         {
-            PushLog(mainPlayer->GetName() + "은(는) " + ItemName + "을 보상으로 얻었습니다.", EBattleLogType::Important);
+            PushLog("[안내] " + mainPlayer->GetName() + "은(는) " + ItemName + "을 보상으로 얻었습니다.", EBattleLogType::Important);
         }
         else
         {
-            PushLog(mainPlayer->GetName() + "은(는) 인벤토리가 가득 차 있어 아이템을 얻지 못했습니다.", EBattleLogType::Important);
+            PushLog("[안내] " + mainPlayer->GetName() + "은(는) 인벤토리가 가득 차 있어 아이템을 얻지 못했습니다.", EBattleLogType::Important);
         }
         PushLog("", EBattleLogType::Important);
     }
@@ -660,7 +660,7 @@ bool BattleManager::ProcessBattleTurn()
         SetCurrentRound(_CurrentRound + 1);
         
         // ⭐ 플레이어 턴 시작 로그
-        PushLog("=== 플레이어 턴 " + std::to_string(_CurrentRound) + " 시작 ===", EBattleLogType::Important);
+        PushLog("[전투] === 플레이어 턴 " + std::to_string(_CurrentRound) + " 시작 ===", EBattleLogType::Important);
 
         // 4. 플레이어 턴: ProcessTurn(Monster)
         ProcessTurn(_CurrentMonster.get());
@@ -679,7 +679,7 @@ bool BattleManager::ProcessBattleTurn()
     else
     {
  // ⭐ 몬스터 턴 시작 로그
-        PushLog("=== 몬스터 턴 " + std::to_string(_CurrentRound) + " 시작 ===", EBattleLogType::Important);
+        PushLog("[전투] === 몬스터 턴 " + std::to_string(_CurrentRound) + " 시작 ===", EBattleLogType::Important);
     
         // 6. 몬스터 턴: 타겟 선정 후 공격
         Player* target = SelectMonsterTarget();
