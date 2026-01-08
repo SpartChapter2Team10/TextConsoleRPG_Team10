@@ -7,7 +7,9 @@
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6.svg?logo=windows)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-**[🎥 Gameplay Video](https://youtu.be/k-tPc7hbnwE)** ·
+**[🎥 Gameplay Video-SpeedRun](https://youtu.be/k-tPc7hbnwE)** ·
+**[🎥 Gameplay Video-Detail](https://www.youtube.com/watch?v=Y2zJsQHeVBM&feature=youtu.be)**
+
 **[📄 Game Design Document](https://www.notion.so/teamsparta/2de2dc3ef5148072bfe8e8df9bed6356)** ·
 **[📄 Dev PPT (PDF)](https://github.com/user-attachments/files/24472503/NBC_2CH_.10._.PPT.pdf)** ·
 **[💻 GitHub 저장소](https://github.com/SpartChapter2Team10/TextConsoleRPG_Team10)**  
